@@ -8,6 +8,9 @@
 # Matt's file syncing thing
 .stignore
 
+# our files
+pause.txt
+
 # All the remainder are Python ones
 # Byte-compiled / optimized / DLL files
 __pycache__/
