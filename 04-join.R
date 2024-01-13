@@ -60,6 +60,7 @@ library(arrow)
 # Load the parquet files --------------------------------------------------
 data_dir <- '/media/matthew/Tux/AppliedEconometrics/data'
 #data_dir <- 'data'
+
 source_dir <- file.path(data_dir, '02-C-deduplicated')  
 
 # This one is quite large
