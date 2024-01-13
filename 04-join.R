@@ -58,17 +58,16 @@ library(tidyverse)
 library(arrow)
 
 # Load the parquet files --------------------------------------------------
-source_dir <- file.path('data', '06-F-one-parquet-per-table')  
+data_dir <- '/media/matthew/Tux/AppliedEconometrics/data'
+#data_dir <- 'data'
+source_dir <- file.path(data_dir, '02-C-deduplicated')  
 
-#   This one is quite large
-#   so only load the columns we care about
-dispatchload <- read_parquet(
-  file.path(source_dir, 'DISPATCHLOAD.parquet'),
-  col_select=c(
-    "SETTLEMENTDATE",
-    "DUID",
-    "INITIALMW",
-    "INTERVENTION")
+# This one is quite large
+# so we read as a lazily evaluated arrow dataset
+# (which is actually many parquet files)
+# not a normal dataframe
+dispatchload <- open_dataset(
+  file.path(source_dir, 'DISPATCHLOAD'),
 )
 
 dualloc <- read_parquet(
@@ -98,23 +97,7 @@ dudetailsummary <- read_parquet(
 )
 
 
-# Check for duplicates ----------------------------------------------------
-# It might be the case that the same row of data was present in multiple source files
-# If so, we'll need to deduplicate
-# For now, just check that's not the case
-stopifnot(! any(duplicated(dualloc)))
-stopifnot(! any(duplicated(genunits)))
-stopifnot(! any(duplicated(dispatchload)))
-stopifnot(! any(duplicated(dudetailsummary)))
-
-
 # Filter --------------------------------------------------------------------
-
-# remove INTERVENTION==1
-# (INTERVENTION=1 is a hypothetical counterfactual for rare edge cases)
-dispatchload <- dispatchload |> 
-  filter(INTERVENTION == 0) |> 
-  select(-INTERVENTION) # Is deleting unused columns good style?
 
 # filter out DUIDs which are loads, not generators
 genunits <- genunits |> 
@@ -122,13 +105,25 @@ genunits <- genunits |>
   select(-GENSETTYPE) 
 
 # dudetailsummary has start and end times,
-# to allow data to change over time
-# but all we care about in that table is the region per generator.
-# It's hard to move a generator across the country, so you wouldn't expect this to change.
-# But apparently the regions were redefined long ago.
-# So filter old data
+# to allow data to change over time.
+# Some DUIDs changed region over time.
+# This sounds bizarre, because electricity generators are big and hard to move.
+# All regions changes in 1999. That's before our main dataset. So we've culled that.
+# One region (SNOWY1) was removed in 2008, and those generators were 'moved'
+# into VIC1 and NSW1 (i.e. no change to DST eligibility)
+# Of the remainder, 2 moved for reasons that aren't clear.
+# (Assuming redrawing boundaries, and these are close to the boundary.)
+# Let's just assert that these aren't including QLD1 (the DST region)
 dudetailsummary <- dudetailsummary |> 
   filter(START_DATE >= make_datetime(year=2000, tz="Australia/Brisbane"))
+duplication_check <- dudetailsummary |>
+  summarise(
+    includes_qld = any(REGIONID == 'QLD1', na.rm = TRUE),
+    moved = n_distinct(REGIONID) > 1,
+    .by=DUID,
+  )
+stopifnot(! any(duplication_check$includes_qld & duplication_check$moved))
+
 
 # Integrity checks and exploration  -------------------------------------------------------------------
 
@@ -136,6 +131,7 @@ dudetailsummary <- dudetailsummary |>
 # so it appears that this info can be updated over time.
 # if so that would complicate the subsequent joins.
 # Let's assert that none of the records change.
+# (I assume there are changes only to the columns we don't care about.)
 num_duplicates <- genunits |> 
   summarise(
     n=n(),
@@ -198,6 +194,10 @@ emissions_per_duid <- genunits |>
     .by=DUID
   )
 
+emissions_per_duid |> 
+  filter(is.na(CO2E_EMISSIONS_FACTOR)) |>
+  View()
+
 # join with power per duid
 # so we get emissions intensity and energy per duid in the same dataframe over time
 # and then combine to get emissions
@@ -220,7 +220,6 @@ df <- power_by_duid |>
 # then join it back to the df with lots of columns
 # TODO: check this date midnight convention
 # TODO: timezone appears wrong. I think we're off by 10 hours. Investigate and fix.
-# TODO: check that the moving generators don't move into/out of DST regions
 df <- df |>
   left_join(dudetailsummary, 
             by=join_by(

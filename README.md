@@ -14,6 +14,7 @@ Then open the notebook with `jupyter lab` (and then select the file).
 This playbook downloads the relevant files from AEMO's website (nemweb), and then unzips them,
 maps each row to the respective 'table', and then saves the results as parquet files.
 (More documentation is in Markdown cells inside the notebook.)
+To see the advantages of parquet over csv, read [this](https://r4ds.hadley.nz/arrow#advantages-of-parquet).
 
 Then there's `02-join.R`. This is an R script that takes parquet files from the previous step,
 and joins them together into one dataframe with everything we want.
