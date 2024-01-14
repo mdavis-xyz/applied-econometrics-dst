@@ -14,20 +14,24 @@
 # each dispatchible unit may contain multiple gensets
 
 # column names are uppercase for now
-# because that's how there were in the original AEMO files
+# because that's how they were in the original AEMO files
+# TODO: change to lowercase earlier, in the python script.
 
-# tables/dataframes and relevant columns
+# tables/dataframes and relevant columns:
 
 # dispatchload
 #   We use this to get the actual power output of each generator
 #   AEMO docs: "DISPATCHLOAD set out the current SCADA MW and target MW for each dispatchable unit..."
 #   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_128.htm#1
+#   This one is quite large, and can easily take up more space than memory.
+#   Note that the previous scripts deleted most columns, to save space.
+#   And created a new column, `POWER`, which is not in the original data by that name.
 #   relevant columns:
 #      DUID
-#      SETTLEMENTDATE - end of a 5 or 30 minute interval
-#      INITIALMW - megawatts (power) generated at the start of the interval
-#                  Use linear intepolation (diagonal dot-to-dot) to figure out the average power over an interval.
-#                  (Generators are supposed to ramp up/down linearly.)
+#      SETTLEMENTDATE - end of a 5 minute interval
+#      POWER - megawatts (power) generated at the start of the interval
+#              To convert to energy (MWh) each period, multiply by 5/60
+#              
 # genunits
 #   we use this to get emissions intensity, and other standing data per generator
 #   this is by GENSETID, not DUID
@@ -54,6 +58,9 @@
 #   e.g. QLD1 for Queensland
 #   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_252.htm#1
 
+
+# imports -----------------------------------------------------------------
+
 library(tidyverse)
 library(arrow)
 
@@ -62,6 +69,10 @@ data_dir <- '/media/matthew/Tux/AppliedEconometrics/data'
 #data_dir <- 'data'
 
 source_dir <- file.path(data_dir, '02-C-deduplicated')  
+
+# TODO: refactor this into constants.R
+# since it also appears in 03-deduplicate.R
+dst_transitions_path <- 'data/03-dst-dates.csv'
 
 # This one is quite large
 # so we read as a lazily evaluated arrow dataset
@@ -100,6 +111,15 @@ dudetailsummary <- read_parquet(
 
 # Filter --------------------------------------------------------------------
 
+# some plants have no emmissions data.
+# filter by only plants with known generation.
+# hopefully that eliminates plants with missing data
+duids <- dispatchload |>
+  to_duckdb() |>
+  distinct(DUID) |>
+  collect() |>
+  pull(DUID)
+
 # filter out DUIDs which are loads, not generators
 genunits <- genunits |> 
   filter(GENSETTYPE == 'GENERATOR') |>
@@ -109,22 +129,41 @@ genunits <- genunits |>
 # to allow data to change over time.
 # Some DUIDs changed region over time.
 # This sounds bizarre, because electricity generators are big and hard to move.
-# All regions changes in 1999. That's before our main dataset. So we've culled that.
+# All regions changes in 1999. That's before our main dataset. So we culled that.
 # One region (SNOWY1) was removed in 2008, and those generators were 'moved'
 # into VIC1 and NSW1 (i.e. no change to DST eligibility)
+# This was before our period of interest anyway. (DISPATCHLOAD goes back to 2009)
+# But in case that limit changes, let's replace SNOWY1 with NSW1/VIC1.
 # Of the remainder, 2 moved for reasons that aren't clear.
 # (Assuming redrawing boundaries, and these are close to the boundary.)
 # Let's just assert that these aren't including QLD1 (the DST region)
 dudetailsummary <- dudetailsummary |> 
-  filter(START_DATE >= make_datetime(year=2000, tz="Australia/Brisbane"))
+  filter(START_DATE >= make_datetime(year=2009, tz="Australia/Brisbane")) |>
+  group_by(DUID) |> 
+  arrange(START_DATE) |>
+  mutate(REGIONID = ifelse(REGIONID == "SNOWY1", NA, REGIONID)) |>
+  fill(REGIONID, .direction = "up")
+
+# filter out generators for which we have no generation data
+dudetailsummary <- dudetailsummary |>
+  filter(DUID %in% duids)
+
 duplication_check <- dudetailsummary |>
   summarise(
     includes_qld = any(REGIONID == 'QLD1', na.rm = TRUE),
     moved = n_distinct(REGIONID) > 1,
-    .by=DUID,
   )
+moved_duids <- duplication_check |> filter(moved) |> pull(DUID)
 stopifnot(! any(duplication_check$includes_qld & duplication_check$moved))
 
+# TODO: investigate further the movement of generators.
+# VSSSH1S1 is a VPP with zero (direct) emissions
+# there was one other. Need to check. Both were only since 2020.
+# for now, just assume each plant has always been in
+# the region it is in today.
+duid_region <- dudetailsummary |>
+  arrange(desc(END_DATE), .keep_all = TRUE) |>
+  select(DUID, REGIONID)
 
 # Integrity checks and exploration  -------------------------------------------------------------------
 
@@ -142,38 +181,8 @@ num_duplicates <- genunits |>
   nrow()
 stopifnot(num_duplicates == 0)
 
-# Prepare Interval times
-
-# SETTLEMENTDATE is the end of the time interval
-# which may be a 5 minute or 30 minute interval
-power_by_duid <- dispatchload |> 
-  arrange(DUID, SETTLEMENTDATE) |>
-  group_by(DUID) |>
-  mutate(
-    INTERVAL_END=SETTLEMENTDATE,
-    INTERVAL_START=lag(INTERVAL_END),
-    INTERVAL_DURATION=INTERVAL_END - INTERVAL_START,
-  ) |>
-  # fix up the first row duration
-  fill(INTERVAL_DURATION, .direction='up') |>
-  mutate(
-    INTERVAL_START=coalesce(INTERVAL_START, INTERVAL_END - INTERVAL_DURATION)
-  ) |>
-  # prepare power values
-  # INITIALMW is the starting power each interval
-  # do linear interpolation
-  mutate(
-    MW_INITIAL = INITIALMW,
-    MW_END=lead(MW_INITIAL, default=first(MW_INITIAL)),
-    MW_AVERAGE=(MW_END+MW_INITIAL)/2,
-    MWH=MW_AVERAGE * (INTERVAL_DURATION / dhours(1)) # megawatt hours (energy, not power)
-  )
-
-# assert that all time intervals are 5 or 30 minutes
-# this is failing for now, because we don't yet have all the data
-stopifnot(all(power_by_duid$INTERVAL_DURATION == dminutes(5)) | (power_by_duid$INTERVAL_DURATION == dminutes(30)))
-
 # DUID to GENSETID mapping ------------------------------------------------
+
 duid_gensetid <- dualloc |>
   select(DUID, GENSETID) |>
   distinct()
@@ -195,49 +204,87 @@ emissions_per_duid <- genunits |>
     .by=DUID
   )
 
+
+emissions_per_duid <- emissions_per_duid |>
+  filter(DUID %in% duids)
+
 duids_without_emissions <- emissions_per_duid |> 
   filter(is.na(CO2E_EMISSIONS_FACTOR)) |>
   pull(DUID)
 # TODO: investigate why some have no emissions
 # I have checked, many overlap with DISPATCHLOAD
 
-# join with power per duid
-# so we get emissions intensity and energy per duid in the same dataframe over time
-# and then combine to get emissions
-df <- power_by_duid |>
-  left_join(emissions_per_duid, by='DUID') |>
-  mutate(
-    CO2E_EMISSIONS = MWH * CO2E_EMISSIONS_FACTOR # unsure if kg, tonnes etc
-  )
+# now we want to add region to the list of DUIDs and emissions
+duid_static <- emissions_per_duid |> 
+  left_join(duid_region, by='DUID')
 
-# now get REGIONID (to figure out which are in DST states)
-# to do this, join with DUDETAILSUMMARY
-# but watch out, that shows two generators changing region over time
-# (not sure why, probably a boundary redraw)
-# so join on DUID, which gives many results per original row
-# then filter back down based on the START_DATE and END_DATE
-# note that START_DATE, END_DATE are midnight at the *start* of the day
-# that they apply to
-# Note that in order to not use up more memory than we have on a laptop
-# we'll do the joins and filters with only the joining keys and REGIONID
-# then join it back to the df with lots of columns
-# TODO: check this date midnight convention
-# TODO: timezone appears wrong. I think we're off by 10 hours. Investigate and fix.
-df <- df |>
-  left_join(dudetailsummary, 
+
+
+# SETTLEMENTDATE is the end of the time interval
+# which are 5 minutes long
+# now we're back to dealing with large data
+min_per_interval <- 5
+min_per_hour <- 60
+h_per_interval <- min_per_interval / min_per_hour
+
+region_power_emissions <- dispatchload |>
+  left_join(duid_static, by='DUID') |>
+  mutate(
+    energy_mwh = POWER * h_per_interval,
+    co2 = energy_mwh * CO2E_EMISSIONS_FACTOR
+  ) |>
+  summarize(
+    energy_mwh = sum(energy_mwh, na.rm = TRUE),
+    co2 = sum(co2, na.rm = TRUE),
+    .by=c(REGIONID, SETTLEMENTDATE),
+  ) |>
+  rename(
+    regionid = REGIONID,
+    interval_end = SETTLEMENTDATE,
+  ) |> 
+  collect() # required for subsequent inequality join
+
+
+# add DST info ------------------------------------------------------------
+
+# cull everything except this many days from DST transitions
+# this is duplicated from 03-deduplicate.R
+# TODO: calculate windows in 02-get-DST-transitions.ipynb
+# instead of doing it both here and in 03-deduplicate.R
+window_size <- 4*7
+
+dst_transitions <- read_csv(dst_transitions_path) |>
+  rename(
+    dst_date = date,
+    dst_direction = direction) |>
+  mutate(
+    dst_direction = factor(dst_direction),
+    dst_window_start = dst_date - window_size,
+    dst_window_end = dst_date + window_size,
+    dst_transition_id = paste(year(dst_date), dst_direction, sep='-'),
+  ) 
+
+# now join DST info with main dataframe
+df <- region_power_emissions |>
+  collect() |>
+  left_join(dst_transitions, 
             by=join_by(
-              DUID, 
-              INTERVAL_START >= START_DATE,
-              INTERVAL_START < END_DATE
+              interval_end > dst_window_start,
+              interval_end <= dst_window_end
             )
   ) |>
-  select(-c(START_DATE, END_DATE))
-df |> head() |> View()
-
-
+  select(-dst_window_start, -dst_window_end) |>
+  mutate(
+    # TODO: do exact time of day the transition happens (2am)
+    # TODO: manually check that the join is not off by 1 day
+    after_transition = interval_end > dst_date,
+    
+    dst_now_anywhere = if_else(dst_direction == 'start', after_transition, !after_transition),
+    dst_now_here = if_else(regionid == 'QLD1', FALSE, dst_now_anywhere)
+  )
+  
 # Save Result -------------------------------------------------------------
 
-dest_path <- file.path('data', '07-joined.parquet')
+dest_path <- file.path(data_dir, '04-joined.parquet')
 df |> 
-  select(DUID, INTERVAL_START, INTERVAL_END, INTERVAL_DURATION, MW_AVERAGE, MWH, CO2E_EMISSIONS, REGIONID) |>
   write_parquet(dest_path)
