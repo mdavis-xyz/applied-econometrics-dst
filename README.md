@@ -25,4 +25,7 @@ Some relevant documentation files are in the `documentation` folder. These are f
 Our code doesn't look at these. That's just for humans to look at to understand the dataset.
 
 
+## Unused
+
+The `unused` folder is an archive of scripts which are no longer in use, or just investigation stuff that we don't want to delete.
 

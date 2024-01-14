@@ -195,9 +195,11 @@ emissions_per_duid <- genunits |>
     .by=DUID
   )
 
-emissions_per_duid |> 
+duids_without_emissions <- emissions_per_duid |> 
   filter(is.na(CO2E_EMISSIONS_FACTOR)) |>
-  View()
+  pull(DUID)
+# TODO: investigate why some have no emissions
+# I have checked, many overlap with DISPATCHLOAD
 
 # join with power per duid
 # so we get emissions intensity and energy per duid in the same dataframe over time
