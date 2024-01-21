@@ -68,6 +68,30 @@ df |>
   )
 ggsave(filename = "plots/co2-by-day-2023.png", height=5, width=8)
 
+
+df |>
+  mutate(
+    d = date(interval_end)
+  ) |>
+  summarise(
+    mwh_per_day = sum(energy_mwh),
+    co2_per_day = sum(co2),
+    .by = c(d, regionid)
+  ) |>
+  filter(year(d) == 2023, month(d) > 6) |>
+  filter(d != max(d)) |>
+  ggplot(aes(x = d, y = mwh_per_day, group=regionid, color=regionid)) +
+  geom_line() +
+  geom_vline(xintercept=make_date(2023, 9, 30)) +
+  labs(
+    title = "Energy per day",
+    subtitle = "by region, for a particular transition, 2023 spring forward",
+    x = "date",
+    y = "Energy (MWh)",
+  )
+ggsave(filename = "plots/mwh-by-day-2023.png", height=5, width=8)
+
+
 df |>
   mutate(
     d = date(interval_end)
