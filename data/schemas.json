@@ -1,4 +1,5926 @@
 {
+  "MMS_DATA_MODEL_AUDIT": {
+    "indexes": [],
+    "columns": {
+      "INSTALLATION_DATE": "DATE",
+      "MMSDM_VERSION": "VARCHAR2(20)",
+      "INSTALL_TYPE": "VARCHAR2(10)",
+      "SCRIPT_VERSION": "VARCHAR2(20)",
+      "NEM_CHANGE_NOTICE": "VARCHAR2(20)",
+      "PROJECT_TITLE": "VARCHAR2(200)",
+      "USERNAME": "VARCHAR2(40)",
+      "STATUS": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "INSTALL_TYPE",
+      "INSTALLATION_DATE",
+      "MMSDM_VERSION"
+    ]
+  },
+  "CONTRACTAGC": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID",
+        "CONTRACTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "DUID": "VARCHAR2(10)",
+      "CRR": "NUMBER(4,0)",
+      "CRL": "NUMBER(4,0)",
+      "RLPRICE": "NUMBER(10,2)",
+      "CCPRICE": "NUMBER(10,2)",
+      "BS": "NUMBER(10,2)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "VERSIONNO"
+    ]
+  },
+  "CONTRACTLOADSHED": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "DUID": "VARCHAR2(10)",
+      "LSEPRICE": "NUMBER(6,2)",
+      "MCPPRICE": "NUMBER(12,2)",
+      "TENDEREDPRICE": "NUMBER(6,2)",
+      "LSCR": "NUMBER(6,2)",
+      "ILSCALINGFACTOR": "NUMBER(15,5)",
+      "LOWER60SECBREAKPOINT": "NUMBER(9,6)",
+      "LOWER60SECMAX": "NUMBER(9,6)",
+      "LOWER6SECBREAKPOINT": "NUMBER(9,6)",
+      "LOWER6SECMAX": "NUMBER(9,6)",
+      "RAISE60SECBREAKPOINT": "NUMBER(9,6)",
+      "RAISE60SECCAPACITY": "NUMBER(9,6)",
+      "RAISE60SECMAX": "NUMBER(9,6)",
+      "RAISE6SECBREAKPOINT": "NUMBER(9,6)",
+      "RAISE6SECCAPACITY": "NUMBER(9,6)",
+      "RAISE6SECMAX": "NUMBER(9,6)",
+      "PRICE6SECRAISEMANDATORY": "NUMBER(16,6)",
+      "QUANT6SECRAISEMANDATORY": "NUMBER(9,6)",
+      "PRICE6SECRAISECONTRACT": "NUMBER(16,6)",
+      "QUANT6SECRAISECONTRACT": "NUMBER(9,6)",
+      "PRICE60SECRAISEMANDATORY": "NUMBER(16,6)",
+      "QUANT60SECRAISEMANDATORY": "NUMBER(9,6)",
+      "PRICE60SECRAISECONTRACT": "NUMBER(16,6)",
+      "QUANT60SECRAISECONTRACT": "NUMBER(9,6)",
+      "PRICE6SECLOWERMANDATORY": "NUMBER(16,6)",
+      "QUANT6SECLOWERMANDATORY": "NUMBER(9,6)",
+      "PRICE6SECLOWERCONTRACT": "NUMBER(16,6)",
+      "QUANT6SECLOWERCONTRACT": "NUMBER(9,6)",
+      "PRICE60SECLOWERMANDATORY": "NUMBER(16,6)",
+      "QUANT60SECLOWERMANDATORY": "NUMBER(9,6)",
+      "PRICE60SECLOWERCONTRACT": "NUMBER(16,6)",
+      "QUANT60SECLOWERCONTRACT": "NUMBER(9,6)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "DEFAULT_TESTINGPAYMENT_AMOUNT": "NUMBER(18,8)",
+      "SERVICE_START_DATE": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "VERSIONNO"
+    ]
+  },
+  "CONTRACTREACTIVEPOWER": {
+    "indexes": [
+      [
+        "PARTICIPANTID"
+      ],
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "DUID": "VARCHAR2(10)",
+      "SYNCCOMPENSATION": "VARCHAR2(1)",
+      "MVARAPRICE": "NUMBER(10,2)",
+      "MVAREPRICE": "NUMBER(10,2)",
+      "MVARGPRICE": "NUMBER(10,2)",
+      "CCPRICE": "NUMBER(10,2)",
+      "MTA": "NUMBER(10,2)",
+      "MTG": "NUMBER(10,2)",
+      "MMCA": "NUMBER(10,2)",
+      "MMCG": "NUMBER(10,2)",
+      "EU": "NUMBER(10,2)",
+      "PP": "NUMBER(10,2)",
+      "BS": "NUMBER(10,2)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "DEFAULT_TESTINGPAYMENT_AMOUNT": "NUMBER(18,8)",
+      "SERVICE_START_DATE": "DATE",
+      "AVAILABILITY_MWH_THRESHOLD": "NUMBER(18,8)",
+      "MVAR_THRESHOLD": "NUMBER(18,8)",
+      "REBATE_CAP": "NUMBER(18,8)",
+      "REBATE_AMOUNT_PER_MVAR": "NUMBER(18,8)",
+      "ISREBATEAPPLICABLE": "NUMBER(1,0)"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "VERSIONNO"
+    ]
+  },
+  "CONTRACTRESTARTSERVICES": {
+    "indexes": [
+      [
+        "PARTICIPANTID"
+      ],
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "RESTARTTYPE": "NUMBER(1,0)",
+      "RCPRICE": "NUMBER(6,2)",
+      "TRIPTOHOUSELEVEL": "NUMBER(5,0)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "DEFAULT_TESTINGPAYMENT_AMOUNT": "NUMBER(18,8)",
+      "SERVICE_START_DATE": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "VERSIONNO"
+    ]
+  },
+  "CONTRACTRESTARTUNITS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "CONTRACTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "DUID": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "DUID",
+      "VERSIONNO"
+    ]
+  },
+  "OFFERAGCDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "CONTRACTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "AVAILABILITY": "NUMBER(4,0)",
+      "UPPERLIMIT": "NUMBER(4,0)",
+      "LOWERLIMIT": "NUMBER(4,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "FILENAME": "VARCHAR2(40)",
+      "LASTCHANGED": "DATE",
+      "PERIODID": "NUMBER(3,0)",
+      "AGCUP": "NUMBER(3,0)",
+      "AGCDOWN": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "EFFECTIVEDATE",
+      "PERIODID",
+      "VERSIONNO"
+    ]
+  },
+  "OFFERASTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "FILENAME": "VARCHAR2(40)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "PARTICIPANTID",
+      "VERSIONNO"
+    ]
+  },
+  "OFFERLSHEDDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "AVAILABLELOAD": "NUMBER(4,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "FILENAME": "VARCHAR2(40)",
+      "LASTCHANGED": "DATE",
+      "PERIODID": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "EFFECTIVEDATE",
+      "PERIODID",
+      "VERSIONNO"
+    ]
+  },
+  "OFFERRESTARTDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "OFFERDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "AVAILABILITY": "VARCHAR2(3)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "FILENAME": "VARCHAR2(40)",
+      "LASTCHANGED": "DATE",
+      "PERIODID": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "OFFERDATE",
+      "PERIODID",
+      "VERSIONNO"
+    ]
+  },
+  "OFFERRPOWERDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "CONTRACTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PERIODID": "NUMBER(3,0)",
+      "AVAILABILITY": "NUMBER(3,0)",
+      "MTA": "NUMBER(6,0)",
+      "MTG": "NUMBER(6,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "FILENAME": "VARCHAR2(40)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "EFFECTIVEDATE",
+      "PERIODID",
+      "VERSIONNO"
+    ]
+  },
+  "BIDDAYOFFER": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "DUID": "VARCHAR2(10)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "SETTLEMENTDATE": "DATE",
+      "OFFERDATE": "TIMESTAMP(3)",
+      "VERSIONNO": "NUMBER(22,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "DAILYENERGYCONSTRAINT": "NUMBER(12,6)",
+      "REBIDEXPLANATION": "VARCHAR2(500)",
+      "PRICEBAND1": "NUMBER(9,2)",
+      "PRICEBAND2": "NUMBER(9,2)",
+      "PRICEBAND3": "NUMBER(9,2)",
+      "PRICEBAND4": "NUMBER(9,2)",
+      "PRICEBAND5": "NUMBER(9,2)",
+      "PRICEBAND6": "NUMBER(9,2)",
+      "PRICEBAND7": "NUMBER(9,2)",
+      "PRICEBAND8": "NUMBER(9,2)",
+      "PRICEBAND9": "NUMBER(9,2)",
+      "PRICEBAND10": "NUMBER(9,2)",
+      "MINIMUMLOAD": "NUMBER(22,0)",
+      "T1": "NUMBER(22,0)",
+      "T2": "NUMBER(22,0)",
+      "T3": "NUMBER(22,0)",
+      "T4": "NUMBER(22,0)",
+      "NORMALSTATUS": "VARCHAR2(3)",
+      "LASTCHANGED": "DATE",
+      "MR_FACTOR": "NUMBER(16,6)",
+      "ENTRYTYPE": "VARCHAR2(20)",
+      "REBID_EVENT_TIME": "VARCHAR2(20)",
+      "REBID_AWARE_TIME": "VARCHAR2(20)",
+      "REBID_DECISION_TIME": "VARCHAR2(20)",
+      "REBID_CATEGORY": "VARCHAR2(1)",
+      "REFERENCE_ID": "VARCHAR2(100)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "DUID",
+      "OFFERDATE",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "BIDDAYOFFER_D": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "DUID": "VARCHAR2(10)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "BIDSETTLEMENTDATE": "DATE",
+      "OFFERDATE": "DATE",
+      "VERSIONNO": "NUMBER(22,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "DAILYENERGYCONSTRAINT": "NUMBER(12,6)",
+      "REBIDEXPLANATION": "VARCHAR2(500)",
+      "PRICEBAND1": "NUMBER(9,2)",
+      "PRICEBAND2": "NUMBER(9,2)",
+      "PRICEBAND3": "NUMBER(9,2)",
+      "PRICEBAND4": "NUMBER(9,2)",
+      "PRICEBAND5": "NUMBER(9,2)",
+      "PRICEBAND6": "NUMBER(9,2)",
+      "PRICEBAND7": "NUMBER(9,2)",
+      "PRICEBAND8": "NUMBER(9,2)",
+      "PRICEBAND9": "NUMBER(9,2)",
+      "PRICEBAND10": "NUMBER(9,2)",
+      "MINIMUMLOAD": "NUMBER(22,0)",
+      "T1": "NUMBER(22,0)",
+      "T2": "NUMBER(22,0)",
+      "T3": "NUMBER(22,0)",
+      "T4": "NUMBER(22,0)",
+      "NORMALSTATUS": "VARCHAR2(3)",
+      "LASTCHANGED": "DATE",
+      "MR_FACTOR": "NUMBER(16,6)",
+      "ENTRYTYPE": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "DUID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "BIDOFFERFILETRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "OFFERDATE": "TIMESTAMP(3)",
+      "FILENAME": "VARCHAR2(80)",
+      "STATUS": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(20)",
+      "AUTHORISEDDATE": "DATE",
+      "TRANSACTION_ID": "VARCHAR2(100)",
+      "REFERENCE_ID": "VARCHAR2(100)",
+      "SUBMISSION_TIMESTAMP": "DATE",
+      "COMMENTS": "VARCHAR2(1000)",
+      "SUBMISSION_METHOD": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "OFFERDATE",
+      "PARTICIPANTID"
+    ]
+  },
+  "BIDOFFERPERIOD": {
+    "indexes": [],
+    "columns": {
+      "DUID": "VARCHAR2(20)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "TRADINGDATE": "DATE",
+      "OFFERDATETIME": "TIMESTAMP(3)",
+      "PERIODID": "NUMBER(3,0)",
+      "MAXAVAIL": "NUMBER(8,3)",
+      "FIXEDLOAD": "NUMBER(8,3)",
+      "RAMPUPRATE": "NUMBER(6)",
+      "RAMPDOWNRATE": "NUMBER(6)",
+      "ENABLEMENTMIN": "NUMBER(8,3)",
+      "ENABLEMENTMAX": "NUMBER(8,3)",
+      "LOWBREAKPOINT": "NUMBER(8,3)",
+      "HIGHBREAKPOINT": "NUMBER(8,3)",
+      "BANDAVAIL1": "NUMBER(8,3)",
+      "BANDAVAIL2": "NUMBER(8,3)",
+      "BANDAVAIL3": "NUMBER(8,3)",
+      "BANDAVAIL4": "NUMBER(8,3)",
+      "BANDAVAIL5": "NUMBER(8,3)",
+      "BANDAVAIL6": "NUMBER(8,3)",
+      "BANDAVAIL7": "NUMBER(8,3)",
+      "BANDAVAIL8": "NUMBER(8,3)",
+      "BANDAVAIL9": "NUMBER(8,3)",
+      "BANDAVAIL10": "NUMBER(8,3)",
+      "PASAAVAILABILITY": "NUMBER(8,3)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "DUID",
+      "OFFERDATETIME",
+      "PERIODID",
+      "TRADINGDATE"
+    ]
+  },
+  "BIDPEROFFER_D": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "DUID": "VARCHAR2(10)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "BIDSETTLEMENTDATE": "DATE",
+      "OFFERDATE": "DATE",
+      "PERIODID": "NUMBER(22,0)",
+      "VERSIONNO": "NUMBER(22,0)",
+      "MAXAVAIL": "NUMBER(12,6)",
+      "FIXEDLOAD": "NUMBER(12,6)",
+      "ROCUP": "NUMBER(6,0)",
+      "ROCDOWN": "NUMBER(6,0)",
+      "ENABLEMENTMIN": "NUMBER(6,0)",
+      "ENABLEMENTMAX": "NUMBER(6,0)",
+      "LOWBREAKPOINT": "NUMBER(6,0)",
+      "HIGHBREAKPOINT": "NUMBER(6,0)",
+      "BANDAVAIL1": "NUMBER(22,0)",
+      "BANDAVAIL2": "NUMBER(22,0)",
+      "BANDAVAIL3": "NUMBER(22,0)",
+      "BANDAVAIL4": "NUMBER(22,0)",
+      "BANDAVAIL5": "NUMBER(22,0)",
+      "BANDAVAIL6": "NUMBER(22,0)",
+      "BANDAVAIL7": "NUMBER(22,0)",
+      "BANDAVAIL8": "NUMBER(22,0)",
+      "BANDAVAIL9": "NUMBER(22,0)",
+      "BANDAVAIL10": "NUMBER(22,0)",
+      "LASTCHANGED": "DATE",
+      "PASAAVAILABILITY": "NUMBER(12,0)",
+      "INTERVAL_DATETIME": "DATE",
+      "MR_CAPACITY": "NUMBER(6,0)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "DUID",
+      "INTERVAL_DATETIME",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "MNSP_BIDOFFERPERIOD": {
+    "indexes": [],
+    "columns": {
+      "LINKID": "VARCHAR2(20)",
+      "TRADINGDATE": "DATE",
+      "OFFERDATETIME": "TIMESTAMP(3)",
+      "PERIODID": "NUMBER(3,0)",
+      "MAXAVAIL": "NUMBER(8,3)",
+      "FIXEDLOAD": "NUMBER(8,3)",
+      "RAMPUPRATE": "NUMBER(6)",
+      "BANDAVAIL1": "NUMBER(8,3)",
+      "BANDAVAIL2": "NUMBER(8,3)",
+      "BANDAVAIL3": "NUMBER(8,3)",
+      "BANDAVAIL4": "NUMBER(8,3)",
+      "BANDAVAIL5": "NUMBER(8,3)",
+      "BANDAVAIL6": "NUMBER(8,3)",
+      "BANDAVAIL7": "NUMBER(8,3)",
+      "BANDAVAIL8": "NUMBER(8,3)",
+      "BANDAVAIL9": "NUMBER(8,3)",
+      "BANDAVAIL10": "NUMBER(8,3)",
+      "PASAAVAILABILITY": "NUMBER(8,3)"
+    },
+    "primary_keys": [
+      "LINKID",
+      "OFFERDATETIME",
+      "PERIODID",
+      "TRADINGDATE"
+    ]
+  },
+  "MNSP_DAYOFFER": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "OFFERDATE": "TIMESTAMP(3)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LINKID": "VARCHAR2(10)",
+      "ENTRYTYPE": "VARCHAR2(20)",
+      "REBIDEXPLANATION": "VARCHAR2(500)",
+      "PRICEBAND1": "NUMBER(9,2)",
+      "PRICEBAND2": "NUMBER(9,2)",
+      "PRICEBAND3": "NUMBER(9,2)",
+      "PRICEBAND4": "NUMBER(9,2)",
+      "PRICEBAND5": "NUMBER(9,2)",
+      "PRICEBAND6": "NUMBER(9,2)",
+      "PRICEBAND7": "NUMBER(9,2)",
+      "PRICEBAND8": "NUMBER(9,2)",
+      "PRICEBAND9": "NUMBER(9,2)",
+      "PRICEBAND10": "NUMBER(9,2)",
+      "LASTCHANGED": "DATE",
+      "MR_FACTOR": "NUMBER(16,6)",
+      "REBID_EVENT_TIME": "VARCHAR2(20)",
+      "REBID_AWARE_TIME": "VARCHAR2(20)",
+      "REBID_DECISION_TIME": "VARCHAR2(20)",
+      "REBID_CATEGORY": "VARCHAR2(1)",
+      "REFERENCE_ID": "VARCHAR2(100)"
+    },
+    "primary_keys": [
+      "LINKID",
+      "OFFERDATE",
+      "PARTICIPANTID",
+      "SETTLEMENTDATE",
+      "VERSIONNO"
+    ]
+  },
+  "MTPASA_OFFERDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "UNITID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "ENERGY": "NUMBER(9)",
+      "CAPACITY1": "NUMBER(9)",
+      "CAPACITY2": "NUMBER(9)",
+      "CAPACITY3": "NUMBER(9)",
+      "CAPACITY4": "NUMBER(9)",
+      "CAPACITY5": "NUMBER(9)",
+      "CAPACITY6": "NUMBER(9)",
+      "CAPACITY7": "NUMBER(9)",
+      "LASTCHANGED": "DATE",
+      "UNITSTATE1": "VARCHAR2(20)",
+      "UNITSTATE2": "VARCHAR2(20)",
+      "UNITSTATE3": "VARCHAR2(20)",
+      "UNITSTATE4": "VARCHAR2(20)",
+      "UNITSTATE5": "VARCHAR2(20)",
+      "UNITSTATE6": "VARCHAR2(20)",
+      "UNITSTATE7": "VARCHAR2(20)",
+      "RECALLTIME1": "NUMBER(4)",
+      "RECALLTIME2": "NUMBER(4)",
+      "RECALLTIME3": "NUMBER(4)",
+      "RECALLTIME4": "NUMBER(4)",
+      "RECALLTIME5": "NUMBER(4)",
+      "RECALLTIME6": "NUMBER(4)",
+      "RECALLTIME7": "NUMBER(4)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "OFFERDATETIME",
+      "PARTICIPANTID",
+      "UNITID"
+    ]
+  },
+  "MTPASA_OFFERFILETRK": {
+    "indexes": [],
+    "columns": {
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "FILENAME": "VARCHAR2(200)"
+    },
+    "primary_keys": [
+      "OFFERDATETIME",
+      "PARTICIPANTID"
+    ]
+  },
+  "BILLINGCALENDAR": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "PRELIMINARYSTATEMENTDATE": "DATE",
+      "FINALSTATEMENTDATE": "DATE",
+      "PAYMENTDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "REVISION1_STATEMENTDATE": "DATE",
+      "REVISION2_STATEMENTDATE": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "WEEKNO"
+    ]
+  },
+  "GST_BAS_CLASS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "BAS_CLASS": "VARCHAR2(30)",
+      "DESCRIPTION": "VARCHAR2(100)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BAS_CLASS"
+    ]
+  },
+  "GST_RATE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "BAS_CLASS": "VARCHAR2(30)",
+      "GST_RATE": "NUMBER(8,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BAS_CLASS",
+      "EFFECTIVEDATE",
+      "VERSIONNO"
+    ]
+  },
+  "GST_TRANSACTION_CLASS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "TRANSACTION_TYPE": "VARCHAR2(30)",
+      "BAS_CLASS": "VARCHAR2(30)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BAS_CLASS",
+      "EFFECTIVEDATE",
+      "TRANSACTION_TYPE",
+      "VERSIONNO"
+    ]
+  },
+  "GST_TRANSACTION_TYPE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "TRANSACTION_TYPE": "VARCHAR2(30)",
+      "DESCRIPTION": "VARCHAR2(100)",
+      "GL_FINANCIALCODE": "VARCHAR2(10)",
+      "GL_TCODE": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "TRANSACTION_TYPE"
+    ]
+  },
+  "SECDEPOSIT_INTEREST_RATE": {
+    "indexes": [],
+    "columns": {
+      "INTEREST_ACCT_ID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSION_DATETIME": "DATE",
+      "INTEREST_RATE": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "INTEREST_ACCT_ID",
+      "VERSION_DATETIME"
+    ]
+  },
+  "SECDEPOSIT_PROVISION": {
+    "indexes": [],
+    "columns": {
+      "SECURITY_DEPOSIT_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "TRANSACTION_DATE": "DATE",
+      "MATURITY_CONTRACTYEAR": "NUMBER(4,0)",
+      "MATURITY_WEEKNO": "NUMBER(3,0)",
+      "AMOUNT": "NUMBER(18,8)",
+      "INTEREST_RATE": "NUMBER(18,8)",
+      "INTEREST_CALC_TYPE": "VARCHAR2(20)",
+      "INTEREST_ACCT_ID": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "PARTICIPANTID",
+      "SECURITY_DEPOSIT_ID"
+    ]
+  },
+  "BILLING_APC_COMPENSATION": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4)",
+      "WEEKNO": "NUMBER(3)",
+      "BILLRUNNO": "NUMBER(3)",
+      "APEVENTID": "NUMBER(6)",
+      "CLAIMID": "NUMBER(6)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "COMPENSATION_AMOUNT": "NUMBER(18,8)",
+      "EVENT_TYPE": "VARCHAR2(20)",
+      "COMPENSATION_TYPE": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "APEVENTID",
+      "BILLRUNNO",
+      "CLAIMID",
+      "CONTRACTYEAR",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_APC_RECOVERY": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4)",
+      "WEEKNO": "NUMBER(3)",
+      "BILLRUNNO": "NUMBER(3)",
+      "APEVENTID": "NUMBER(6)",
+      "CLAIMID": "NUMBER(6)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "RECOVERY_AMOUNT": "NUMBER(18,8)",
+      "ELIGIBILITY_START_INTERVAL": "DATE",
+      "ELIGIBILITY_END_INTERVAL": "DATE",
+      "PARTICIPANT_DEMAND": "NUMBER(18,8)",
+      "REGION_DEMAND": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "APEVENTID",
+      "BILLRUNNO",
+      "CLAIMID",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_CO2E_PUBLICATION": {
+    "indexes": [
+      [
+        "CONTRACTYEAR",
+        "WEEKNO",
+        "SETTLEMENTDATE",
+        "REGIONID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4)",
+      "WEEKNO": "NUMBER(3)",
+      "BILLRUNNO": "NUMBER(3)",
+      "SETTLEMENTDATE": "DATE",
+      "REGIONID": "VARCHAR(20)",
+      "SENTOUTENERGY": "NUMBER(18,8)",
+      "GENERATOREMISSIONS": "NUMBER(18,8)",
+      "INTENSITYINDEX": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "REGIONID",
+      "SETTLEMENTDATE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_CO2E_PUBLICATION_TRK": {
+    "indexes": [
+      [
+        "CONTRACTYEAR",
+        "WEEKNO"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4)",
+      "WEEKNO": "NUMBER(3)",
+      "BILLRUNNO": "NUMBER(3)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DAILY_ENERGY_SUMMARY": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "SETTLEMENTDATE": "DATE",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "CUSTOMER_ENERGY_PURCHASED": "NUMBER(18,8)",
+      "GENERATOR_ENERGY_SOLD": "NUMBER(18,8)",
+      "GENERATOR_ENERGY_PURCHASED": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "SETTLEMENTDATE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIR_FINAL_AMOUNT": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "COMPENSATION_TYPE": "VARCHAR2(40)",
+      "PROVISIONAL_AMOUNT": "NUMBER(18,8)",
+      "FINAL_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "COMPENSATION_TYPE",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIR_FINAL_RECOVERY": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "CRA_AMOUNT": "NUMBER(18,8)",
+      "PROVISIONAL_AMOUNT": "NUMBER(18,8)",
+      "FINAL_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIR_PROV_AMOUNT": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "COMPENSATION_TYPE": "VARCHAR2(40)",
+      "COMPENSATION_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "COMPENSATION_TYPE",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIR_PROV_RECOVERY": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "CRA_AMOUNT": "NUMBER(18,8)",
+      "RECOVERY_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIR_RECOVERY_DETAIL": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "PARTICIPANTCATEGORYID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "RECOVERY_AMOUNT": "NUMBER(18,8)",
+      "RECOVERY_ENERGY": "NUMBER(18,8)",
+      "REGION_ENERGY": "NUMBER(18,8)",
+      "EXCLUDED_ENERGY": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "PARTICIPANTCATEGORYID",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIRECTION_RECON_OTHER": {
+    "indexes": [
+      [
+        "CONTRACTYEAR",
+        "WEEKNO",
+        "BILLRUNNO",
+        "DIRECTION_ID",
+        "REGIONID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4)",
+      "WEEKNO": "NUMBER(3)",
+      "BILLRUNNO": "NUMBER(3)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "DIRECTION_DESC": "VARCHAR2(200)",
+      "DIRECTION_TYPE_ID": "VARCHAR2(20)",
+      "DIRECTION_START_DATE": "DATE",
+      "DIRECTION_END_DATE": "DATE",
+      "DIRECTION_START_INTERVAL": "DATE",
+      "DIRECTION_END_INTERVAL": "DATE",
+      "COMPENSATION_AMOUNT": "NUMBER(18,8)",
+      "INTEREST_AMOUNT": "NUMBER(18,8)",
+      "INDEPENDENT_EXPERT_FEE": "NUMBER(18,8)",
+      "CRA": "NUMBER(18,8)",
+      "REGIONAL_CUSTOMER_ENERGY": "NUMBER(18,8)",
+      "REGIONAL_GENERATOR_ENERGY": "NUMBER(18,8)",
+      "REGIONAL_BENEFIT_FACTOR": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_DIRECTION_RECONCILIATN": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4)",
+      "WEEKNO": "NUMBER(3)",
+      "BILLRUNNO": "NUMBER(3)",
+      "DIRECTION_ID": "VARCHAR2(20)",
+      "DIRECTION_DESC": "VARCHAR2(200)",
+      "DIRECTION_START_DATE": "DATE",
+      "DIRECTION_END_DATE": "DATE",
+      "COMPENSATION_AMOUNT": "NUMBER(16,6)",
+      "INDEPENDENT_EXPERT_FEE": "NUMBER(16,6)",
+      "INTEREST_AMOUNT": "NUMBER(16,6)",
+      "CRA": "NUMBER(16,6)",
+      "NEM_FEE_ID": "VARCHAR2(20)",
+      "NEM_FIXED_FEE_AMOUNT": "NUMBER(16,6)",
+      "MKT_CUSTOMER_PERC": "NUMBER(16,6)",
+      "GENERATOR_PERC": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "DIRECTION_ID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_EFTSHORTFALL_AMOUNT": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "SHORTFALL_AMOUNT": "NUMBER(18,8)",
+      "SHORTFALL": "NUMBER(18,8)",
+      "SHORTFALL_COMPANY_ID": "VARCHAR2(20)",
+      "COMPANY_SHORTFALL_AMOUNT": "NUMBER(18,8)",
+      "PARTICIPANT_NET_ENERGY": "NUMBER(18,8)",
+      "COMPANY_NET_ENERGY": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_EFTSHORTFALL_DETAIL": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "TRANSACTION_TYPE": "VARCHAR2(40)",
+      "AMOUNT": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "TRANSACTION_TYPE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_ENERGY_TRAN_SAPS": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "TNI": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "CONSUMED_ENERGY_MWH": "NUMBER(18,8)",
+      "SENTOUT_ENERGY_MWH": "NUMBER(18,8)",
+      "CONSUMED_ENERGY_COST": "NUMBER(18,8)",
+      "SENTOUT_ENERGY_COST": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "TNI",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_GST_DETAIL": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "BAS_CLASS": "VARCHAR2(30)",
+      "TRANSACTION_TYPE": "VARCHAR2(30)",
+      "GST_EXCLUSIVE_AMOUNT": "NUMBER(15,5)",
+      "GST_AMOUNT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BAS_CLASS",
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "TRANSACTION_TYPE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_GST_SUMMARY": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "BAS_CLASS": "VARCHAR2(30)",
+      "GST_EXCLUSIVE_AMOUNT": "NUMBER(15,5)",
+      "GST_AMOUNT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BAS_CLASS",
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_NMAS_TST_PAYMENTS": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR(20)",
+      "SERVICE": "VARCHAR(10)",
+      "CONTRACTID": "VARCHAR(10)",
+      "PAYMENT_AMOUNT": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "SERVICE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_NMAS_TST_RECOVERY": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR(20)",
+      "SERVICE": "VARCHAR(10)",
+      "CONTRACTID": "VARCHAR(10)",
+      "REGIONID": "VARCHAR(10)",
+      "RBF": "NUMBER(18,8)",
+      "TEST_PAYMENT": "NUMBER(18,8)",
+      "RECOVERY_START_DATE": "DATE",
+      "RECOVERY_END_DATE": "DATE",
+      "PARTICIPANT_ENERGY": "NUMBER(18,8)",
+      "REGION_ENERGY": "NUMBER(18,8)",
+      "NEM_ENERGY": "NUMBER(18,8)",
+      "CUSTOMER_PROPORTION": "NUMBER(18,8)",
+      "GENERATOR_PROPORTION": "NUMBER(18,8)",
+      "PARTICIPANT_GENERATION": "NUMBER(18,8)",
+      "NEM_GENERATION": "NUMBER(18,8)",
+      "RECOVERY_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "SERVICE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_NMAS_TST_RECVRY_RBF": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "SERVICE": "VARCHAR(10)",
+      "CONTRACTID": "VARCHAR(10)",
+      "REGIONID": "VARCHAR(10)",
+      "RBF": "NUMBER(18,8)",
+      "PAYMENT_AMOUNT": "NUMBER(18,8)",
+      "RECOVERY_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "REGIONID",
+      "SERVICE",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_NMAS_TST_RECVRY_TRK": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "RECOVERY_CONTRACTYEAR": "NUMBER(4,0)",
+      "RECOVERY_WEEKNO": "NUMBER(3,0)",
+      "RECOVERY_BILLRUNNO": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "RECOVERY_BILLRUNNO",
+      "RECOVERY_CONTRACTYEAR",
+      "RECOVERY_WEEKNO",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_SECDEP_INTEREST_PAY": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "SECURITY_DEPOSIT_ID": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "INTEREST_AMOUNT": "NUMBER(18,8)",
+      "INTEREST_CALC_TYPE": "VARCHAR2(20)",
+      "INTEREST_ACCT_ID": "VARCHAR2(20)",
+      "INTEREST_RATE": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "SECURITY_DEPOSIT_ID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_SECDEP_INTEREST_RATE": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "INTEREST_ACCT_ID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "INTEREST_RATE": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "EFFECTIVEDATE",
+      "INTEREST_ACCT_ID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_SECDEPOSIT_APPLICATION": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "APPLICATION_AMOUNT": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_SUBST_DEMAND": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "SETTLEMENTDATE": "DATE",
+      "TNI": "VARCHAR2(20)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "SUBSTITUTEDEMAND": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "SETTLEMENTDATE",
+      "TNI",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_SUBST_RUN_VERSION": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "REFERENCESETTLEMENTDATE": "DATE",
+      "REFERENCESETTLEMENTRUNNO": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "REFERENCESETTLEMENTDATE",
+      "REFERENCESETTLEMENTRUNNO",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_WDR": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "WDR_CREDIT_AMOUNT": "NUMBER(18,8)",
+      "WDR_DEBIT_AMOUNT": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLING_WDR_DETAIL": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "WDRRRPERIOD": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "FRMP": "VARCHAR2(20)",
+      "DRSP": "VARCHAR2(20)",
+      "WDRSQ": "NUMBER(18,8)",
+      "WDRRR": "NUMBER(18,8)",
+      "WDRTA": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "DRSP",
+      "FRMP",
+      "REGIONID",
+      "WDRRRPERIOD",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGAPCCOMPENSATION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR2(10)",
+      "APCCOMPENSATION": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGAPCRECOVERY": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR2(10)",
+      "APCRECOVERY": "NUMBER(15,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGASPAYMENTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "CONNECTIONPOINTID": "VARCHAR2(10)",
+      "RAISE6SEC": "NUMBER(15,5)",
+      "LOWER6SEC": "NUMBER(15,5)",
+      "RAISE60SEC": "NUMBER(15,5)",
+      "LOWER60SEC": "NUMBER(15,5)",
+      "AGC": "NUMBER(15,5)",
+      "FCASCOMP": "NUMBER(15,5)",
+      "LOADSHED": "NUMBER(15,5)",
+      "RGUL": "NUMBER(15,5)",
+      "RGUU": "NUMBER(15,5)",
+      "REACTIVEPOWER": "NUMBER(15,5)",
+      "SYSTEMRESTART": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "LOWER5MIN": "NUMBER(15,5)",
+      "RAISE5MIN": "NUMBER(15,5)",
+      "LOWERREG": "NUMBER(15,5)",
+      "RAISEREG": "NUMBER(15,5)",
+      "AVAILABILITY_REACTIVE": "NUMBER(18,8)",
+      "AVAILABILITY_REACTIVE_RBT": "NUMBER(18,8)",
+      "RAISE1SEC": "NUMBER(18,8)",
+      "LOWER1SEC": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONNECTIONPOINTID",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGASRECOVERY": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "RAISE6SEC": "NUMBER(15,5)",
+      "LOWER6SEC": "NUMBER(15,5)",
+      "RAISE60SEC": "NUMBER(15,5)",
+      "LOWER60SEC": "NUMBER(15,5)",
+      "AGC": "NUMBER(15,5)",
+      "FCASCOMP": "NUMBER(15,5)",
+      "LOADSHED": "NUMBER(15,5)",
+      "RGUL": "NUMBER(15,5)",
+      "RGUU": "NUMBER(15,5)",
+      "REACTIVEPOWER": "NUMBER(15,5)",
+      "SYSTEMRESTART": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "RAISE6SEC_GEN": "NUMBER(15,5)",
+      "LOWER6SEC_GEN": "NUMBER(15,5)",
+      "RAISE60SEC_GEN": "NUMBER(15,5)",
+      "LOWER60SEC_GEN": "NUMBER(15,5)",
+      "AGC_GEN": "NUMBER(15,5)",
+      "FCASCOMP_GEN": "NUMBER(15,5)",
+      "LOADSHED_GEN": "NUMBER(15,5)",
+      "RGUL_GEN": "NUMBER(15,5)",
+      "RGUU_GEN": "NUMBER(15,5)",
+      "REACTIVEPOWER_GEN": "NUMBER(15,5)",
+      "SYSTEMRESTART_GEN": "NUMBER(15,5)",
+      "LOWER5MIN": "NUMBER(15,5)",
+      "RAISE5MIN": "NUMBER(15,5)",
+      "LOWERREG": "NUMBER(15,5)",
+      "RAISEREG": "NUMBER(15,5)",
+      "LOWER5MIN_GEN": "NUMBER(16,6)",
+      "RAISE5MIN_GEN": "NUMBER(16,6)",
+      "LOWERREG_GEN": "NUMBER(16,6)",
+      "RAISEREG_GEN": "NUMBER(16,6)",
+      "AVAILABILITY_REACTIVE": "NUMBER(18,8)",
+      "AVAILABILITY_REACTIVE_RBT": "NUMBER(18,8)",
+      "AVAILABILITY_REACTIVE_GEN": "NUMBER(18,8)",
+      "AVAILABILITY_REACTIVE_RBT_GEN": "NUMBER(18,8)",
+      "RAISE1SEC": "NUMBER(18,8)",
+      "LOWER1SEC": "NUMBER(18,8)",
+      "RAISE1SEC_GEN": "NUMBER(18,8)",
+      "LOWER1SEC_GEN": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGCPDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "CONNECTIONPOINTID": "VARCHAR2(10)",
+      "AGGREGATEENERGY": "NUMBER(16,6)",
+      "PURCHASES": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "MDA": "VARCHAR2(10)",
+      "AFE": "NUMBER(18,8)",
+      "DME": "NUMBER(18,8)",
+      "UFEA": "NUMBER(18,8)",
+      "AGE": "NUMBER(18,8)",
+      "SOLDENERGY": "NUMBER(18,8)",
+      "SALES": "NUMBER(18,8)",
+      "PURCHASEDENERGY": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONNECTIONPOINTID",
+      "CONTRACTYEAR",
+      "MDA",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGDAYTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "SETTLEMENTDATE",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGFEES": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "MARKETFEEID": "VARCHAR2(10)",
+      "RATE": "NUMBER(15,5)",
+      "ENERGY": "NUMBER(16,6)",
+      "VALUE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "PARTICIPANTCATEGORYID": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "MARKETFEEID",
+      "PARTICIPANTCATEGORYID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGFINANCIALADJUSTMENTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "PARTICIPANTTYPE": "VARCHAR2(10)",
+      "ADJUSTMENTITEM": "VARCHAR2(64)",
+      "AMOUNT": "NUMBER(15,5)",
+      "VALUE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "FINANCIALCODE": "NUMBER(10,0)",
+      "BAS_CLASS": "VARCHAR2(30)"
+    },
+    "primary_keys": [
+      "ADJUSTMENTITEM",
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGGENDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "CONNECTIONPOINTID": "VARCHAR2(10)",
+      "STATIONID": "VARCHAR2(10)",
+      "DUID": "VARCHAR2(10)",
+      "AGGREGATEENERGY": "NUMBER(16,6)",
+      "SALES": "NUMBER(16,6)",
+      "PURCHASES": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "PURCHASEDENERGY": "NUMBER(16,6)",
+      "MDA": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONNECTIONPOINTID",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGINTERRESIDUES": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "ALLOCATION": "NUMBER(6,3)",
+      "TOTALSURPLUS": "NUMBER(15,5)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "SURPLUSVALUE": "NUMBER(15,6)",
+      "LASTCHANGED": "DATE",
+      "REGIONID": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGINTRARESIDUES": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "ALLOCATION": "NUMBER(6,3)",
+      "TOTALSURPLUS": "NUMBER(15,5)",
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "SURPLUSVALUE": "NUMBER(15,6)",
+      "LASTCHANGED": "DATE",
+      "REGIONID": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRAUCSURPLUS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(2,0)",
+      "RESIDUEYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(2,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "TOTALRESIDUES": "NUMBER(15,5)",
+      "ADJUSTMENT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRAUCSURPLUSSUM": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "RESIDUEYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(2,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "TOTALSURPLUS": "NUMBER(15,5)",
+      "AUCTIONFEES": "NUMBER(15,5)",
+      "ACTUALPAYMENT": "NUMBER(15,5)",
+      "AUCTIONFEES_GST": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "CSP_DEROGATION_AMOUNT": "NUMBER(18,8)",
+      "UNADJUSTED_IRSR": "NUMBER(18,8)",
+      "NEGATIVE_RESIDUES": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "QUARTER",
+      "RESIDUEYEAR",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRFM": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "IRFMPAYMENT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRNSPSURPLUS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(2,0)",
+      "RESIDUEYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(2,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "TOTALRESIDUES": "NUMBER(15,5)",
+      "ADJUSTMENT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRNSPSURPLUSSUM": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "RESIDUEYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(2,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "TOTALSURPLUS": "NUMBER(15,5)",
+      "AUCTIONFEES": "NUMBER(15,5)",
+      "AUCTIONFEES_GST": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "CSP_DEROGATION_AMOUNT": "NUMBER(18,8)",
+      "UNADJUSTED_IRSR": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "QUARTER",
+      "RESIDUEYEAR",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRPARTSURPLUS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(2,0)",
+      "RESIDUEYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(2,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "TOTALRESIDUES": "NUMBER(15,5)",
+      "ADJUSTMENT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "ACTUALPAYMENT": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGIRPARTSURPLUSSUM": {
+    "indexes": [
+      [
+        "RESIDUEYEAR",
+        "QUARTER"
+      ],
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "RESIDUEYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(2,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "TOTALSURPLUS": "NUMBER(15,5)",
+      "AUCTIONFEES": "NUMBER(15,5)",
+      "ACTUALPAYMENT": "NUMBER(15,5)",
+      "AUCTIONFEES_GST": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "CSP_DEROGATION_AMOUNT": "NUMBER(18,8)",
+      "UNADJUSTED_IRSR": "NUMBER(18,8)",
+      "AUCTIONFEES_TOTALGROSS_ADJ": "Number(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "QUARTER",
+      "RESIDUEYEAR",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGPRIORADJUSTMENTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID",
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "ADJCONTRACTYEAR": "NUMBER(4,0)",
+      "ADJWEEKNO": "NUMBER(3,0)",
+      "ADJBILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "PREVAMOUNT": "NUMBER(15,5)",
+      "ADJAMOUNT": "NUMBER(15,5)",
+      "IRN": "NUMBER(15,5)",
+      "IRP": "NUMBER(15,5)",
+      "INTERESTAMOUNT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "IRSR_PREVAMOUNT": "NUMBER(15,5)",
+      "IRSR_ADJAMOUNT": "NUMBER(15,5)",
+      "IRSR_INTERESTAMOUNT": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "ADJBILLRUNNO",
+      "ADJCONTRACTYEAR",
+      "ADJWEEKNO",
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGREALLOC": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "COUNTERPARTY": "VARCHAR2(10)",
+      "VALUE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "COUNTERPARTY",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGREALLOC_DETAIL": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "COUNTERPARTY": "VARCHAR2(10)",
+      "REALLOCATIONID": "VARCHAR2(20)",
+      "VALUE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "COUNTERPARTY",
+      "PARTICIPANTID",
+      "REALLOCATIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGREGIONEXPORTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "EXPORTTO": "VARCHAR2(10)",
+      "ENERGY": "NUMBER(16,6)",
+      "VALUE": "NUMBER(15,5)",
+      "SURPLUSENERGY": "NUMBER(16,6)",
+      "SURPLUSVALUE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "EXPORTTO",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGREGIONFIGURES": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "ENERGYOUT": "NUMBER(16,6)",
+      "VALUEOUT": "NUMBER(16,6)",
+      "ENERGYPURCHASED": "NUMBER(16,6)",
+      "VALUEPURCHASED": "NUMBER(16,6)",
+      "EXCESSGEN": "NUMBER(16,6)",
+      "RESERVETRADING": "NUMBER(16,6)",
+      "INTCOMPO": "NUMBER(16,6)",
+      "ADMINPRICECOMPO": "NUMBER(16,6)",
+      "SETTSURPLUS": "NUMBER(16,6)",
+      "ASPAYMENT": "NUMBER(16,6)",
+      "POOLFEES": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "WDRSQ": "NUMBER(18,8)",
+      "WDRTA": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGREGIONIMPORTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "IMPORTFROM": "VARCHAR2(10)",
+      "ENERGY": "NUMBER(16,6)",
+      "VALUE": "NUMBER(15,5)",
+      "SURPLUSENERGY": "NUMBER(16,6)",
+      "SURPLUSVALUE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "IMPORTFROM",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLINGRUNTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "STATUS": "VARCHAR2(6)",
+      "ADJ_CLEARED": "VARCHAR2(1)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(10)",
+      "POSTDATE": "DATE",
+      "POSTBY": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "RECEIPTPOSTDATE": "DATE",
+      "RECEIPTPOSTBY": "VARCHAR2(10)",
+      "PAYMENTPOSTDATE": "DATE",
+      "PAYMENTPOSTBY": "VARCHAR2(10)",
+      "SHORTFALL": "NUMBER(16,6)",
+      "MAKEUP": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "WEEKNO"
+    ]
+  },
+  "BILLRESERVETRADERPAYMENT": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "CONTRACTID": "VARCHAR2(20)",
+      "PAYMENT_ID": "NUMBER(3,0)",
+      "PAYMENT_TYPE": "VARCHAR2(40)",
+      "PAYMENT_AMOUNT": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "PAYMENT_ID",
+      "WEEKNO"
+    ]
+  },
+  "BILLRESERVETRADERRECOVERY": {
+    "indexes": [],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "WEEKNO": "NUMBER(3,0)",
+      "BILLRUNNO": "NUMBER(3,0)",
+      "PUBLICATION_ID": "VARCHAR2(40)",
+      "PAYMENT_ID": "NUMBER(3,0)",
+      "PAYMENT_AMOUNT": "NUMBER(18,8)",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "PARTICIPANT_DEMAND": "NUMBER(18,8)",
+      "REGION_DEMAND": "NUMBER(18,8)",
+      "ELIGIBILITY_START_INTERVAL": "DATE",
+      "ELIGIBILITY_END_INTERVAL": "DATE",
+      "RECOVERY_AMOUNT": "NUMBER(18,8)",
+      "EXCLUDED_ENERGY": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "PARTICIPANTID",
+      "PAYMENT_ID",
+      "PUBLICATION_ID",
+      "REGIONID",
+      "WEEKNO"
+    ]
+  },
+  "BILLWHITEHOLE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(22,0)",
+      "WEEKNO": "NUMBER(22,0)",
+      "BILLRUNNO": "NUMBER(22,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "NL": "NUMBER(15,6)",
+      "PARTICIPANTDEMAND": "NUMBER(15,6)",
+      "REGIONDEMAND": "NUMBER(15,6)",
+      "WHITEHOLEPAYMENT": "NUMBER(15,6)",
+      "LASTCHANGED": "DATE",
+      "INTERCONNECTORID": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BILLRUNNO",
+      "CONTRACTYEAR",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "WEEKNO"
+    ]
+  },
+  "DEMANDOPERATIONALACTUAL": {
+    "indexes": [
+      [
+        "INTERVAL_DATETIME",
+        "REGIONID"
+      ]
+    ],
+    "columns": {
+      "INTERVAL_DATETIME": "date",
+      "REGIONID": "Varchar2(20)",
+      "OPERATIONAL_DEMAND": "number(10,0)",
+      "LASTCHANGED": "date",
+      "OPERATIONAL_DEMAND_ADJUSTMENT": "NUMBER(10,0)",
+      "WDR_ESTIMATE": "NUMBER(10)"
+    },
+    "primary_keys": [
+      "INTERVAL_DATETIME",
+      "REGIONID"
+    ]
+  },
+  "DEMANDOPERATIONALFORECAST": {
+    "indexes": [
+      [
+        "INTERVAL_DATETIME",
+        "REGIONID"
+      ]
+    ],
+    "columns": {
+      "INTERVAL_DATETIME": "date",
+      "REGIONID": "Varchar2(20)",
+      "LOAD_DATE": "date",
+      "OPERATIONAL_DEMAND_POE10": "number(15,2)",
+      "OPERATIONAL_DEMAND_POE50": "number(15,2)",
+      "OPERATIONAL_DEMAND_POE90": "number(15,2)",
+      "LASTCHANGED": "date"
+    },
+    "primary_keys": [
+      "INTERVAL_DATETIME",
+      "REGIONID"
+    ]
+  },
+  "INTERMITTENT_CLUSTER_AVAIL": {
+    "indexes": [],
+    "columns": {
+      "TRADINGDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "CLUSTERID": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "ELEMENTS_UNAVAILABLE": "NUMBER(5,0)",
+      "ELEMENTS_AVAILABLE": "NUMBER(5,0)"
+    },
+    "primary_keys": [
+      "CLUSTERID",
+      "DUID",
+      "OFFERDATETIME",
+      "PERIODID",
+      "TRADINGDATE"
+    ]
+  },
+  "INTERMITTENT_CLUSTER_AVAIL_DAY": {
+    "indexes": [],
+    "columns": {
+      "TRADINGDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "CLUSTERID": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "CLUSTERID",
+      "DUID",
+      "OFFERDATETIME",
+      "TRADINGDATE"
+    ]
+  },
+  "INTERMITTENT_DS_PRED": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "ORIGIN": "VARCHAR2(20)",
+      "FORECAST_PRIORITY": "NUMBER(10,0)",
+      "FORECAST_MEAN": "NUMBER(18,8)",
+      "FORECAST_POE10": "NUMBER(18,8)",
+      "FORECAST_POE50": "NUMBER(18,8)",
+      "FORECAST_POE90": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "DUID",
+      "FORECAST_PRIORITY",
+      "INTERVAL_DATETIME",
+      "OFFERDATETIME",
+      "ORIGIN",
+      "RUN_DATETIME"
+    ]
+  },
+  "INTERMITTENT_DS_RUN": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "Varchar2(20)",
+      "OFFERDATETIME": "DATE",
+      "ORIGIN": "Varchar2(20)",
+      "FORECAST_PRIORITY": "NUMBER(10,0)",
+      "AUTHORISEDBY": "Varchar2(20)",
+      "COMMENTS": "Varchar2(200)",
+      "LASTCHANGED": "DATE",
+      "MODEL": "Varchar2(30)",
+      "PARTICIPANT_TIMESTAMP": "DATE",
+      "SUPPRESSED_AEMO": "NUMBER(1,0)",
+      "SUPPRESSED_PARTICIPANT": "NUMBER(1,0)",
+      "TRANSACTION_ID": "Varchar2(100)"
+    },
+    "primary_keys": [
+      "DUID",
+      "FORECAST_PRIORITY",
+      "OFFERDATETIME",
+      "ORIGIN",
+      "RUN_DATETIME"
+    ]
+  },
+  "INTERMITTENT_GEN_FCST": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "START_INTERVAL_DATETIME": "DATE",
+      "END_INTERVAL_DATETIME": "DATE",
+      "VERSIONNO": "NUMBER(10,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "DUID",
+      "RUN_DATETIME"
+    ]
+  },
+  "INTERMITTENT_GEN_FCST_DATA": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "INTERVAL_DATETIME": "DATE",
+      "POWERMEAN": "NUMBER(9,3)",
+      "POWERPOE50": "NUMBER(9,3)",
+      "POWERPOELOW": "NUMBER(9,3)",
+      "POWERPOEHIGH": "NUMBER(9,3)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "DUID",
+      "INTERVAL_DATETIME",
+      "RUN_DATETIME"
+    ]
+  },
+  "INTERMITTENT_GEN_LIMIT": {
+    "indexes": [],
+    "columns": {
+      "TRADINGDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "PERIODID": "NUMBER(3,0)",
+      "UPPERMWLIMIT": "NUMBER(6)"
+    },
+    "primary_keys": [
+      "DUID",
+      "OFFERDATETIME",
+      "PERIODID",
+      "TRADINGDATE"
+    ]
+  },
+  "INTERMITTENT_GEN_LIMIT_DAY": {
+    "indexes": [],
+    "columns": {
+      "TRADINGDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "PARTICIPANTID": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE",
+      "AUTHORISEDBYUSER": "VARCHAR2(20)",
+      "AUTHORISEDBYPARTICIPANTID": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "DUID",
+      "OFFERDATETIME",
+      "TRADINGDATE"
+    ]
+  },
+  "INTERMITTENT_GEN_SCADA": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "SCADA_TYPE": "VARCHAR2(20)",
+      "SCADA_VALUE": "NUMBER(15,5)",
+      "SCADA_QUALITY": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "DUID",
+      "RUN_DATETIME",
+      "SCADA_TYPE"
+    ]
+  },
+  "INTERMITTENT_P5_PRED": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "ORIGIN": "VARCHAR2(20)",
+      "FORECAST_PRIORITY": "NUMBER(10,0)",
+      "FORECAST_MEAN": "NUMBER(18,8)",
+      "FORECAST_POE10": "NUMBER(18,8)",
+      "FORECAST_POE50": "NUMBER(18,8)",
+      "FORECAST_POE90": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "DUID",
+      "FORECAST_PRIORITY",
+      "INTERVAL_DATETIME",
+      "OFFERDATETIME",
+      "ORIGIN",
+      "RUN_DATETIME"
+    ]
+  },
+  "INTERMITTENT_P5_RUN": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "DUID": "Varchar2(20)",
+      "OFFERDATETIME": "DATE",
+      "ORIGIN": "Varchar2(20)",
+      "FORECAST_PRIORITY": "NUMBER(10,0)",
+      "AUTHORISEDBY": "Varchar2(20)",
+      "COMMENTS": "Varchar2(200)",
+      "LASTCHANGED": "DATE",
+      "MODEL": "Varchar2(30)",
+      "PARTICIPANT_TIMESTAMP": "DATE",
+      "SUPPRESSED_AEMO": "NUMBER(1,0)",
+      "SUPPRESSED_PARTICIPANT": "NUMBER(1,0)",
+      "TRANSACTION_ID": "Varchar2(100)"
+    },
+    "primary_keys": [
+      "DUID",
+      "FORECAST_PRIORITY",
+      "OFFERDATETIME",
+      "ORIGIN",
+      "RUN_DATETIME"
+    ]
+  },
+  "MTPASA_INTERMITTENT_AVAIL": {
+    "indexes": [],
+    "columns": {
+      "TRADINGDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "CLUSTERID": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE",
+      "ELEMENTS_UNAVAILABLE": "NUMBER(5,0)",
+      "ELEMENTS_AVAILABLE": "NUMBER(5,0)"
+    },
+    "primary_keys": [
+      "CLUSTERID",
+      "DUID",
+      "OFFERDATETIME",
+      "TRADINGDATE"
+    ]
+  },
+  "MTPASA_INTERMITTENT_LIMIT": {
+    "indexes": [],
+    "columns": {
+      "TRADINGDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "OFFERDATETIME": "DATE",
+      "LASTCHANGED": "DATE",
+      "UPPERMWLIMIT": "NUMBER(6)",
+      "AUTHORISEDBYUSER": "VARCHAR2(20)",
+      "AUTHORISEDBYPARTICIPANTID": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "DUID",
+      "OFFERDATETIME",
+      "TRADINGDATE"
+    ]
+  },
+  "PERDEMAND": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "SETTLEMENTDATE": "DATE",
+      "REGIONID": "VARCHAR2(10)",
+      "OFFERDATE": "DATE",
+      "PERIODID": "NUMBER(3,0)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "RESDEMAND": "NUMBER(10,0)",
+      "DEMAND90PROBABILITY": "NUMBER(10,0)",
+      "DEMAND10PROBABILITY": "NUMBER(10,0)",
+      "LASTCHANGED": "DATE",
+      "MR_SCHEDULE": "NUMBER(6,0)"
+    },
+    "primary_keys": [
+      "OFFERDATE",
+      "PERIODID",
+      "REGIONID",
+      "SETTLEMENTDATE",
+      "VERSIONNO"
+    ]
+  },
+  "RESDEMANDTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "REGIONID": "VARCHAR2(10)",
+      "OFFERDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "FILENAME": "VARCHAR2(40)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "OFFERDATE",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "ROOFTOP_PV_ACTUAL": {
+    "indexes": [
+      [
+        "INTERVAL_DATETIME",
+        "TYPE",
+        "REGIONID"
+      ]
+    ],
+    "columns": {
+      "INTERVAL_DATETIME": "DATE",
+      "TYPE": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "POWER": "NUMBER(12,3)",
+      "QI": "NUMBER(2,1)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INTERVAL_DATETIME",
+      "REGIONID",
+      "TYPE"
+    ]
+  },
+  "ROOFTOP_PV_FORECAST": {
+    "indexes": [
+      [
+        "VERSION_DATETIME",
+        "INTERVAL_DATETIME",
+        "REGIONID"
+      ]
+    ],
+    "columns": {
+      "VERSION_DATETIME": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "INTERVAL_DATETIME": "DATE",
+      "POWERMEAN": "NUMBER(12,3)",
+      "POWERPOE50": "NUMBER(12,3)",
+      "POWERPOELOW": "NUMBER(12,3)",
+      "POWERPOEHIGH": "NUMBER(12,3)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INTERVAL_DATETIME",
+      "REGIONID",
+      "VERSION_DATETIME"
+    ]
+  },
+  "CONSTRAINTRELAXATION_OCD": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "RHS": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "VERSIONNO": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "RUNNO",
+      "SETTLEMENTDATE",
+      "VERSIONNO"
+    ]
+  },
+  "DISPATCH_CONSTRAINT_FCAS_OCD": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3)",
+      "INTERVENTION": "NUMBER(2)",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "VERSIONNO": "NUMBER(3)",
+      "LASTCHANGED": "DATE",
+      "RHS": "NUMBER(15,5)",
+      "MARGINALVALUE": "NUMBER(15,5)",
+      "VIOLATIONDEGREE": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "INTERVENTION",
+      "RUNNO",
+      "SETTLEMENTDATE",
+      "VERSIONNO"
+    ]
+  },
+  "DISPATCH_FCAS_REQ": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "GENCONID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(10)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "GENCONEFFECTIVEDATE": "DATE",
+      "GENCONVERSIONNO": "NUMBER(3,0)",
+      "MARGINALVALUE": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "BASE_COST": "NUMBER(18,8)",
+      "ADJUSTED_COST": "NUMBER(18,8)",
+      "ESTIMATED_CMPF": "NUMBER(18,8)",
+      "ESTIMATED_CRMPF": "NUMBER(18,8)",
+      "RECOVERY_FACTOR_CMPF": "NUMBER(18,8)",
+      "RECOVERY_FACTOR_CRMPF": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "GENCONID",
+      "INTERVENTION",
+      "REGIONID",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCH_INTERCONNECTION": {
+    "indexes": [],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "FROM_REGIONID": "VARCHAR2(20)",
+      "TO_REGIONID": "VARCHAR2(20)",
+      "DISPATCHINTERVAL": "NUMBER(22,0)",
+      "IRLF": "NUMBER(15,5)",
+      "MWFLOW": "NUMBER(16,6)",
+      "METEREDMWFLOW": "NUMBER(16,6)",
+      "FROM_REGION_MW_LOSSES": "NUMBER(16,6)",
+      "TO_REGION_MW_LOSSES": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "FROM_REGIONID",
+      "INTERVENTION",
+      "RUNNO",
+      "SETTLEMENTDATE",
+      "TO_REGIONID"
+    ]
+  },
+  "DISPATCH_LOCAL_PRICE": {
+    "indexes": [
+      [
+        "SETTLEMENTDATE",
+        "DUID"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "LOCAL_PRICE_ADJUSTMENT": "NUMBER(10,2)",
+      "LOCALLY_CONSTRAINED": "NUMBER(1,0)"
+    },
+    "primary_keys": [
+      "DUID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCH_MNSPBIDTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LINKID": "VARCHAR2(10)",
+      "OFFERSETTLEMENTDATE": "DATE",
+      "OFFEREFFECTIVEDATE": "TIMESTAMP(3)",
+      "OFFERVERSIONNO": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "LINKID",
+      "PARTICIPANTID",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCH_MR_SCHEDULE_TRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "REGIONID": "VARCHAR2(10)",
+      "MR_DATE": "DATE",
+      "VERSION_DATETIME": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "REGIONID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCH_PRICE_REVISION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "VERSIONNO": "NUMBER(3)",
+      "RRP_NEW": "NUMBER(15,5)",
+      "RRP_OLD": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "INTERVENTION",
+      "REGIONID",
+      "RUNNO",
+      "SETTLEMENTDATE",
+      "VERSIONNO"
+    ]
+  },
+  "DISPATCH_UNIT_CONFORMANCE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "INTERVAL_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "TOTALCLEARED": "NUMBER(16,6)",
+      "ACTUALMW": "NUMBER(16,6)",
+      "ROC": "NUMBER(16,6)",
+      "AVAILABILITY": "NUMBER(16,6)",
+      "LOWERREG": "NUMBER(16,6)",
+      "RAISEREG": "NUMBER(16,6)",
+      "STRIGLM": "NUMBER(16,6)",
+      "LTRIGLM": "NUMBER(16,6)",
+      "MWERROR": "NUMBER(16,6)",
+      "MAX_MWERROR": "NUMBER(16,6)",
+      "LECOUNT": "NUMBER(6)",
+      "SECOUNT": "NUMBER(6)",
+      "STATUS": "VARCHAR2(20)",
+      "PARTICIPANT_STATUS_ACTION": "VARCHAR2(100)",
+      "OPERATING_MODE": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE",
+      "ADG_ID": "VARCHAR2(20)",
+      "SEMIDISPATCHCAP": "NUMBER(3,0)",
+      "CONFORMANCE_MODE": "NUMBER(6,0)"
+    },
+    "primary_keys": [
+      "DUID",
+      "INTERVAL_DATETIME"
+    ]
+  },
+  "DISPATCH_UNIT_SCADA": {
+    "indexes": [
+      [
+        "SETTLEMENTDATE",
+        "DUID"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "Date",
+      "DUID": "varchar2(20)",
+      "SCADAVALUE": "Number(16,6)"
+    },
+    "primary_keys": [
+      "DUID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHBLOCKEDCONSTRAINT": {
+    "indexes": [],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "CONSTRAINTID": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHCASESOLUTION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "CASESUBTYPE": "VARCHAR2(3)",
+      "SOLUTIONSTATUS": "NUMBER(2,0)",
+      "SPDVERSION": "VARCHAR2(20)",
+      "NONPHYSICALLOSSES": "NUMBER(1,0)",
+      "TOTALOBJECTIVE": "NUMBER(27,10)",
+      "TOTALAREAGENVIOLATION": "NUMBER(15,5)",
+      "TOTALINTERCONNECTORVIOLATION": "NUMBER(15,5)",
+      "TOTALGENERICVIOLATION": "NUMBER(15,5)",
+      "TOTALRAMPRATEVIOLATION": "NUMBER(15,5)",
+      "TOTALUNITMWCAPACITYVIOLATION": "NUMBER(15,5)",
+      "TOTAL5MINVIOLATION": "NUMBER(15,5)",
+      "TOTALREGVIOLATION": "NUMBER(15,5)",
+      "TOTAL6SECVIOLATION": "NUMBER(15,5)",
+      "TOTAL60SECVIOLATION": "NUMBER(15,5)",
+      "TOTALASPROFILEVIOLATION": "NUMBER(15,5)",
+      "TOTALFASTSTARTVIOLATION": "NUMBER(15,5)",
+      "TOTALENERGYOFFERVIOLATION": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "SWITCHRUNINITIALSTATUS": "NUMBER(1,0)",
+      "SWITCHRUNBESTSTATUS": "NUMBER(1,0)",
+      "SWITCHRUNBESTSTATUS_INT": "NUMBER(1,0)"
+    },
+    "primary_keys": [
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHCONSTRAINT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "SETTLEMENTDATE"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "DISPATCHINTERVAL": "NUMBER(22,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "RHS": "NUMBER(15,5)",
+      "MARGINALVALUE": "NUMBER(15,5)",
+      "VIOLATIONDEGREE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "GENCONID_EFFECTIVEDATE": "DATE",
+      "GENCONID_VERSIONNO": "NUMBER(22,0)",
+      "LHS": "number(15,5)"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "DISPATCHINTERVAL",
+      "INTERVENTION",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHINTERCONNECTORRES": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "DISPATCHINTERVAL": "NUMBER(22,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "METEREDMWFLOW": "NUMBER(15,5)",
+      "MWFLOW": "NUMBER(15,5)",
+      "MWLOSSES": "NUMBER(15,5)",
+      "MARGINALVALUE": "NUMBER(15,5)",
+      "VIOLATIONDEGREE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "EXPORTLIMIT": "NUMBER(15,5)",
+      "IMPORTLIMIT": "NUMBER(15,5)",
+      "MARGINALLOSS": "NUMBER(15,5)",
+      "EXPORTGENCONID": "VARCHAR2(20)",
+      "IMPORTGENCONID": "VARCHAR2(20)",
+      "FCASEXPORTLIMIT": "NUMBER(15,5)",
+      "FCASIMPORTLIMIT": "NUMBER(15,5)",
+      "LOCAL_PRICE_ADJUSTMENT_EXPORT": "NUMBER(10,2)",
+      "LOCALLY_CONSTRAINED_EXPORT": "NUMBER(1,0)",
+      "LOCAL_PRICE_ADJUSTMENT_IMPORT": "NUMBER(10,2)",
+      "LOCALLY_CONSTRAINED_IMPORT": "NUMBER(1,0)"
+    },
+    "primary_keys": [
+      "DISPATCHINTERVAL",
+      "INTERCONNECTORID",
+      "INTERVENTION",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHLOAD": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "DUID",
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "DUID": "VARCHAR2(10)",
+      "TRADETYPE": "NUMBER(2,0)",
+      "DISPATCHINTERVAL": "NUMBER(22,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "CONNECTIONPOINTID": "VARCHAR2(12)",
+      "DISPATCHMODE": "NUMBER(2,0)",
+      "AGCSTATUS": "NUMBER(2,0)",
+      "INITIALMW": "NUMBER(15,5)",
+      "TOTALCLEARED": "NUMBER(15,5)",
+      "RAMPDOWNRATE": "NUMBER(15,5)",
+      "RAMPUPRATE": "NUMBER(15,5)",
+      "LOWER5MIN": "NUMBER(15,5)",
+      "LOWER60SEC": "NUMBER(15,5)",
+      "LOWER6SEC": "NUMBER(15,5)",
+      "RAISE5MIN": "NUMBER(15,5)",
+      "RAISE60SEC": "NUMBER(15,5)",
+      "RAISE6SEC": "NUMBER(15,5)",
+      "DOWNEPF": "NUMBER(15,5)",
+      "UPEPF": "NUMBER(15,5)",
+      "MARGINAL5MINVALUE": "NUMBER(15,5)",
+      "MARGINAL60SECVALUE": "NUMBER(15,5)",
+      "MARGINAL6SECVALUE": "NUMBER(15,5)",
+      "MARGINALVALUE": "NUMBER(15,5)",
+      "VIOLATION5MINDEGREE": "NUMBER(15,5)",
+      "VIOLATION60SECDEGREE": "NUMBER(15,5)",
+      "VIOLATION6SECDEGREE": "NUMBER(15,5)",
+      "VIOLATIONDEGREE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "LOWERREG": "NUMBER(15,5)",
+      "RAISEREG": "NUMBER(15,5)",
+      "AVAILABILITY": "NUMBER(15,5)",
+      "RAISE6SECFLAGS": "NUMBER(3,0)",
+      "RAISE60SECFLAGS": "NUMBER(3,0)",
+      "RAISE5MINFLAGS": "NUMBER(3,0)",
+      "RAISEREGFLAGS": "NUMBER(3,0)",
+      "LOWER6SECFLAGS": "NUMBER(3,0)",
+      "LOWER60SECFLAGS": "NUMBER(3,0)",
+      "LOWER5MINFLAGS": "NUMBER(3,0)",
+      "LOWERREGFLAGS": "NUMBER(3,0)",
+      "RAISEREGAVAILABILITY": "NUMBER(15,5)",
+      "RAISEREGENABLEMENTMAX": "NUMBER(15,5)",
+      "RAISEREGENABLEMENTMIN": "NUMBER(15,5)",
+      "LOWERREGAVAILABILITY": "NUMBER(15,5)",
+      "LOWERREGENABLEMENTMAX": "NUMBER(15,5)",
+      "LOWERREGENABLEMENTMIN": "NUMBER(15,5)",
+      "RAISE6SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "RAISE60SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "RAISE5MINACTUALAVAILABILITY": "NUMBER(16,6)",
+      "RAISEREGACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER6SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER60SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER5MINACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWERREGACTUALAVAILABILITY": "NUMBER(16,6)",
+      "SEMIDISPATCHCAP": "NUMBER(3,0)",
+      "DISPATCHMODETIME": "NUMBER(4,0)",
+      "CONFORMANCE_MODE": "NUMBER(6,0)",
+      "UIGF": "NUMBER(15,5)",
+      "RAISE1SEC": "NUMBER(15,5)",
+      "RAISE1SECFLAGS": "NUMBER(3,0)",
+      "LOWER1SEC": "NUMBER(15,5)",
+      "LOWER1SECFLAGS": "NUMBER(3,0)",
+      "RAISE1SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER1SECACTUALAVAILABILITY": "NUMBER(16,6)"
+    },
+    "primary_keys": [
+      "DUID",
+      "INTERVENTION",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHOFFERTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "DUID",
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "DUID": "VARCHAR2(10)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "BIDSETTLEMENTDATE": "DATE",
+      "BIDOFFERDATE": "TIMESTAMP(3)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "DUID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHPRICE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "DISPATCHINTERVAL": "VARCHAR2(22)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "RRP": "NUMBER(15,5)",
+      "EEP": "NUMBER(15,5)",
+      "ROP": "NUMBER(15,5)",
+      "APCFLAG": "NUMBER(3,0)",
+      "MARKETSUSPENDEDFLAG": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE",
+      "RAISE6SECRRP": "NUMBER(15,5)",
+      "RAISE6SECROP": "NUMBER(15,5)",
+      "RAISE6SECAPCFLAG": "NUMBER(3,0)",
+      "RAISE60SECRRP": "NUMBER(15,5)",
+      "RAISE60SECROP": "NUMBER(15,5)",
+      "RAISE60SECAPCFLAG": "NUMBER(3,0)",
+      "RAISE5MINRRP": "NUMBER(15,5)",
+      "RAISE5MINROP": "NUMBER(15,5)",
+      "RAISE5MINAPCFLAG": "NUMBER(3,0)",
+      "RAISEREGRRP": "NUMBER(15,5)",
+      "RAISEREGROP": "NUMBER(15,5)",
+      "RAISEREGAPCFLAG": "NUMBER(3,0)",
+      "LOWER6SECRRP": "NUMBER(15,5)",
+      "LOWER6SECROP": "NUMBER(15,5)",
+      "LOWER6SECAPCFLAG": "NUMBER(3,0)",
+      "LOWER60SECRRP": "NUMBER(15,5)",
+      "LOWER60SECROP": "NUMBER(15,5)",
+      "LOWER60SECAPCFLAG": "NUMBER(3,0)",
+      "LOWER5MINRRP": "NUMBER(15,5)",
+      "LOWER5MINROP": "NUMBER(15,5)",
+      "LOWER5MINAPCFLAG": "NUMBER(3,0)",
+      "LOWERREGRRP": "NUMBER(15,5)",
+      "LOWERREGROP": "NUMBER(15,5)",
+      "LOWERREGAPCFLAG": "NUMBER(3,0)",
+      "PRICE_STATUS": "VARCHAR2(20)",
+      "PRE_AP_ENERGY_PRICE": "NUMBER(15,5)",
+      "PRE_AP_RAISE6_PRICE": "NUMBER(15,5)",
+      "PRE_AP_RAISE60_PRICE": "NUMBER(15,5)",
+      "PRE_AP_RAISE5MIN_PRICE": "NUMBER(15,5)",
+      "PRE_AP_RAISEREG_PRICE": "NUMBER(15,5)",
+      "PRE_AP_LOWER6_PRICE": "NUMBER(15,5)",
+      "PRE_AP_LOWER60_PRICE": "NUMBER(15,5)",
+      "PRE_AP_LOWER5MIN_PRICE": "NUMBER(15,5)",
+      "PRE_AP_LOWERREG_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_ENERGY_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_RAISE6_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_RAISE60_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_RAISE5MIN_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_RAISEREG_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_LOWER6_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_LOWER60_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_LOWER5MIN_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_LOWERREG_PRICE": "NUMBER(15,5)",
+      "OCD_STATUS": "VARCHAR2(14)",
+      "MII_STATUS": "VARCHAR2(21)",
+      "RAISE1SECRRP": "NUMBER(15,5)",
+      "RAISE1SECROP": "NUMBER(15,5)",
+      "RAISE1SECAPCFLAG": "NUMBER(3,0)",
+      "LOWER1SECRRP": "NUMBER(15,5)",
+      "LOWER1SECROP": "NUMBER(15,5)",
+      "LOWER1SECAPCFLAG": "NUMBER(3,0)",
+      "PRE_AP_RAISE1_PRICE": "NUMBER(15,5)",
+      "PRE_AP_LOWER1_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_RAISE1_PRICE": "NUMBER(15,5)",
+      "CUMUL_PRE_AP_LOWER1_PRICE": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "DISPATCHINTERVAL",
+      "INTERVENTION",
+      "REGIONID",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "DISPATCHREGIONSUM": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "RUNNO": "NUMBER(3,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "DISPATCHINTERVAL": "NUMBER(22,0)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "TOTALDEMAND": "NUMBER(15,5)",
+      "AVAILABLEGENERATION": "NUMBER(15,5)",
+      "AVAILABLELOAD": "NUMBER(15,5)",
+      "DEMANDFORECAST": "NUMBER(15,5)",
+      "DISPATCHABLEGENERATION": "NUMBER(15,5)",
+      "DISPATCHABLELOAD": "NUMBER(15,5)",
+      "NETINTERCHANGE": "NUMBER(15,5)",
+      "EXCESSGENERATION": "NUMBER(15,5)",
+      "LOWER5MINDISPATCH": "NUMBER(15,5)",
+      "LOWER5MINIMPORT": "NUMBER(15,5)",
+      "LOWER5MINLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER5MINLOCALPRICE": "NUMBER(15,5)",
+      "LOWER5MINLOCALREQ": "NUMBER(15,5)",
+      "LOWER5MINPRICE": "NUMBER(15,5)",
+      "LOWER5MINREQ": "NUMBER(15,5)",
+      "LOWER5MINSUPPLYPRICE": "NUMBER(15,5)",
+      "LOWER60SECDISPATCH": "NUMBER(15,5)",
+      "LOWER60SECIMPORT": "NUMBER(15,5)",
+      "LOWER60SECLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER60SECLOCALPRICE": "NUMBER(15,5)",
+      "LOWER60SECLOCALREQ": "NUMBER(15,5)",
+      "LOWER60SECPRICE": "NUMBER(15,5)",
+      "LOWER60SECREQ": "NUMBER(15,5)",
+      "LOWER60SECSUPPLYPRICE": "NUMBER(15,5)",
+      "LOWER6SECDISPATCH": "NUMBER(15,5)",
+      "LOWER6SECIMPORT": "NUMBER(15,5)",
+      "LOWER6SECLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER6SECLOCALPRICE": "NUMBER(15,5)",
+      "LOWER6SECLOCALREQ": "NUMBER(15,5)",
+      "LOWER6SECPRICE": "NUMBER(15,5)",
+      "LOWER6SECREQ": "NUMBER(15,5)",
+      "LOWER6SECSUPPLYPRICE": "NUMBER(15,5)",
+      "RAISE5MINDISPATCH": "NUMBER(15,5)",
+      "RAISE5MINIMPORT": "NUMBER(15,5)",
+      "RAISE5MINLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE5MINLOCALPRICE": "NUMBER(15,5)",
+      "RAISE5MINLOCALREQ": "NUMBER(15,5)",
+      "RAISE5MINPRICE": "NUMBER(15,5)",
+      "RAISE5MINREQ": "NUMBER(15,5)",
+      "RAISE5MINSUPPLYPRICE": "NUMBER(15,5)",
+      "RAISE60SECDISPATCH": "NUMBER(15,5)",
+      "RAISE60SECIMPORT": "NUMBER(15,5)",
+      "RAISE60SECLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE60SECLOCALPRICE": "NUMBER(15,5)",
+      "RAISE60SECLOCALREQ": "NUMBER(15,5)",
+      "RAISE60SECPRICE": "NUMBER(15,5)",
+      "RAISE60SECREQ": "NUMBER(15,5)",
+      "RAISE60SECSUPPLYPRICE": "NUMBER(15,5)",
+      "RAISE6SECDISPATCH": "NUMBER(15,5)",
+      "RAISE6SECIMPORT": "NUMBER(15,5)",
+      "RAISE6SECLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE6SECLOCALPRICE": "NUMBER(15,5)",
+      "RAISE6SECLOCALREQ": "NUMBER(15,5)",
+      "RAISE6SECPRICE": "NUMBER(15,5)",
+      "RAISE6SECREQ": "NUMBER(15,5)",
+      "RAISE6SECSUPPLYPRICE": "NUMBER(15,5)",
+      "AGGEGATEDISPATCHERROR": "NUMBER(15,5)",
+      "AGGREGATEDISPATCHERROR": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "INITIALSUPPLY": "NUMBER(15,5)",
+      "CLEAREDSUPPLY": "NUMBER(15,5)",
+      "LOWERREGIMPORT": "NUMBER(15,5)",
+      "LOWERREGLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWERREGLOCALREQ": "NUMBER(15,5)",
+      "LOWERREGREQ": "NUMBER(15,5)",
+      "RAISEREGIMPORT": "NUMBER(15,5)",
+      "RAISEREGLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISEREGLOCALREQ": "NUMBER(15,5)",
+      "RAISEREGREQ": "NUMBER(15,5)",
+      "RAISE5MINLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISEREGLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISE60SECLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISE6SECLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWER5MINLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWERREGLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWER60SECLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWER6SECLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISE5MINVIOLATION": "NUMBER(15,5)",
+      "RAISEREGVIOLATION": "NUMBER(15,5)",
+      "RAISE60SECVIOLATION": "NUMBER(15,5)",
+      "RAISE6SECVIOLATION": "NUMBER(15,5)",
+      "LOWER5MINVIOLATION": "NUMBER(15,5)",
+      "LOWERREGVIOLATION": "NUMBER(15,5)",
+      "LOWER60SECVIOLATION": "NUMBER(15,5)",
+      "LOWER6SECVIOLATION": "NUMBER(15,5)",
+      "RAISE6SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "RAISE60SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "RAISE5MINACTUALAVAILABILITY": "NUMBER(16,6)",
+      "RAISEREGACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER6SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER60SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER5MINACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWERREGACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LORSURPLUS": "NUMBER(16,6)",
+      "LRCSURPLUS": "NUMBER(16,6)",
+      "TOTALINTERMITTENTGENERATION": "NUMBER(15,5)",
+      "DEMAND_AND_NONSCHEDGEN": "NUMBER(15,5)",
+      "UIGF": "NUMBER(15,5)",
+      "SEMISCHEDULE_CLEAREDMW": "NUMBER(15,5)",
+      "SEMISCHEDULE_COMPLIANCEMW": "NUMBER(15,5)",
+      "SS_SOLAR_UIGF": "Number(15,5)",
+      "SS_WIND_UIGF": "Number (15,5)",
+      "SS_SOLAR_CLEAREDMW": "Number(15,5)",
+      "SS_WIND_CLEAREDMW": "Number(15,5)",
+      "SS_SOLAR_COMPLIANCEMW": "Number(15,5)",
+      "SS_WIND_COMPLIANCEMW": "Number(15,5)",
+      "WDR_INITIALMW": "NUMBER(15,5)",
+      "WDR_AVAILABLE": "NUMBER(15,5)",
+      "WDR_DISPATCHED": "NUMBER(15,5)",
+      "SS_SOLAR_AVAILABILITY": "NUMBER(15,5)",
+      "SS_WIND_AVAILABILITY": "NUMBER(15,5)",
+      "RAISE1SECLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER1SECLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE1SECACTUALAVAILABILITY": "NUMBER(16,6)",
+      "LOWER1SECACTUALAVAILABILITY": "NUMBER(16,6)"
+    },
+    "primary_keys": [
+      "DISPATCHINTERVAL",
+      "INTERVENTION",
+      "REGIONID",
+      "RUNNO",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "INTERMITTENT_FORECAST_TRK": {
+    "indexes": [],
+    "columns": {
+      "SETTLEMENTDATE": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "ORIGIN": "VARCHAR2(20)",
+      "FORECAST_PRIORITY": "NUMBER(10,0)",
+      "OFFERDATETIME": "DATE"
+    },
+    "primary_keys": [
+      "DUID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "NEGATIVE_RESIDUE": {
+    "indexes": [
+      [
+        "SETTLEMENTDATE",
+        "NRM_DATETIME",
+        "DIRECTIONAL_INTERCONNECTORID"
+      ]
+    ],
+    "columns": {
+      "SETTLEMENTDATE": "date",
+      "NRM_DATETIME": "date",
+      "DIRECTIONAL_INTERCONNECTORID": "varchar2(30)",
+      "NRM_ACTIVATED_FLAG": "number(1,0)",
+      "CUMUL_NEGRESIDUE_AMOUNT": "number(15,5)",
+      "CUMUL_NEGRESIDUE_PREV_TI": "number(15,5)",
+      "NEGRESIDUE_CURRENT_TI": "number(15,5)",
+      "NEGRESIDUE_PD_NEXT_TI": "number(15,5)",
+      "PRICE_REVISION": "varchar2(30)",
+      "PREDISPATCHSEQNO": "varchar2(20)",
+      "EVENT_ACTIVATED_DI": "date",
+      "EVENT_DEACTIVATED_DI": "date",
+      "DI_NOTBINDING_COUNT": "number(2,0)",
+      "DI_VIOLATED_COUNT": "number(2,0)",
+      "NRMCONSTRAINT_BLOCKED_FLAG": "number(1,0)"
+    },
+    "primary_keys": [
+      "DIRECTIONAL_INTERCONNECTORID",
+      "NRM_DATETIME",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "APEVENT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "APEVENTID": "NUMBER(22,0)",
+      "EFFECTIVEFROMINTERVAL": "DATE",
+      "EFFECTIVETOINTERVAL": "DATE",
+      "REASON": "VARCHAR2(2000)",
+      "STARTAUTHORISEDBY": "VARCHAR2(15)",
+      "STARTAUTHORISEDDATE": "DATE",
+      "ENDAUTHORISEDBY": "VARCHAR2(15)",
+      "ENDAUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "APEVENTID"
+    ]
+  },
+  "APEVENTREGION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "APEVENTID": "NUMBER(22,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "ENERGYAPFLAG": "NUMBER(1,0)",
+      "RAISE6SECAPFLAG": "NUMBER(1,0)",
+      "RAISE60SECAPFLAG": "NUMBER(1,0)",
+      "RAISE5MINAPFLAG": "NUMBER(1,0)",
+      "RAISEREGAPFLAG": "NUMBER(1,0)",
+      "LOWER6SECAPFLAG": "NUMBER(1,0)",
+      "LOWER60SECAPFLAG": "NUMBER(1,0)",
+      "LOWER5MINAPFLAG": "NUMBER(1,0)",
+      "LOWERREGAPFLAG": "NUMBER(1,0)",
+      "RAISE1SECAPFLAG": "NUMBER(3,0)",
+      "LOWER1SECAPFLAG": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "APEVENTID",
+      "REGIONID"
+    ]
+  },
+  "IRFMAMOUNT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "IRFMID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PERIODID": "NUMBER(4,0)",
+      "AMOUNT": "NUMBER(15,5)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "IRFMID",
+      "PERIODID",
+      "VERSIONNO"
+    ]
+  },
+  "IRFMEVENTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "IRFMID": "VARCHAR2(10)",
+      "STARTDATE": "DATE",
+      "STARTPERIOD": "NUMBER(3,0)",
+      "ENDDATE": "DATE",
+      "ENDPERIOD": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "IRFMID"
+    ]
+  },
+  "MARKET_SUSPEND_REGIME_SUM": {
+    "indexes": [],
+    "columns": {
+      "SUSPENSION_ID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "START_INTERVAL": "DATE",
+      "END_INTERVAL": "DATE",
+      "PRICING_REGIME": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "REGIONID",
+      "START_INTERVAL",
+      "SUSPENSION_ID"
+    ]
+  },
+  "MARKET_SUSPEND_REGION_SUM": {
+    "indexes": [],
+    "columns": {
+      "SUSPENSION_ID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "INITIAL_INTERVAL": "DATE",
+      "END_REGION_INTERVAL": "DATE",
+      "END_SUSPENSION_INTERVAL": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "REGIONID",
+      "SUSPENSION_ID"
+    ]
+  },
+  "MARKET_SUSPEND_SCHEDULE": {
+    "indexes": [],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "DAY_TYPE": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "ENERGY_RRP": "NUMBER(15,5)",
+      "R6_RRP": "NUMBER(15,5)",
+      "R60_RRP": "NUMBER(15,5)",
+      "R5_RRP": "NUMBER(15,5)",
+      "RREG_RRP": "NUMBER(15,5)",
+      "L6_RRP": "NUMBER(15,5)",
+      "L60_RRP": "NUMBER(15,5)",
+      "L5_RRP": "NUMBER(15,5)",
+      "LREG_RRP": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "L1_RRP": "NUMBER(15,5)",
+      "R1_RRP": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "DAY_TYPE",
+      "EFFECTIVEDATE",
+      "PERIODID",
+      "REGIONID"
+    ]
+  },
+  "MARKET_SUSPEND_SCHEDULE_TRK": {
+    "indexes": [],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "SOURCE_START_DATE": "DATE",
+      "SOURCE_END_DATE": "DATE",
+      "COMMENTS": "VARCHAR2(1000)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE"
+    ]
+  },
+  "OVERRIDERRP": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "STARTDATE": "DATE",
+      "STARTPERIOD": "NUMBER(3,0)",
+      "ENDDATE": "DATE",
+      "ENDPERIOD": "NUMBER(3,0)",
+      "RRP": "NUMBER(15,0)",
+      "DESCRIPTION": "VARCHAR2(128)",
+      "AUTHORISESTART": "VARCHAR2(15)",
+      "AUTHORISEEND": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "REGIONID",
+      "STARTDATE",
+      "STARTPERIOD"
+    ]
+  },
+  "REGIONAPC": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "REGIONAPCINTERVALS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PERIODID": "NUMBER(3,0)",
+      "APCVALUE": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "APCTYPE": "NUMBER(3,0)",
+      "FCASAPCVALUE": "NUMBER(16,6)",
+      "APFVALUE": "NUMBER(16,6)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "PERIODID",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "GDINSTRUCT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "DUID"
+      ],
+      [
+        "TARGETTIME"
+      ]
+    ],
+    "columns": {
+      "DUID": "VARCHAR2(10)",
+      "STATIONID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR2(10)",
+      "ID": "NUMBER(22,0)",
+      "INSTRUCTIONTYPEID": "VARCHAR2(10)",
+      "INSTRUCTIONSUBTYPEID": "VARCHAR2(10)",
+      "INSTRUCTIONCLASSID": "VARCHAR2(10)",
+      "REASON": "VARCHAR2(64)",
+      "INSTLEVEL": "NUMBER(6,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "ISSUEDTIME": "DATE",
+      "TARGETTIME": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "ID"
+    ]
+  },
+  "INSTRUCTIONSUBTYPE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "INSTRUCTIONTYPEID": "VARCHAR2(10)",
+      "INSTRUCTIONSUBTYPEID": "VARCHAR2(10)",
+      "DESCRIPTION": "VARCHAR2(64)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INSTRUCTIONSUBTYPEID",
+      "INSTRUCTIONTYPEID"
+    ]
+  },
+  "INSTRUCTIONTYPE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "INSTRUCTIONTYPEID": "VARCHAR2(10)",
+      "DESCRIPTION": "VARCHAR2(64)",
+      "REGIONID": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INSTRUCTIONTYPEID"
+    ]
+  },
+  "EMSMASTER": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "SPD_ID": "VARCHAR(21)",
+      "SPD_TYPE": "VARCHAR(1)",
+      "DESCRIPTION": "VARCHAR(255)",
+      "GROUPING_ID": "VARCHAR(20)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "SPD_ID",
+      "SPD_TYPE"
+    ]
+  },
+  "GENCONDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "GENCONID": "VARCHAR2(20)",
+      "CONSTRAINTTYPE": "VARCHAR2(2)",
+      "CONSTRAINTVALUE": "NUMBER(16,6)",
+      "DESCRIPTION": "VARCHAR2(256)",
+      "STATUS": "VARCHAR2(8)",
+      "GENERICCONSTRAINTWEIGHT": "NUMBER(16,6)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "DYNAMICRHS": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "DISPATCH": "VARCHAR2(1)",
+      "PREDISPATCH": "VARCHAR2(1)",
+      "STPASA": "VARCHAR2(1)",
+      "MTPASA": "VARCHAR2(1)",
+      "IMPACT": "VARCHAR2(64)",
+      "SOURCE": "VARCHAR2(128)",
+      "LIMITTYPE": "VARCHAR2(64)",
+      "REASON": "VARCHAR2(256)",
+      "MODIFICATIONS": "VARCHAR2(256)",
+      "ADDITIONALNOTES": "VARCHAR2(256)",
+      "P5MIN_SCOPE_OVERRIDE": "VARCHAR2(2)",
+      "LRC": "VARCHAR2(1)",
+      "LOR": "VARCHAR2(1)",
+      "FORCE_SCADA": "NUMBER(1,0)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "GENCONID",
+      "VERSIONNO"
+    ]
+  },
+  "GENCONSET": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "GENCONSETID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "GENCONID": "VARCHAR2(20)",
+      "GENCONEFFDATE": "DATE",
+      "GENCONVERSIONNO": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "GENCONID",
+      "GENCONSETID",
+      "VERSIONNO"
+    ]
+  },
+  "GENCONSETINVOKE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "INVOCATION_ID": "NUMBER(9)",
+      "STARTDATE": "DATE",
+      "STARTPERIOD": "NUMBER(3,0)",
+      "GENCONSETID": "VARCHAR2(20)",
+      "ENDDATE": "DATE",
+      "ENDPERIOD": "NUMBER(3,0)",
+      "STARTAUTHORISEDBY": "VARCHAR2(15)",
+      "ENDAUTHORISEDBY": "VARCHAR2(15)",
+      "INTERVENTION": "VARCHAR2(1)",
+      "ASCONSTRAINTTYPE": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "STARTINTERVALDATETIME": "DATE",
+      "ENDINTERVALDATETIME": "DATE",
+      "SYSTEMNORMAL": "VARCHAR2(1)"
+    },
+    "primary_keys": [
+      "INVOCATION_ID"
+    ]
+  },
+  "GENCONSETTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "GENCONSETID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "DESCRIPTION": "VARCHAR2(256)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "COVERAGE": "VARCHAR2(64)",
+      "MODIFICATIONS": "VARCHAR2(256)",
+      "SYSTEMNORMAL": "VARCHAR2(1)",
+      "OUTAGE": "VARCHAR2(256)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "GENCONSETID",
+      "VERSIONNO"
+    ]
+  },
+  "GENERICCONSTRAINTRHS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "GENCONID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(22,0)",
+      "SCOPE": "VARCHAR2(2)",
+      "TERMID": "NUMBER(4,0)",
+      "GROUPID": "NUMBER(3,0)",
+      "SPD_ID": "VARCHAR2(21)",
+      "SPD_TYPE": "VARCHAR2(1)",
+      "FACTOR": "NUMBER(16,6)",
+      "OPERATION": "VARCHAR2(10)",
+      "DEFAULTVALUE": "NUMBER(16,6)",
+      "PARAMETERTERM1": "VARCHAR2(12)",
+      "PARAMETERTERM2": "VARCHAR2(12)",
+      "PARAMETERTERM3": "VARCHAR2(12)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "GENCONID",
+      "SCOPE",
+      "TERMID",
+      "VERSIONNO"
+    ]
+  },
+  "GENERICEQUATIONDESC": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EQUATIONID": "VARCHAR2(20)",
+      "DESCRIPTION": "VARCHAR2(256)",
+      "LASTCHANGED": "DATE",
+      "IMPACT": "VARCHAR2(64)",
+      "SOURCE": "VARCHAR2(128)",
+      "LIMITTYPE": "VARCHAR2(64)",
+      "REASON": "VARCHAR2(256)",
+      "MODIFICATIONS": "VARCHAR2(256)",
+      "ADDITIONALNOTES": "VARCHAR2(256)"
+    },
+    "primary_keys": [
+      "EQUATIONID"
+    ]
+  },
+  "GENERICEQUATIONRHS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EQUATIONID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "TERMID": "NUMBER(3,0)",
+      "GROUPID": "NUMBER(3,0)",
+      "SPD_ID": "VARCHAR2(21)",
+      "SPD_TYPE": "VARCHAR2(1)",
+      "FACTOR": "NUMBER(16,6)",
+      "OPERATION": "VARCHAR2(10)",
+      "DEFAULTVALUE": "NUMBER(16,6)",
+      "PARAMETERTERM1": "VARCHAR2(12)",
+      "PARAMETERTERM2": "VARCHAR2(12)",
+      "PARAMETERTERM3": "VARCHAR2(12)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "EQUATIONID",
+      "TERMID",
+      "VERSIONNO"
+    ]
+  },
+  "SPDCONNECTIONPOINTCONSTRAINT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONNECTIONPOINTID": "VARCHAR2(12)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "GENCONID": "VARCHAR2(20)",
+      "FACTOR": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "BIDTYPE": "VARCHAR2(12)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "CONNECTIONPOINTID",
+      "EFFECTIVEDATE",
+      "GENCONID",
+      "VERSIONNO"
+    ]
+  },
+  "SPDINTERCONNECTORCONSTRAINT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "GENCONID": "VARCHAR2(20)",
+      "FACTOR": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "GENCONID",
+      "INTERCONNECTORID",
+      "VERSIONNO"
+    ]
+  },
+  "SPDREGIONCONSTRAINT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "GENCONID": "VARCHAR2(20)",
+      "FACTOR": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE",
+      "BIDTYPE": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "EFFECTIVEDATE",
+      "GENCONID",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "AUCTION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "AUCTIONID": "VARCHAR2(30)",
+      "AUCTIONDATE": "DATE",
+      "NOTIFYDATE": "DATE",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "DESCRIPTION": "VARCHAR2(100)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(30)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AUCTIONID"
+    ]
+  },
+  "AUCTION_CALENDAR": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "NOTIFYDATE": "DATE",
+      "PAYMENTDATE": "DATE",
+      "RECONCILIATIONDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "PRELIMPURCHASESTMTDATE": "DATE",
+      "PRELIMPROCEEDSSTMTDATE": "DATE",
+      "FINALPURCHASESTMTDATE": "DATE",
+      "FINALPROCEEDSSTMTDATE": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "QUARTER"
+    ]
+  },
+  "AUCTION_IC_ALLOCATIONS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "MAXIMUMUNITS": "NUMBER(5,0)",
+      "PROPORTION": "NUMBER(8,5)",
+      "AUCTIONFEE": "NUMBER(17,5)",
+      "CHANGEDATE": "DATE",
+      "CHANGEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE",
+      "AUCTIONFEE_SALES": "Number(18,8)"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "QUARTER",
+      "VERSIONNO"
+    ]
+  },
+  "AUCTION_REVENUE_ESTIMATE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "VALUATIONID": "VARCHAR2(15)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "MONTHNO": "NUMBER(1,0)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "REVENUE": "NUMBER(17,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "MONTHNO",
+      "QUARTER",
+      "VALUATIONID",
+      "VERSIONNO"
+    ]
+  },
+  "AUCTION_REVENUE_TRACK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "VALUATIONID": "VARCHAR2(15)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "EFFECTIVEDATE": "DATE",
+      "STATUS": "VARCHAR2(10)",
+      "DOCUMENTREF": "VARCHAR2(30)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "QUARTER",
+      "VALUATIONID",
+      "VERSIONNO"
+    ]
+  },
+  "AUCTION_RP_ESTIMATE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "VALUATIONID": "VARCHAR2(15)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "RPESTIMATE": "NUMBER(17,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "QUARTER",
+      "VALUATIONID",
+      "VERSIONNO"
+    ]
+  },
+  "AUCTION_TRANCHE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "TRANCHE": "NUMBER(2,0)",
+      "AUCTIONDATE": "DATE",
+      "NOTIFYDATE": "DATE",
+      "UNITALLOCATION": "NUMBER(18,8)",
+      "CHANGEDATE": "DATE",
+      "CHANGEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "QUARTER",
+      "TRANCHE",
+      "VERSIONNO"
+    ]
+  },
+  "RESIDUE_BID_TRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "BIDLOADDATE": "DATE",
+      "LASTCHANGED": "DATE",
+      "AUCTIONID": "VARCHAR2(30)"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "PARTICIPANTID",
+      "VERSIONNO"
+    ]
+  },
+  "RESIDUE_CON_DATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "UNITSPURCHASED": "NUMBER(17,5)",
+      "LINKPAYMENT": "NUMBER(17,5)",
+      "LASTCHANGED": "DATE",
+      "SECONDARY_UNITS_SOLD": "Number(18,8)"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "VERSIONNO"
+    ]
+  },
+  "RESIDUE_CON_ESTIMATES_TRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "VALUATIONID": "VARCHAR2(15)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "CONTRACTYEAR",
+      "QUARTER",
+      "VALUATIONID"
+    ]
+  },
+  "RESIDUE_CON_FUNDS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "DEFAULTUNITS": "NUMBER(5,0)",
+      "ROLLOVERUNITS": "NUMBER(5,0)",
+      "REALLOCATEDUNITS": "NUMBER(5,0)",
+      "UNITSOFFERED": "NUMBER(5,0)",
+      "MEANRESERVEPRICE": "NUMBER(9,2)",
+      "SCALEFACTOR": "NUMBER(8,5)",
+      "ACTUALRESERVEPRICE": "NUMBER(9,2)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID"
+    ]
+  },
+  "RESIDUE_CONTRACTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTYEAR": "NUMBER(4,0)",
+      "QUARTER": "NUMBER(1,0)",
+      "TRANCHE": "NUMBER(2,0)",
+      "CONTRACTID": "VARCHAR2(30)",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "NOTIFYDATE": "DATE",
+      "AUCTIONDATE": "DATE",
+      "CALCMETHOD": "VARCHAR2(20)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "NOTIFYPOSTDATE": "DATE",
+      "NOTIFYBY": "VARCHAR2(15)",
+      "POSTDATE": "DATE",
+      "POSTEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE",
+      "DESCRIPTION": "VARCHAR2(80)",
+      "AUCTIONID": "VARCHAR2(30)"
+    },
+    "primary_keys": [
+      "CONTRACTYEAR",
+      "QUARTER",
+      "TRANCHE"
+    ]
+  },
+  "RESIDUE_FUNDS_BID": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LOADDATE": "DATE",
+      "OPTIONID": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "UNITS": "NUMBER(5,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "LOADDATE",
+      "OPTIONID",
+      "PARTICIPANTID"
+    ]
+  },
+  "RESIDUE_PRICE_BID": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LOADDATE": "DATE",
+      "OPTIONID": "NUMBER(3,0)",
+      "BIDPRICE": "NUMBER(17,5)",
+      "LASTCHANGED": "DATE",
+      "AUCTIONID": "VARCHAR2(30)"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "LOADDATE",
+      "OPTIONID",
+      "PARTICIPANTID"
+    ]
+  },
+  "RESIDUE_PRICE_FUNDS_BID": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "UNITS": "NUMBER(5,0)",
+      "BIDPRICE": "NUMBER(17,5)",
+      "LINKEDBIDFLAG": "NUMBER(6,0)",
+      "AUCTIONID": "VARCHAR2(30)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "LINKEDBIDFLAG"
+    ]
+  },
+  "RESIDUE_PUBLIC_DATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "UNITSOFFERED": "NUMBER(5,0)",
+      "UNITSSOLD": "NUMBER(16,6)",
+      "CLEARINGPRICE": "NUMBER(17,5)",
+      "RESERVEPRICE": "NUMBER(17,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "VERSIONNO"
+    ]
+  },
+  "RESIDUE_TRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "VERSIONNO": "NUMBER(3,0)",
+      "RUNDATE": "DATE",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "POSTDATE": "DATE",
+      "POSTEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE",
+      "STATUS": "VARCHAR2(15)",
+      "AUCTIONID": "VARCHAR2(30)"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "VERSIONNO"
+    ]
+  },
+  "RESIDUECONTRACTPAYMENTS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "PARTICIPANTID"
+    ]
+  },
+  "RESIDUEFILETRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "CONTRACTID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LOADDATE": "DATE",
+      "FILENAME": "VARCHAR2(40)",
+      "ACKFILENAME": "VARCHAR2(40)",
+      "STATUS": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "AUCTIONID": "VARCHAR2(30)"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "LOADDATE",
+      "PARTICIPANTID"
+    ]
+  },
+  "SRA_CASH_SECURITY": {
+    "indexes": [],
+    "columns": {
+      "CASH_SECURITY_ID": "VARCHAR2(36)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "PROVISION_DATE": "DATE",
+      "CASH_AMOUNT": "NUMBER(18,8)",
+      "INTEREST_ACCT_ID": "VARCHAR2(20)",
+      "AUTHORISEDDATE": "DATE",
+      "FINALRETURNDATE": "DATE",
+      "CASH_SECURITY_RETURNED": "NUMBER(18,8)",
+      "DELETIONDATE": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CASH_SECURITY_ID"
+    ]
+  },
+  "SRA_FINANCIAL_AUC_MARDETAIL": {
+    "indexes": [],
+    "columns": {
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "SRA_RUNNO": "NUMBER(3)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "CASH_SECURITY_ID": "VARCHAR2(36)",
+      "RETURNED_AMOUNT": "NUMBER(18,8)",
+      "RETURNED_INTEREST": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "CASH_SECURITY_ID",
+      "PARTICIPANTID",
+      "SRA_QUARTER",
+      "SRA_RUNNO",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_FINANCIAL_AUC_MARGIN": {
+    "indexes": [],
+    "columns": {
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "SRA_RUNNO": "NUMBER(3)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "TOTAL_CASH_SECURITY": "NUMBER(18,8)",
+      "REQUIRED_MARGIN": "NUMBER(18,8)",
+      "RETURNED_MARGIN": "NUMBER(18,8)",
+      "RETURNED_MARGIN_INTEREST": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "PARTICIPANTID",
+      "SRA_QUARTER",
+      "SRA_RUNNO",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_FINANCIAL_AUC_RECEIPTS": {
+    "indexes": [],
+    "columns": {
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "SRA_RUNNO": "NUMBER(3)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "CONTRACTID": "VARCHAR2(10)",
+      "UNITS_PURCHASED": "NUMBER(18,8)",
+      "CLEARING_PRICE": "NUMBER(18,8)",
+      "RECEIPT_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE",
+      "PROCEEDS_AMOUNT": "NUMBER(18,8)",
+      "UNITS_SOLD": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "SRA_QUARTER",
+      "SRA_RUNNO",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_FINANCIAL_AUCPAY_DETAIL": {
+    "indexes": [],
+    "columns": {
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "SRA_RUNNO": "NUMBER(3)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "CONTRACTID": "VARCHAR2(10)",
+      "MAXIMUM_UNITS": "NUMBER(18,8)",
+      "UNITS_SOLD": "NUMBER(18,8)",
+      "SHORTFALL_UNITS": "NUMBER(18,8)",
+      "RESERVE_PRICE": "NUMBER(18,8)",
+      "CLEARING_PRICE": "NUMBER(18,8)",
+      "PAYMENT_AMOUNT": "NUMBER(18,8)",
+      "SHORTFALL_AMOUNT": "NUMBER(18,8)",
+      "ALLOCATION": "NUMBER(18,8)",
+      "NET_PAYMENT_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONTRACTID",
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "SRA_QUARTER",
+      "SRA_RUNNO",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_FINANCIAL_AUCPAY_SUM": {
+    "indexes": [],
+    "columns": {
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "SRA_RUNNO": "NUMBER(3)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "GROSS_PROCEEDS_AMOUNT": "NUMBER(18,8)",
+      "TOTAL_GROSS_PROCEEDS_AMOUNT": "NUMBER(18,8)",
+      "SHORTFALL_AMOUNT": "NUMBER(18,8)",
+      "TOTAL_SHORTFALL_AMOUNT": "NUMBER(18,8)",
+      "NET_PAYMENT_AMOUNT": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "PARTICIPANTID",
+      "SRA_QUARTER",
+      "SRA_RUNNO",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_FINANCIAL_RUNTRK": {
+    "indexes": [],
+    "columns": {
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "SRA_RUNNO": "NUMBER(3)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "RUNDATE": "DATE",
+      "POSTEDDATE": "DATE",
+      "INTEREST_VERSIONNO": "NUMBER(3)",
+      "MAKEUP_VERSIONNO": "NUMBER(3)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "SRA_QUARTER",
+      "SRA_RUNNO",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_OFFER_PRODUCT": {
+    "indexes": [],
+    "columns": {
+      "AUCTIONID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LOADDATE": "DATE",
+      "OPTIONID": "NUMBER(4)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "OFFER_QUANTITY": "NUMBER(5)",
+      "OFFER_PRICE": "NUMBER(18,8)",
+      "TRANCHEID": "VARCHAR2(30)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "LOADDATE",
+      "OPTIONID",
+      "PARTICIPANTID"
+    ]
+  },
+  "SRA_OFFER_PROFILE": {
+    "indexes": [],
+    "columns": {
+      "AUCTIONID": "VARCHAR2(30)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "LOADDATE": "DATE",
+      "FILENAME": "VARCHAR2(40)",
+      "ACKFILENAME": "VARCHAR2(40)",
+      "TRANSACTIONID": "VARCHAR2(100)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AUCTIONID",
+      "LOADDATE",
+      "PARTICIPANTID"
+    ]
+  },
+  "SRA_PRUDENTIAL_CASH_SECURITY": {
+    "indexes": [],
+    "columns": {
+      "PRUDENTIAL_DATE": "DATE",
+      "PRUDENTIAL_RUNNO": "NUMBER(8)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "CASH_SECURITY_ID": "VARCHAR2(36)",
+      "CASH_SECURITY_AMOUNT": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "CASH_SECURITY_ID",
+      "PARTICIPANTID",
+      "PRUDENTIAL_DATE",
+      "PRUDENTIAL_RUNNO"
+    ]
+  },
+  "SRA_PRUDENTIAL_COMP_POSITION": {
+    "indexes": [],
+    "columns": {
+      "PRUDENTIAL_DATE": "DATE",
+      "PRUDENTIAL_RUNNO": "NUMBER(8)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "TRADING_LIMIT": "NUMBER(18,8)",
+      "PRUDENTIAL_EXPOSURE_AMOUNT": "NUMBER(18,8)",
+      "TRADING_MARGIN": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "PARTICIPANTID",
+      "PRUDENTIAL_DATE",
+      "PRUDENTIAL_RUNNO"
+    ]
+  },
+  "SRA_PRUDENTIAL_EXPOSURE": {
+    "indexes": [],
+    "columns": {
+      "PRUDENTIAL_DATE": "DATE",
+      "PRUDENTIAL_RUNNO": "NUMBER(8)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "SRA_YEAR": "NUMBER(4)",
+      "SRA_QUARTER": "NUMBER(3)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "FROMREGIONID": "VARCHAR2(10)",
+      "MAX_TRANCHE": "NUMBER(2)",
+      "AUCTIONID": "VARCHAR2(30)",
+      "OFFER_SUBMISSIONTIME": "DATE",
+      "AVERAGE_PURCHASE_PRICE": "NUMBER(18,8)",
+      "AVERAGE_CANCELLATION_PRICE": "NUMBER(18,8)",
+      "CANCELLATION_VOLUME": "NUMBER(18,8)",
+      "TRADING_POSITION": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "FROMREGIONID",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "PRUDENTIAL_DATE",
+      "PRUDENTIAL_RUNNO",
+      "SRA_QUARTER",
+      "SRA_YEAR"
+    ]
+  },
+  "SRA_PRUDENTIAL_RUN": {
+    "indexes": [],
+    "columns": {
+      "PRUDENTIAL_DATE": "DATE",
+      "PRUDENTIAL_RUNNO": "NUMBER(8)"
+    },
+    "primary_keys": [
+      "PRUDENTIAL_DATE",
+      "PRUDENTIAL_RUNNO"
+    ]
+  },
+  "VALUATIONID": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "VALUATIONID": "VARCHAR2(15)",
+      "DESCRIPTION": "VARCHAR2(80)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "VALUATIONID"
+    ]
+  },
+  "BIDTYPES": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "BIDTYPE": "VARCHAR2(10)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "DESCRIPTION": "VARCHAR2(64)",
+      "NUMBEROFBANDS": "NUMBER(3,0)",
+      "NUMDAYSAHEADPRICELOCKED": "NUMBER(2,0)",
+      "VALIDATIONRULE": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "SPDALIAS": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "EFFECTIVEDATE",
+      "VERSIONNO"
+    ]
+  },
+  "BIDTYPESTRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "VERSIONNO"
+    ]
+  },
+  "INTERCONNECTOR": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "REGIONFROM": "VARCHAR2(10)",
+      "RSOID": "VARCHAR2(10)",
+      "REGIONTO": "VARCHAR2(10)",
+      "DESCRIPTION": "VARCHAR2(64)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INTERCONNECTORID"
+    ]
+  },
+  "INTERCONNECTORALLOC": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(5,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR2(10)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "ALLOCATION": "NUMBER(12,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "INTERCONNECTORID",
+      "PARTICIPANTID",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "INTERCONNECTORCONSTRAINT": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "RESERVEOVERALLLOADFACTOR": "NUMBER(5,2)",
+      "FROMREGIONLOSSSHARE": "NUMBER(5,2)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "MAXMWIN": "NUMBER(15,5)",
+      "MAXMWOUT": "NUMBER(15,5)",
+      "LOSSCONSTANT": "NUMBER(15,6)",
+      "LOSSFLOWCOEFFICIENT": "NUMBER(27,17)",
+      "EMSMEASURAND": "VARCHAR2(40)",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "AUTHORISEDDATE": "DATE",
+      "DYNAMICRHS": "VARCHAR2(1)",
+      "IMPORTLIMIT": "NUMBER(6,0)",
+      "EXPORTLIMIT": "NUMBER(6,0)",
+      "OUTAGEDERATIONFACTOR": "NUMBER(15,5)",
+      "NONPHYSICALLOSSFACTOR": "NUMBER(15,5)",
+      "OVERLOADFACTOR60SEC": "NUMBER(15,5)",
+      "OVERLOADFACTOR6SEC": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "FCASSUPPORTUNAVAILABLE": "NUMBER(1,0)",
+      "ICTYPE": "VARCHAR2(10)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "INTERCONNECTORID",
+      "VERSIONNO"
+    ]
+  },
+  "INTRAREGIONALLOC": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(5,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "ALLOCATION": "NUMBER(12,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "PARTICIPANTID",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "LOSSFACTORMODEL": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR2(10)",
+      "DEMANDCOEFFICIENT": "NUMBER(27,17)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "INTERCONNECTORID",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "LOSSMODEL": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "PERIODID": "VARCHAR2(20)",
+      "LOSSSEGMENT": "NUMBER(6,0)",
+      "MWBREAKPOINT": "NUMBER(6,0)",
+      "LOSSFACTOR": "NUMBER(16,6)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "INTERCONNECTORID",
+      "LOSSSEGMENT",
+      "VERSIONNO"
+    ]
+  },
+  "MARKET_PRICE_THRESHOLDS": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(4,0)",
+      "VOLL": "NUMBER(15,5)",
+      "MARKETPRICEFLOOR": "NUMBER(15,5)",
+      "ADMINISTERED_PRICE_THRESHOLD": "NUMBER(15,5)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "VERSIONNO"
+    ]
+  },
+  "REGION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "REGIONID": "VARCHAR2(10)",
+      "DESCRIPTION": "VARCHAR2(64)",
+      "REGIONSTATUS": "VARCHAR2(8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "REGIONID"
+    ]
+  },
+  "REGIONSTANDINGDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "REGIONID": "VARCHAR2(10)",
+      "RSOID": "VARCHAR2(10)",
+      "REGIONALREFERENCEPOINTID": "VARCHAR2(10)",
+      "PEAKTRADINGPERIOD": "NUMBER(3,0)",
+      "AUTHORISEDDATE": "DATE",
+      "AUTHORISEDBY": "VARCHAR2(15)",
+      "SCALINGFACTOR": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "REGIONID",
+      "VERSIONNO"
+    ]
+  },
+  "TRANSMISSIONLOSSFACTOR": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "TRANSMISSIONLOSSFACTOR": "NUMBER(15,5)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(22,0)",
+      "CONNECTIONPOINTID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE",
+      "SECONDARY_TLF": "NUMBER(18,8)"
+    },
+    "primary_keys": [
+      "CONNECTIONPOINTID",
+      "EFFECTIVEDATE",
+      "VERSIONNO"
+    ]
+  },
+  "MARKETNOTICEDATA": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "NOTICEID": "NUMBER(10,0)",
+      "EFFECTIVEDATE": "DATE",
+      "TYPEID": "VARCHAR2(25)",
+      "NOTICETYPE": "VARCHAR2(25)",
+      "LASTCHANGED": "DATE",
+      "REASON": "VARCHAR2(2000)",
+      "EXTERNALREFERENCE": "VARCHAR2(255)"
+    },
+    "primary_keys": [
+      "NOTICEID"
+    ]
+  },
+  "MARKETNOTICETYPE": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "TYPEID": "VARCHAR2(25)",
+      "DESCRIPTION": "VARCHAR2(64)",
+      "RAISEDBY": "VARCHAR2(10)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "TYPEID"
+    ]
+  },
+  "PARTICIPANTNOTICETRK": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ],
+      [
+        "PARTICIPANTID"
+      ]
+    ],
+    "columns": {
+      "PARTICIPANTID": "VARCHAR2(10)",
+      "NOTICEID": "NUMBER(10,0)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "NOTICEID",
+      "PARTICIPANTID"
+    ]
+  },
+  "METERDATA_AGGREGATE_READS": {
+    "indexes": [
+      [
+        "CASE_ID",
+        "SETTLEMENTDATE",
+        "CONNECTIONPOINTID",
+        "METER_TYPE",
+        "FRMP",
+        "LR",
+        "PERIODID"
+      ]
+    ],
+    "columns": {
+      "CASE_ID": "NUMBER(15,0)",
+      "SETTLEMENTDATE": "DATE",
+      "CONNECTIONPOINTID": "VARCHAR2(20)",
+      "METER_TYPE": "VARCHAR2(20)",
+      "FRMP": "VARCHAR2(20)",
+      "LR": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "IMPORTVALUE": "NUMBER(18,8)",
+      "EXPORTVALUE": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CASE_ID",
+      "CONNECTIONPOINTID",
+      "FRMP",
+      "LR",
+      "METER_TYPE",
+      "PERIODID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "METERDATA_INDIVIDUAL_READS": {
+    "indexes": [
+      [
+        "CASE_ID",
+        "SETTLEMENTDATE",
+        "METER_ID",
+        "METER_ID_SUFFIX",
+        "PERIODID"
+      ]
+    ],
+    "columns": {
+      "CASE_ID": "NUMBER(15,0)",
+      "SETTLEMENTDATE": "DATE",
+      "METER_ID": "VARCHAR2(20)",
+      "METER_ID_SUFFIX": "VARCHAR2(20)",
+      "FRMP": "VARCHAR2(20)",
+      "LR": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "CONNECTIONPOINTID": "VARCHAR2(20)",
+      "METER_TYPE": "VARCHAR2(20)",
+      "IMPORTVALUE": "NUMBER(18,8)",
+      "EXPORTVALUE": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CASE_ID",
+      "METER_ID",
+      "METER_ID_SUFFIX",
+      "PERIODID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "METERDATA_INTERCONNECTOR": {
+    "indexes": [
+      [
+        "CASE_ID",
+        "SETTLEMENTDATE",
+        "INTERCONNECTORID",
+        "PERIODID"
+      ]
+    ],
+    "columns": {
+      "CASE_ID": "NUMBER(15,0)",
+      "SETTLEMENTDATE": "DATE",
+      "INTERCONNECTORID": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "IMPORTVALUE": "NUMBER(18,8)",
+      "EXPORTVALUE": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CASE_ID",
+      "INTERCONNECTORID",
+      "PERIODID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "METERDATA_SAPS": {
+    "indexes": [],
+    "columns": {
+      "CASE_ID": "NUMBER(15,0)",
+      "SETTLEMENTDATE": "DATE",
+      "CONNECTIONPOINT_ID": "VARCHAR2(20)",
+      "METER_TYPE": "VARCHAR2(20)",
+      "FRMP": "VARCHAR2(20)",
+      "LR": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(4,0)",
+      "IMPORTVALUE": "NUMBER(18,8)",
+      "EXPORTVALUE": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CASE_ID",
+      "CONNECTIONPOINT_ID",
+      "FRMP",
+      "LR",
+      "METER_TYPE",
+      "PERIODID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "METERDATA_WDR_READS": {
+    "indexes": [],
+    "columns": {
+      "MARKET_ID": "VARCHAR2(20)",
+      "CASE_ID": "NUMBER(15,0)",
+      "SETTLEMENTDATE": "DATE",
+      "METER_ID": "VARCHAR2(20)",
+      "TNI": "VARCHAR2(20)",
+      "FRMP": "VARCHAR2(20)",
+      "DRSP": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "METEREDQUANTITYIMPORT": "NUMBER(18,8)",
+      "METEREDQUANTITYEXPORT": "NUMBER(18,8)",
+      "BASELINEQUANTITY": "NUMBER(18,8)",
+      "QUALITYFLAG": "VARCHAR2(20)",
+      "ISNONCOMPLIANT": "NUMBER(1,0)",
+      "BASELINECALCULATIONID": "VARCHAR2(100)"
+    },
+    "primary_keys": [
+      "CASE_ID",
+      "MARKET_ID",
+      "METER_ID",
+      "PERIODID",
+      "SETTLEMENTDATE"
+    ]
+  },
+  "MTPASA_CASERESULT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "PLEXOS_VERSION": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "RUN_DATETIME",
+      "RUN_NO"
+    ]
+  },
+  "MTPASA_CONSTRAINTRESULT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DEMAND_POE_TYPE": "VARCHAR2(20)",
+      "DAY": "DATE",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "PERIODID": "NUMBER(3,0)",
+      "PROBABILITYOFBINDING": "NUMBER(8,5)",
+      "PROBABILITYOFVIOLATION": "NUMBER(8,5)",
+      "CONSTRAINTVIOLATION90": "NUMBER(12,2)",
+      "CONSTRAINTVIOLATION50": "NUMBER(12,2)",
+      "CONSTRAINTVIOLATION10": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "DAY",
+      "DEMAND_POE_TYPE",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE"
+    ]
+  },
+  "MTPASA_CONSTRAINTSUMMARY": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DEMAND_POE_TYPE": "VARCHAR2(20)",
+      "DAY": "DATE",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "EFFECTIVEDATE": "DATE",
+      "VERSIONNO": "NUMBER(3,0)",
+      "AGGREGATION_PERIOD": "VARCHAR2(20)",
+      "CONSTRAINTHOURSBINDING": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AGGREGATION_PERIOD",
+      "CONSTRAINTID",
+      "DAY",
+      "DEMAND_POE_TYPE",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE"
+    ]
+  },
+  "MTPASA_DUIDAVAILABILITY": {
+    "indexes": [],
+    "columns": {
+      "PUBLISH_DATETIME": "DATE",
+      "DAY": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "DUID": "VARCHAR2(20)",
+      "PASAAVAILABILITY": "NUMBER(12,0)",
+      "LATEST_OFFER_DATETIME": "DATE",
+      "LASTCHANGED": "DATE",
+      "CARRYOVERSTATUS": "NUMBER(1,0)",
+      "PASAUNITSTATE": "VARCHAR2(20)",
+      "PASARECALLTIME": "NUMBER(4)"
+    },
+    "primary_keys": [
+      "DAY",
+      "DUID",
+      "PUBLISH_DATETIME",
+      "REGIONID"
+    ]
+  },
+  "MTPASA_INTERCONNECTORRESULT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DEMAND_POE_TYPE": "VARCHAR2(20)",
+      "DAY": "DATE",
+      "INTERCONNECTORID": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "FLOW90": "NUMBER(12,2)",
+      "FLOW50": "NUMBER(12,2)",
+      "FLOW10": "NUMBER(12,2)",
+      "PROBABILITYOFBINDINGEXPORT": "NUMBER(8,5)",
+      "PROBABILITYOFBINDINGIMPORT": "NUMBER(8,5)",
+      "CALCULATEDEXPORTLIMIT": "NUMBER(12,2)",
+      "CALCULATEDIMPORTLIMIT": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "DAY",
+      "DEMAND_POE_TYPE",
+      "INTERCONNECTORID",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE"
+    ]
+  },
+  "MTPASA_LOLPRESULT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DAY": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "WORST_INTERVAL_PERIODID": "NUMBER(3,0)",
+      "WORST_INTERVAL_DEMAND": "NUMBER(12,2)",
+      "WORST_INTERVAL_INTGEN": "NUMBER(12,2)",
+      "WORST_INTERVAL_DSP": "NUMBER(12,2)",
+      "LOSSOFLOADPROBABILITY": "NUMBER(8,5)",
+      "LOSSOFLOADMAGNITUDE": "VARCHAR2(20)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "DAY",
+      "REGIONID",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE"
+    ]
+  },
+  "MTPASA_REGIONAVAIL_TRK": {
+    "indexes": [],
+    "columns": {
+      "PUBLISH_DATETIME": "DATE",
+      "STARTDATE": "DATE",
+      "ENDDATE": "DATE",
+      "LATEST_OFFER_DATETIME": "DATE"
+    },
+    "primary_keys": [
+      "PUBLISH_DATETIME"
+    ]
+  },
+  "MTPASA_REGIONAVAILABILITY": {
+    "indexes": [],
+    "columns": {
+      "PUBLISH_DATETIME": "DATE",
+      "DAY": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "PASAAVAILABILITY_SCHEDULED": "NUMBER(12,0)",
+      "LATEST_OFFER_DATETIME": "DATE",
+      "ENERGYUNCONSTRAINEDCAPACITY": "NUMBER(12,0)",
+      "ENERGYCONSTRAINEDCAPACITY": "NUMBER(12,0)",
+      "NONSCHEDULEDGENERATION": "NUMBER(12,2)",
+      "DEMAND10": "NUMBER(12,2)",
+      "DEMAND50": "NUMBER(12,2)",
+      "ENERGYREQDEMAND10": "NUMBER(12,2)",
+      "ENERGYREQDEMAND50": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE",
+      "DEMAND10MIN": "NUMBER(12,2)",
+      "DEMAND10MAX": "NUMBER(12,2)",
+      "DEMAND50MIN": "NUMBER(12,2)",
+      "DEMAND50MAX": "NUMBER(12,2)",
+      "CARRYOVERCAPACITY": "NUMBER(12,0)"
+    },
+    "primary_keys": [
+      "DAY",
+      "PUBLISH_DATETIME",
+      "REGIONID"
+    ]
+  },
+  "MTPASA_REGIONITERATION": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DEMAND_POE_TYPE": "VARCHAR2(20)",
+      "AGGREGATION_PERIOD": "VARCHAR2(20)",
+      "PERIOD_ENDING": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "USE_ITERATION_ID": "NUMBER(5)",
+      "USE_ITERATION_EVENT_NUMBER": "NUMBER(12,2)",
+      "USE_ITERATION_EVENT_AVERAGE": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AGGREGATION_PERIOD",
+      "DEMAND_POE_TYPE",
+      "PERIOD_ENDING",
+      "REGIONID",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE",
+      "USE_ITERATION_ID"
+    ]
+  },
+  "MTPASA_REGIONRESULT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DEMAND_POE_TYPE": "VARCHAR2(20)",
+      "DAY": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "PERIODID": "NUMBER(3,0)",
+      "DEMAND": "NUMBER(12,2)",
+      "AGGREGATEINSTALLEDCAPACITY": "NUMBER(12,2)",
+      "NUMBEROFITERATIONS": "NUMBER(12,2)",
+      "USE_NUMBEROFITERATIONS": "NUMBER(12,2)",
+      "USE_MAX": "NUMBER(12,2)",
+      "USE_UPPERQUARTILE": "NUMBER(12,2)",
+      "USE_MEDIAN": "NUMBER(12,2)",
+      "USE_LOWERQUARTILE": "NUMBER(12,2)",
+      "USE_MIN": "NUMBER(12,2)",
+      "USE_AVERAGE": "NUMBER(12,2)",
+      "USE_EVENT_AVERAGE": "NUMBER(12,2)",
+      "TOTALSCHEDULEDGEN90": "NUMBER(12,2)",
+      "TOTALSCHEDULEDGEN50": "NUMBER(12,2)",
+      "TOTALSCHEDULEDGEN10": "NUMBER(12,2)",
+      "TOTALINTERMITTENTGEN90": "NUMBER(12,2)",
+      "TOTALINTERMITTENTGEN50": "NUMBER(12,2)",
+      "TOTALINTERMITTENTGEN10": "NUMBER(12,2)",
+      "DEMANDSIDEPARTICIPATION90": "NUMBER(12,2)",
+      "DEMANDSIDEPARTICIPATION50": "NUMBER(12,2)",
+      "DEMANDSIDEPARTICIPATION10": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE",
+      "TOTALSEMISCHEDULEGEN90": "NUMBER(12,2)",
+      "TOTALSEMISCHEDULEGEN50": "NUMBER(12,2)",
+      "TOTALSEMISCHEDULEGEN10": "NUMBER(12,2)",
+      "TOTALAVAILABLEGENMIN": "NUMBER(12,2)",
+      "TOTALAVAILABLEGEN10": "NUMBER(12,2)",
+      "TOTALAVAILABLEGEN50": "NUMBER(12,2)",
+      "TOTALAVAILABLEGEN90": "NUMBER(12,2)",
+      "TOTALAVAILABLEGENMAX": "NUMBER(12,2)"
+    },
+    "primary_keys": [
+      "DAY",
+      "DEMAND_POE_TYPE",
+      "REGIONID",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE"
+    ]
+  },
+  "MTPASA_REGIONSUMMARY": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "RUN_NO": "NUMBER(4)",
+      "RUNTYPE": "VARCHAR2(20)",
+      "DEMAND_POE_TYPE": "VARCHAR2(20)",
+      "AGGREGATION_PERIOD": "VARCHAR2(20)",
+      "PERIOD_ENDING": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "NATIVEDEMAND": "NUMBER(12,2)",
+      "USE_PERCENTILE10": "NUMBER(12,2)",
+      "USE_PERCENTILE20": "NUMBER(12,2)",
+      "USE_PERCENTILE30": "NUMBER(12,2)",
+      "USE_PERCENTILE40": "NUMBER(12,2)",
+      "USE_PERCENTILE50": "NUMBER(12,2)",
+      "USE_PERCENTILE60": "NUMBER(12,2)",
+      "USE_PERCENTILE70": "NUMBER(12,2)",
+      "USE_PERCENTILE80": "NUMBER(12,2)",
+      "USE_PERCENTILE90": "NUMBER(12,2)",
+      "USE_PERCENTILE100": "NUMBER(12,2)",
+      "USE_AVERAGE": "NUMBER(12,2)",
+      "NUMBEROFITERATIONS": "NUMBER(12,2)",
+      "USE_NUMBEROFITERATIONS": "NUMBER(12,2)",
+      "USE_EVENT_MAX": "NUMBER(12,2)",
+      "USE_EVENT_UPPERQUARTILE": "NUMBER(12,2)",
+      "USE_EVENT_MEDIAN": "NUMBER(12,2)",
+      "USE_EVENT_LOWERQUARTILE": "NUMBER(12,2)",
+      "USE_EVENT_MIN": "NUMBER(12,2)",
+      "WEIGHT": "NUMBER(16,6)",
+      "USE_WEIGHTED_AVG": "NUMBER(16,6)",
+      "LRC": "NUMBER(12,2)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "AGGREGATION_PERIOD",
+      "DEMAND_POE_TYPE",
+      "PERIOD_ENDING",
+      "REGIONID",
+      "RUN_DATETIME",
+      "RUN_NO",
+      "RUNTYPE"
+    ]
+  },
+  "P5MIN_BLOCKEDCONSTRAINT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "CONSTRAINTID": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_CASESOLUTION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "STARTINTERVAL_DATETIME": "VARCHAR2(20)",
+      "TOTALOBJECTIVE": "NUMBER(27,10)",
+      "NONPHYSICALLOSSES": "NUMBER(1,0)",
+      "TOTALAREAGENVIOLATION": "NUMBER(15,5)",
+      "TOTALINTERCONNECTORVIOLATION": "NUMBER(15,5)",
+      "TOTALGENERICVIOLATION": "NUMBER(15,5)",
+      "TOTALRAMPRATEVIOLATION": "NUMBER(15,5)",
+      "TOTALUNITMWCAPACITYVIOLATION": "NUMBER(15,5)",
+      "TOTAL5MINVIOLATION": "NUMBER(15,5)",
+      "TOTALREGVIOLATION": "NUMBER(15,5)",
+      "TOTAL6SECVIOLATION": "NUMBER(15,5)",
+      "TOTAL60SECVIOLATION": "NUMBER(15,5)",
+      "TOTALENERGYCONSTRVIOLATION": "NUMBER(15,5)",
+      "TOTALENERGYOFFERVIOLATION": "NUMBER(15,5)",
+      "TOTALASPROFILEVIOLATION": "NUMBER(15,5)",
+      "TOTALFASTSTARTVIOLATION": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "INTERVENTION": "Number(2,0)"
+    },
+    "primary_keys": [
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_CONSTRAINTSOLUTION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "RHS": "NUMBER(15,5)",
+      "MARGINALVALUE": "NUMBER(15,5)",
+      "VIOLATIONDEGREE": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "GENCONID_EFFECTIVEDATE": "DATE",
+      "GENCONID_VERSIONNO": "NUMBER(22,0)",
+      "LHS": "number(15,5)",
+      "INTERVENTION": "Number(2,0)"
+    },
+    "primary_keys": [
+      "CONSTRAINTID",
+      "INTERVAL_DATETIME",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_FCAS_REQUIREMENT": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "CONSTRAINTID": "VARCHAR2(20)",
+      "REGIONID": "VARCHAR2(20)",
+      "BIDTYPE": "VARCHAR2(10)",
+      "INTERVENTION": "NUMBER(2,0)",
+      "CONSTRAINT_EFFECTIVEDATE": "DATE",
+      "CONSTRAINT_VERSIONNO": "NUMBER(3,0)",
+      "MARGINALVALUE": "NUMBER(18,8)",
+      "BASE_COST": "NUMBER(18,8)",
+      "ADJUSTED_COST": "NUMBER(18,8)",
+      "ESTIMATED_CMPF": "NUMBER(18,8)",
+      "ESTIMATED_CRMPF": "NUMBER(18,8)",
+      "RECOVERY_FACTOR_CMPF": "NUMBER(18,8)",
+      "RECOVERY_FACTOR_CRMPF": "NUMBER(18,8)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "BIDTYPE",
+      "CONSTRAINTID",
+      "INTERVAL_DATETIME",
+      "REGIONID",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_INTERCONNECTORSOLN": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERCONNECTORID": "VARCHAR2(10)",
+      "INTERVAL_DATETIME": "DATE",
+      "METEREDMWFLOW": "NUMBER(15,5)",
+      "MWFLOW": "NUMBER(15,5)",
+      "MWLOSSES": "NUMBER(15,5)",
+      "MARGINALVALUE": "NUMBER(15,5)",
+      "VIOLATIONDEGREE": "NUMBER(15,5)",
+      "MNSP": "NUMBER(1,0)",
+      "EXPORTLIMIT": "NUMBER(15,5)",
+      "IMPORTLIMIT": "NUMBER(15,5)",
+      "MARGINALLOSS": "NUMBER(15,5)",
+      "EXPORTGENCONID": "VARCHAR2(20)",
+      "IMPORTGENCONID": "VARCHAR2(20)",
+      "FCASEXPORTLIMIT": "NUMBER(15,5)",
+      "FCASIMPORTLIMIT": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "LOCAL_PRICE_ADJUSTMENT_EXPORT": "NUMBER(10,2)",
+      "LOCALLY_CONSTRAINED_EXPORT": "NUMBER(1,0)",
+      "LOCAL_PRICE_ADJUSTMENT_IMPORT": "NUMBER(10,2)",
+      "LOCALLY_CONSTRAINED_IMPORT": "NUMBER(1,0)",
+      "INTERVENTION": "Number(2,0)"
+    },
+    "primary_keys": [
+      "INTERCONNECTORID",
+      "INTERVAL_DATETIME",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_INTERSENSITIVITIES": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERCONNECTORID": "VARCHAR2(20)",
+      "INTERVAL_DATETIME": "DATE",
+      "INTERVENTION": "NUMBER(1,0)",
+      "INTERVENTION_ACTIVE": "NUMBER(1,0)",
+      "MWFLOW1": "NUMBER(15,5)",
+      "MWFLOW2": "NUMBER(15,5)",
+      "MWFLOW3": "NUMBER(15,5)",
+      "MWFLOW4": "NUMBER(15,5)",
+      "MWFLOW5": "NUMBER(15,5)",
+      "MWFLOW6": "NUMBER(15,5)",
+      "MWFLOW7": "NUMBER(15,5)",
+      "MWFLOW8": "NUMBER(15,5)",
+      "MWFLOW9": "NUMBER(15,5)",
+      "MWFLOW10": "NUMBER(15,5)",
+      "MWFLOW11": "NUMBER(15,5)",
+      "MWFLOW12": "NUMBER(15,5)",
+      "MWFLOW13": "NUMBER(15,5)",
+      "MWFLOW14": "NUMBER(15,5)",
+      "MWFLOW15": "NUMBER(15,5)",
+      "MWFLOW16": "NUMBER(15,5)",
+      "MWFLOW17": "NUMBER(15,5)",
+      "MWFLOW18": "NUMBER(15,5)",
+      "MWFLOW19": "NUMBER(15,5)",
+      "MWFLOW20": "NUMBER(15,5)",
+      "MWFLOW21": "NUMBER(15,5)",
+      "MWFLOW22": "NUMBER(15,5)",
+      "MWFLOW23": "NUMBER(15,5)",
+      "MWFLOW24": "NUMBER(15,5)",
+      "MWFLOW25": "NUMBER(15,5)",
+      "MWFLOW26": "NUMBER(15,5)",
+      "MWFLOW27": "NUMBER(15,5)",
+      "MWFLOW28": "NUMBER(15,5)",
+      "MWFLOW29": "NUMBER(15,5)",
+      "MWFLOW30": "NUMBER(15,5)",
+      "MWFLOW31": "NUMBER(15,5)",
+      "MWFLOW32": "NUMBER(15,5)",
+      "MWFLOW33": "NUMBER(15,5)",
+      "MWFLOW34": "NUMBER(15,5)",
+      "MWFLOW35": "NUMBER(15,5)",
+      "MWFLOW36": "NUMBER(15,5)",
+      "MWFLOW37": "NUMBER(15,5)",
+      "MWFLOW38": "NUMBER(15,5)",
+      "MWFLOW39": "NUMBER(15,5)",
+      "MWFLOW40": "NUMBER(15,5)",
+      "MWFLOW41": "NUMBER(15,5)",
+      "MWFLOW42": "NUMBER(15,5)",
+      "MWFLOW43": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INTERCONNECTORID",
+      "INTERVAL_DATETIME",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_LOCAL_PRICE": {
+    "indexes": [
+      [
+        "RUN_DATETIME",
+        "INTERVAL_DATETIME",
+        "DUID"
+      ]
+    ],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "DUID": "VARCHAR2(20)",
+      "LOCAL_PRICE_ADJUSTMENT": "NUMBER(10, 2)",
+      "LOCALLY_CONSTRAINED": "NUMBER(1,0)"
+    },
+    "primary_keys": [
+      "DUID",
+      "INTERVAL_DATETIME",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_PRICESENSITIVITIES": {
+    "indexes": [],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "REGIONID": "VARCHAR2(20)",
+      "INTERVAL_DATETIME": "DATE",
+      "INTERVENTION": "NUMBER(1,0)",
+      "INTERVENTION_ACTIVE": "NUMBER(1,0)",
+      "RRP1": "NUMBER(15,5)",
+      "RRP2": "NUMBER(15,5)",
+      "RRP3": "NUMBER(15,5)",
+      "RRP4": "NUMBER(15,5)",
+      "RRP5": "NUMBER(15,5)",
+      "RRP6": "NUMBER(15,5)",
+      "RRP7": "NUMBER(15,5)",
+      "RRP8": "NUMBER(15,5)",
+      "RRP9": "NUMBER(15,5)",
+      "RRP10": "NUMBER(15,5)",
+      "RRP11": "NUMBER(15,5)",
+      "RRP12": "NUMBER(15,5)",
+      "RRP13": "NUMBER(15,5)",
+      "RRP14": "NUMBER(15,5)",
+      "RRP15": "NUMBER(15,5)",
+      "RRP16": "NUMBER(15,5)",
+      "RRP17": "NUMBER(15,5)",
+      "RRP18": "NUMBER(15,5)",
+      "RRP19": "NUMBER(15,5)",
+      "RRP20": "NUMBER(15,5)",
+      "RRP21": "NUMBER(15,5)",
+      "RRP22": "NUMBER(15,5)",
+      "RRP23": "NUMBER(15,5)",
+      "RRP24": "NUMBER(15,5)",
+      "RRP25": "NUMBER(15,5)",
+      "RRP26": "NUMBER(15,5)",
+      "RRP27": "NUMBER(15,5)",
+      "RRP28": "NUMBER(15,5)",
+      "RRP29": "NUMBER(15,5)",
+      "RRP30": "NUMBER(15,5)",
+      "RRP31": "NUMBER(15,5)",
+      "RRP32": "NUMBER(15,5)",
+      "RRP33": "NUMBER(15,5)",
+      "RRP34": "NUMBER(15,5)",
+      "RRP35": "NUMBER(15,5)",
+      "RRP36": "NUMBER(15,5)",
+      "RRP37": "NUMBER(15,5)",
+      "RRP38": "NUMBER(15,5)",
+      "RRP39": "NUMBER(15,5)",
+      "RRP40": "NUMBER(15,5)",
+      "RRP41": "NUMBER(15,5)",
+      "RRP42": "NUMBER(15,5)",
+      "RRP43": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "INTERVAL_DATETIME",
+      "REGIONID",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_REGIONSOLUTION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "REGIONID": "VARCHAR2(10)",
+      "RRP": "NUMBER(15,5)",
+      "ROP": "NUMBER(15,5)",
+      "EXCESSGENERATION": "NUMBER(15,5)",
+      "RAISE6SECRRP": "NUMBER(15,5)",
+      "RAISE6SECROP": "NUMBER(15,5)",
+      "RAISE60SECRRP": "NUMBER(15,5)",
+      "RAISE60SECROP": "NUMBER(15,5)",
+      "RAISE5MINRRP": "NUMBER(15,5)",
+      "RAISE5MINROP": "NUMBER(15,5)",
+      "RAISEREGRRP": "NUMBER(15,5)",
+      "RAISEREGROP": "NUMBER(15,5)",
+      "LOWER6SECRRP": "NUMBER(15,5)",
+      "LOWER6SECROP": "NUMBER(15,5)",
+      "LOWER60SECRRP": "NUMBER(15,5)",
+      "LOWER60SECROP": "NUMBER(15,5)",
+      "LOWER5MINRRP": "NUMBER(15,5)",
+      "LOWER5MINROP": "NUMBER(15,5)",
+      "LOWERREGRRP": "NUMBER(15,5)",
+      "LOWERREGROP": "NUMBER(15,5)",
+      "TOTALDEMAND": "NUMBER(15,5)",
+      "AVAILABLEGENERATION": "NUMBER(15,5)",
+      "AVAILABLELOAD": "NUMBER(15,5)",
+      "DEMANDFORECAST": "NUMBER(15,5)",
+      "DISPATCHABLEGENERATION": "NUMBER(15,5)",
+      "DISPATCHABLELOAD": "NUMBER(15,5)",
+      "NETINTERCHANGE": "NUMBER(15,5)",
+      "LOWER5MINDISPATCH": "NUMBER(15,5)",
+      "LOWER5MINIMPORT": "NUMBER(15,5)",
+      "LOWER5MINLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER5MINLOCALREQ": "NUMBER(15,5)",
+      "LOWER5MINREQ": "NUMBER(15,5)",
+      "LOWER60SECDISPATCH": "NUMBER(15,5)",
+      "LOWER60SECIMPORT": "NUMBER(15,5)",
+      "LOWER60SECLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER60SECLOCALREQ": "NUMBER(15,5)",
+      "LOWER60SECREQ": "NUMBER(15,5)",
+      "LOWER6SECDISPATCH": "NUMBER(15,5)",
+      "LOWER6SECIMPORT": "NUMBER(15,5)",
+      "LOWER6SECLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER6SECLOCALREQ": "NUMBER(15,5)",
+      "LOWER6SECREQ": "NUMBER(15,5)",
+      "RAISE5MINDISPATCH": "NUMBER(15,5)",
+      "RAISE5MINIMPORT": "NUMBER(15,5)",
+      "RAISE5MINLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE5MINLOCALREQ": "NUMBER(15,5)",
+      "RAISE5MINREQ": "NUMBER(15,5)",
+      "RAISE60SECDISPATCH": "NUMBER(15,5)",
+      "RAISE60SECIMPORT": "NUMBER(15,5)",
+      "RAISE60SECLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE60SECLOCALREQ": "NUMBER(15,5)",
+      "RAISE60SECREQ": "NUMBER(15,5)",
+      "RAISE6SECDISPATCH": "NUMBER(15,5)",
+      "RAISE6SECIMPORT": "NUMBER(15,5)",
+      "RAISE6SECLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISE6SECLOCALREQ": "NUMBER(15,5)",
+      "RAISE6SECREQ": "NUMBER(15,5)",
+      "AGGREGATEDISPATCHERROR": "NUMBER(15,5)",
+      "INITIALSUPPLY": "NUMBER(15,5)",
+      "CLEAREDSUPPLY": "NUMBER(15,5)",
+      "LOWERREGIMPORT": "NUMBER(15,5)",
+      "LOWERREGDISPATCH": "NUMBER(15,5)",
+      "LOWERREGLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWERREGLOCALREQ": "NUMBER(15,5)",
+      "LOWERREGREQ": "NUMBER(15,5)",
+      "RAISEREGIMPORT": "NUMBER(15,5)",
+      "RAISEREGDISPATCH": "NUMBER(15,5)",
+      "RAISEREGLOCALDISPATCH": "NUMBER(15,5)",
+      "RAISEREGLOCALREQ": "NUMBER(15,5)",
+      "RAISEREGREQ": "NUMBER(15,5)",
+      "RAISE5MINLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISEREGLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISE60SECLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISE6SECLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWER5MINLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWERREGLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWER60SECLOCALVIOLATION": "NUMBER(15,5)",
+      "LOWER6SECLOCALVIOLATION": "NUMBER(15,5)",
+      "RAISE5MINVIOLATION": "NUMBER(15,5)",
+      "RAISEREGVIOLATION": "NUMBER(15,5)",
+      "RAISE60SECVIOLATION": "NUMBER(15,5)",
+      "RAISE6SECVIOLATION": "NUMBER(15,5)",
+      "LOWER5MINVIOLATION": "NUMBER(15,5)",
+      "LOWERREGVIOLATION": "NUMBER(15,5)",
+      "LOWER60SECVIOLATION": "NUMBER(15,5)",
+      "LOWER6SECVIOLATION": "NUMBER(15,5)",
+      "LASTCHANGED": "DATE",
+      "TOTALINTERMITTENTGENERATION": "NUMBER(15,5)",
+      "DEMAND_AND_NONSCHEDGEN": "NUMBER(15,5)",
+      "UIGF": "NUMBER(15,5)",
+      "SEMISCHEDULE_CLEAREDMW": "NUMBER(15,5)",
+      "SEMISCHEDULE_COMPLIANCEMW": "NUMBER(15,5)",
+      "INTERVENTION": "Number(2,0)",
+      "SS_SOLAR_UIGF": "Number(15,5)",
+      "SS_WIND_UIGF": "Number (15,5)",
+      "SS_SOLAR_CLEAREDMW": "Number(15,5)",
+      "SS_WIND_CLEAREDMW": "Number(15,5)",
+      "SS_SOLAR_COMPLIANCEMW": "Number(15,5)",
+      "SS_WIND_COMPLIANCEMW": "Number(15,5)",
+      "WDR_INITIALMW": "NUMBER(15,5)",
+      "WDR_AVAILABLE": "NUMBER(15,5)",
+      "WDR_DISPATCHED": "NUMBER(15,5)",
+      "SS_SOLAR_AVAILABILITY": "NUMBER(15,5)",
+      "SS_WIND_AVAILABILITY": "NUMBER(15,5)",
+      "RAISE1SECRRP": "NUMBER(15,5)",
+      "RAISE1SECROP": "NUMBER(15,5)",
+      "LOWER1SECRRP": "NUMBER(15,5)",
+      "LOWER1SECROP": "NUMBER(15,5)",
+      "RAISE1SECLOCALDISPATCH": "NUMBER(15,5)",
+      "LOWER1SECLOCALDISPATCH": "NUMBER(15,5)"
+    },
+    "primary_keys": [
+      "INTERVAL_DATETIME",
+      "REGIONID",
+      "RUN_DATETIME"
+    ]
+  },
+  "P5MIN_SCENARIODEMAND": {
+    "indexes": [],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSION_DATETIME": "DATE",
+      "SCENARIO": "NUMBER(2,0)",
+      "REGIONID": "VARCHAR2(20)",
+      "DELTAMW": "NUMBER(4,0)"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "REGIONID",
+      "SCENARIO",
+      "VERSION_DATETIME"
+    ]
+  },
+  "P5MIN_SCENARIODEMANDTRK": {
+    "indexes": [],
+    "columns": {
+      "EFFECTIVEDATE": "DATE",
+      "VERSION_DATETIME": "DATE",
+      "AUTHORISEDDATE": "DATE",
+      "LASTCHANGED": "DATE"
+    },
+    "primary_keys": [
+      "EFFECTIVEDATE",
+      "VERSION_DATETIME"
+    ]
+  },
+  "P5MIN_UNITSOLUTION": {
+    "indexes": [
+      [
+        "LASTCHANGED"
+      ]
+    ],
+    "columns": {
+      "RUN_DATETIME": "DATE",
+      "INTERVAL_DATETIME": "DATE",
+      "DUID": "VARCHAR2(10)",
+      "CONNECTIONPOINTID": "VARCHAR2(12)",
+      "TRADETYPE": "NUMBER(2,0)",
+      "AGCSTATUS": "NUMBER(2,0)",
+      "INITIALMW": "NUMBER(15,5)",
+      "TOTALCLEARED": "NUMBER(15,5)",
+      "RAMPDOWNRATE": "NUMBER(15,5)",
+      "RAMPUPRATE": "NUMBER(15,5)",
+      "LOWER5MIN": "NUMBER(15,5)",
+      "LOWER60SEC": "NUMBER(15,5)",
+      "LOWER6SEC": "NUMBER(15,5)",
+      "RAISE5MIN": "NUMBER(15,5)",
+      "RAISE60SEC": "NUMBER(15,5)",
+      "RAISE6SEC": "NUMBER(15,5)",
+      "LOWERREG": "NUMBER(15,5)",
+      "RAISEREG": "NUMBER(15,5)",
+      "AVAILABILITY": "NUMBER(15,5)",
+      "RAISE6SECFLAGS": "NUMBER(3,0)",
+      "RAISE60SECFLAGS": "NUMBER(3,0)",
+      "RAISE5MINFLAGS": "NUMBER(3,0)",
+      "RAISEREGFLAGS": "NUMBER(3,0)",
+      "LOWER6SECFLAGS": "NUMBER(3,0)",
+      "LOWER60SECFLAGS": "NUMBER(3,0)",
+      "LOWER5MINFLAGS": "NUMBER(3,0)",
+      "LOWERREGFLAGS": "NUMBER(3,0)",
+      "LASTCHANGED": "DATE",
+      "SEMIDISPATCHCAP": "NUMBER(3,0)",
+      "INTERVENTION": "Number(2,0)",
+      "DISPATCHMODETIME": "NUMBER(4,0)",
+      "CONFORMANCE_MODE": "NUMBER(6,0)",
+      "UIGF": "NUMBER(15,5)",
+      "RAISE1SEC": "NUMBER(15,5)",
+      "RAISE1SECFLAGS": "NUMBER(3,0)",
+      "LOWER1SEC": "NUMBER(15,5)",
+      "LOWER1SECFLAGS": "NUMBER(3,0)"
+    },
+    "primary_keys": [
+      "DUID",
+      "INTERVAL_DATETIME",
+      "RUN_DATETIME"
+    ]
+  },
   "ADG_DETAIL": {
     "indexes": [],
     "columns": {
@@ -6935,5 +12857,20 @@
       "RUN_DATETIME",
       "VERSION_DATETIME"
     ]
+  },
+  "CO2EII_AVAILABLE_GENERATORS": {
+    "columns": {
+      "STATIONNAME": "VARCHAR2(80)",
+      "DUID": "VARCHAR2(10)",
+      "GENSETID": "VARCHAR2(10)",
+      "REGIONID": "VARCHAR(10)",
+      "CO2E_EMISSIONS_FACTOR": "NUMBER(18,8)",
+      "CO2E_ENERGY_SOURCE": "VARCHAR2(100)",
+      "CO2E_DATA_SOURCE": "VARCHAR2(20)"
+    },
+    "primary_keys": [
+      "DUID"
+    ],
+    "indexes": []
   }
 }

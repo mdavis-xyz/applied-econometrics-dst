@@ -163,7 +163,7 @@ stopifnot(! any(duplication_check$includes_qld & duplication_check$moved))
 # the region it is in today.
 duid_region <- dudetailsummary |>
   arrange(desc(END_DATE), .keep_all = TRUE) |>
-  select(DUID, REGIONID)
+  distinct(DUID, REGIONID)
 
 # Integrity checks and exploration  -------------------------------------------------------------------
 
@@ -198,12 +198,17 @@ duid_gensetid <- dualloc |>
 # (weighted average)
 
 emissions_per_duid <- genunits |>
-  left_join(duid_gensetid, by='GENSETID') |>
+  inner_join(duid_gensetid, by='GENSETID') |>
   summarise(
     CO2E_EMISSIONS_FACTOR=weighted.mean(CO2E_EMISSIONS_FACTOR, MAXCAPACITY),
     .by=DUID
   )
 
+# TODO: investigate misaligned data
+# GENSETIDs ROCKY-GT and SNWYGJP1 are missing from duid_gensetid
+# but present in genunits.
+# SNWYGJP1 is probably snowy hydro (no emissions)
+# ROCKY-GT is probably Rocky Mountain Institute (VPP, so no emissions)
 
 emissions_per_duid <- emissions_per_duid |>
   filter(DUID %in% duids)
@@ -215,10 +220,10 @@ duids_without_emissions <- emissions_per_duid |>
 # I have checked, many overlap with DISPATCHLOAD
 
 # now we want to add region to the list of DUIDs and emissions
+# some DUIDs appear in only one table.
+# Do a full join to make mismatches more obvious.
 duid_static <- emissions_per_duid |> 
-  left_join(duid_region, by='DUID')
-
-
+  full_join(duid_region, by='DUID')
 
 # SETTLEMENTDATE is the end of the time interval
 # which are 5 minutes long
@@ -288,3 +293,4 @@ df <- region_power_emissions |>
 dest_path <- file.path(data_dir, '04-joined.parquet')
 df |> 
   write_parquet(dest_path)
+
