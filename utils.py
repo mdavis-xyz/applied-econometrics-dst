@@ -1,15 +1,19 @@
 import os
 from multiprocessing import current_process
+from itertools import islice
+import traceback
+from random import shuffle
 
 class Logger:
-    def __init__(self, path='data/logs.txt'):
+    def __init__(self, path='data/logs.txt', flush=False):
         self.path = path
         self.reset()
         self.f = open(self.path, 'a')
+        self.flush = flush
         
     def write(self, msg, flush=None):
         self.f.write(msg.rstrip() + '\n')
-        if (current_process().name != 'MainProcess') or flush:
+        if (current_process().name != 'MainProcess') or flush or self.flush:
             # we are in a child process, doing multiprocessing
             # so flush the log, to be psuedo-concurrency safe
             self.f.flush()
@@ -23,7 +27,10 @@ class Logger:
         self.warn(msg)
     def error(self, msg):
         self.write(f"ERROR: {msg}")
-
+    def exception(self, ex):
+        # this just prints the most recent one
+        traceback.print_exc(file=self.f)
+        
     def close(self):
         self.f.close()
         
@@ -37,10 +44,12 @@ class Logger:
 # on Linux and Mac this makes this python process lower priority
 # so when it's running and using up all your CPU, your interface won't lag.
 # So you can keep browsing the web, typing documents etc
-try:
-    os.nice(20)
-except OSError: # ignore error, this is probably on Windows
-    pass
+def renice():
+    try:
+        os.nice(19)
+    except OSError as e: # ignore error, this is probably on Windows
+        print(f"Unable to change process niceness {e}. Continuing")
+        pass
 
 
 # some cells will take a long time to run
@@ -60,4 +69,48 @@ def check_for_pause():
         logger = Logger()
         logger.info("Resumed")
 
-check_for_pause()
+
+# https://docs.python.org/3/library/itertools.html#itertools.batched
+# added to standard library in 3.12
+def batched(iterable, n):
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    it = iter(iterable)
+    while batch := tuple(islice(it, n)):
+        yield batch
+
+# create a directory
+# (do nothing if it exists)
+# file argument is to create a directory that will contain that file
+# choose exactly one argument
+def create_dir(dir=None, file=None):
+    if dir and file:
+        raise ValueError(f"Must specify either dir or file")
+    if file:
+        dir = os.path.dirname(file)
+    if not os.path.exists(dir):
+        try:
+            os.makedirs(dir)
+        except FileExistsError:
+            # race condition when multiprocessing
+            pass
+
+
+# list files in a directory, recursively
+# returning an iterable of one full path at a time
+# if randomised=True, shuffle the list of files
+def walk(dir, randomised=False):
+    if randomised:
+        # need to physicalise into a list
+        # and mutate
+        paths = list(walk(dir, randomised=False))
+        assert isinstance(paths, list)
+        shuffle(paths)
+        # don't mix yield and return in one function
+        for p in paths:
+            yield p
+    else:
+        for (dir,subdirs,files) in os.walk(dir):
+            for file in files:
+                yield os.path.join(dir, file)
