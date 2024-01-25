@@ -114,3 +114,16 @@ def walk(dir, randomised=False):
         for (dir,subdirs,files) in os.walk(dir):
             for file in files:
                 yield os.path.join(dir, file)
+
+
+# when multiprocessing, how many CPUs to use?
+# leave_space=True to True to leave one unused CPU when multiprocessing
+# so that you can still do other stuff on your laptop without your internet browser or whatever being laggy
+# *2 because we assumy hyperthreading
+def num_cpu(leave_spare=True):
+    
+    if leave_spare:
+        num_processes = os.cpu_count() - 2
+    else:
+        num_processes = os.cpu_count()
+    return num_processes
