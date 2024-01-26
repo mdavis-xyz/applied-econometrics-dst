@@ -21,7 +21,8 @@ temp_pop$interval_end <- as.POSIXct(paste(temp_pop$interval_end, "00:00:00"),
 
 #Merge
 energy_n <- left_join(energy, temp_pop, by = c("interval_end", "regionid"))
-energy_n <- energy_n %>%  fill(Temperature, .direction = "down") %>% fill(Population, .direction = "down")
+energy_n <- energy_n %>%  fill(temperature, .direction = "down") %>% fill(population, .direction = "up")
 
 #Save
 write.csv(energy_n, file = file.path(data_dir, "10-energy-merged.csv"))
+print("Done")
