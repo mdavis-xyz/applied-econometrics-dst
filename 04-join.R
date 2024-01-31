@@ -65,10 +65,10 @@ library(tidyverse)
 library(arrow)
 
 # Load the parquet files --------------------------------------------------
-data_dir <- '/media/matthew/Tux/AppliedEconometrics/data'
+data_dir <- '/home/matthew/data'
 #data_dir <- 'data'
 
-source_dir <- file.path(data_dir, '02-C-deduplicated')  
+source_dir <- file.path(data_dir, '03-A-deduplicated')  
 
 # TODO: refactor this into constants.R
 # since it also appears in 03-deduplicate.R

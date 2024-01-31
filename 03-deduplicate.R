@@ -30,25 +30,17 @@ library(R.utils)
 library(ids)
 library(duckdb)
 
-data_dir <- '/media/matthew/Tux/AppliedEconometrics/data'
-source_dir <-  file.path(data_dir, '01-F-one-parquet-per-table')
-prep_dir <-  file.path(data_dir, '02-A-DISPATCHLOAD-few-columns')
-intermediate_dir <-  file.path(data_dir, '02-B-DISPATCHLOAD-partitioned-duplicated')
-dest_dir <- file.path(data_dir, '02-C-deduplicated')
+data_dir <- '/home/matthew/data/'
+source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
+source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
+intermediate_dir <-  file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-duplicated')
+dest_dir <- file.path(data_dir, '03-A-deduplicated')
 dst_transitions_path <- 'data/03-dst-dates.csv'
 
-source_path <-  file.path(source_dir, 'DISPATCHLOAD.parquet')
+source_path <-  file.path(source_dir, 'DISPATCHLOAD')
 
-# delete all the columns we don't need
-# write to a single file
-open_dataset(source_path) |>
-  select(DUID, SETTLEMENTDATE, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION, INTERVENTION) |>
-  write_dataset(
-    prep_dir, 
-    existing_data_behavior="overwrite"
-  )
-
-duids <- open_dataset(prep_dir) |>
+duids <- open_dataset(source_dispatchload_dir) |>
+  select(DUID) |>
   to_duckdb() |>
   distinct(DUID) |>
   collect() |>
@@ -75,7 +67,7 @@ dst_transitions <- read_csv(dst_transitions_path) |>
 for (duid in duids) {
   cat(paste("Loading", duid, "\n"))
   
-  temp_path <- file.path(intermediate_dir, duid)
+  temp_path <- file.path(intermediate_dir, URLencode(duid, reserved=TRUE))
   gc(full = TRUE) # garbage collection
 
   # read the original whole file
@@ -83,12 +75,12 @@ for (duid in duids) {
   # write to it's own dedicated file
   # deliberately not reusing the duckdb instance
   # that would be faster, but appears to use a little more memory
-  open_dataset(prep_dir) |>
+  open_dataset(source_dispatchload_dir) |>
     to_duckdb() |>
     # need special escaping of duid for duck_db
     # so it grabs a single string when generating the SQL
     filter(DUID == !!duid[[1]], INTERVENTION == 0) |>
-    select(SETTLEMENTDATE, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION) |>
+    select(SETTLEMENTDATE, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION, TOP_TIMESTAMP) |>
     to_arrow() |>
     write_dataset(temp_path, existing_data_behavior="overwrite")
   gc(full = TRUE) # garbage collection
@@ -97,13 +89,13 @@ for (duid in duids) {
 
 for (duid in duids) {
   cat(paste("Rewriting", duid, "\n"))
-  temp_path <- file.path(intermediate_dir, duid)
+  temp_path <- file.path(intermediate_dir, URLencode(duid, reserved=TRUE))
   # read what we just wrote
   # all into memory in one go
   # then deduplicate
   open_dataset(temp_path) |>
     collect() |>
-    arrange(SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(LASTCHANGED)) |>
+    arrange(SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
     # we can use distinct now it's a normal dataframe
     distinct(SETTLEMENTDATE, .keep_all = TRUE) |>
     # join with DST transition times
@@ -140,30 +132,36 @@ for (duid in duids) {
   gc(full = TRUE) # garbage collection
 }
 
+dir.create(dest_dir, recursive = TRUE)
+
 # now deduplicate the other tables
 # which are all small, so it's straightforward
 # note that this deduplication is removing > 50% of rows
-read_parquet(file.path(source_dir, 'GENUNITS.parquet')) |>
-  arrange(GENSETID, desc(SCHEMA_VERSION), desc(LASTCHANGED)) |>
-  select(-SCHEMA_VERSION) |>
+open_dataset(file.path(source_dir, 'GENUNITS')) |>
+  arrange(GENSETID, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
   distinct(GENSETID, .keep_all = TRUE) |>
   write_parquet(file.path(dest_dir, 'GENUNITS.parquet'))
 
-read_parquet(file.path(source_dir, 'DUALLOC.parquet')) |>
-  arrange(DUID, EFFECTIVEDATE, GENSETID, VERSIONNO, desc(SCHEMA_VERSION), desc(LASTCHANGED)) |>
-  select(-SCHEMA_VERSION) |>
+open_dataset(file.path(source_dir, 'DUALLOC')) |>
+  arrange(DUID, EFFECTIVEDATE, GENSETID, VERSIONNO, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |> 
   distinct(DUID, EFFECTIVEDATE, GENSETID, VERSIONNO, .keep_all = TRUE) |>
   write_parquet(file.path(dest_dir, 'DUALLOC.parquet'))
 
-read_parquet(file.path(source_dir, 'DUDETAILSUMMARY.parquet')) |>
-  arrange(DUID, START_DATE, desc(SCHEMA_VERSION), desc(LASTCHANGED)) |>
-  select(-SCHEMA_VERSION) |>
+open_dataset(file.path(source_dir, 'DUDETAILSUMMARY')) |>
+  arrange(DUID, START_DATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
   distinct(DUID, START_DATE, .keep_all = TRUE) |>
   write_parquet(file.path(dest_dir, 'DUDETAILSUMMARY.parquet'))
 
-read_parquet(file.path(source_dir, 'STATION.parquet')) |>
-  arrange(STATIONID, desc(SCHEMA_VERSION), desc(LASTCHANGED)) |>
-  select(-SCHEMA_VERSION) |>
+open_dataset(file.path(source_dir, 'STATION')) |>
+  arrange(STATIONID, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
   distinct(STATIONID, .keep_all = TRUE) |>
   write_parquet(file.path(dest_dir, 'STATION.parquet'))
 

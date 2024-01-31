@@ -9,14 +9,16 @@ class Logger:
         self.path = path
         self.reset()
         self.f = open(self.path, 'a')
-        self.flush = flush
+        self._flush = flush
         
     def write(self, msg, flush=None):
         self.f.write(msg.rstrip() + '\n')
-        if (current_process().name != 'MainProcess') or flush or self.flush:
+        if (current_process().name != 'MainProcess') or flush or self._flush:
             # we are in a child process, doing multiprocessing
             # so flush the log, to be psuedo-concurrency safe
-            self.f.flush()
+            self.flush()
+    def flush(self):
+        self.f.flush()
     def debug(self, msg):
         self.write(f"DEBUG: {msg}")
     def info(self, msg):
@@ -33,6 +35,7 @@ class Logger:
         
     def close(self):
         self.f.close()
+        
         
     # erase the file
     # but leave a blank file in place
