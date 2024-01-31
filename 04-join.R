@@ -285,7 +285,8 @@ df <- region_power_emissions |>
     after_transition = interval_end > dst_date,
     
     dst_now_anywhere = if_else(dst_direction == 'start', after_transition, !after_transition),
-    dst_now_here = if_else(regionid == 'QLD1', FALSE, dst_now_anywhere)
+    dst_here_anytime = regionid != 'QLD1',
+    dst_now_here = dst_here_anytime & dst_now_anywhere,
   )
   
 # Save Result -------------------------------------------------------------
