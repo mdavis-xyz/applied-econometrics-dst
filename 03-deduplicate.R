@@ -33,7 +33,7 @@ library(duckdb)
 data_dir <- '/home/matthew/data/'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
-intermediate_dir <-  file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-duplicated')
+intermediate_dir <-  file.path(data_dir, '03-A-partitioned-duplicated')
 dest_dir <- file.path(data_dir, '03-A-deduplicated')
 dst_transitions_path <- 'data/03-dst-dates.csv'
 
@@ -67,7 +67,7 @@ dst_transitions <- read_csv(dst_transitions_path) |>
 for (duid in duids) {
   cat(paste("Loading", duid, "\n"))
   
-  temp_path <- file.path(intermediate_dir, URLencode(duid, reserved=TRUE))
+  temp_path <- file.path(intermediate_dir, 'DISPATCHLOAD', URLencode(duid, reserved=TRUE))
   gc(full = TRUE) # garbage collection
 
   # read the original whole file
@@ -89,7 +89,7 @@ for (duid in duids) {
 
 for (duid in duids) {
   cat(paste("Rewriting", duid, "\n"))
-  temp_path <- file.path(intermediate_dir, URLencode(duid, reserved=TRUE))
+  temp_path <- file.path(intermediate_dir, 'DISPATCHLOAD', URLencode(duid, reserved=TRUE))
   # read what we just wrote
   # all into memory in one go
   # then deduplicate
@@ -165,4 +165,36 @@ open_dataset(file.path(source_dir, 'STATION')) |>
   distinct(STATIONID, .keep_all = TRUE) |>
   write_parquet(file.path(dest_dir, 'STATION.parquet'))
 
+# this one is large
+# but hopefully if we only select a few columns
+# it will be small
+temp_dir <- file.path(intermediate_dir, 'DISPATCHREGIONSUM')
+open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
+  select(DISPATCHINTERVAL, INTERVENTION, REGIONID, RUNNO, SETTLEMENTDATE, LASTCHANGED, TOTALDEMAND, NETINTERCHANGE, EXCESSGENERATION, INITIALSUPPLY, CLEAREDSUPPLY, TOTALINTERMITTENTGENERATION, UIGF, SEMISCHEDULE_CLEAREDMW, SEMISCHEDULE_COMPLIANCEMW, SS_SOLAR_UIGF, SS_WIND_UIGF, SS_SOLAR_CLEAREDMW, SS_WIND_CLEAREDMW, SS_SOLAR_AVAILABILITY, SS_WIND_AVAILABILITY, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+  filter(INTERVENTION == 0) |>
+  select(-INTERVENTION) |>
+  mutate(
+    Y = year(SETTLEMENTDATE)
+  ) |>
+  write_dataset(
+    temp_dir,
+    partitioning=c('REGIONID', 'Y')
+  )
 
+for (file_path in list.files(temp_dir, recursive = TRUE, full.names = TRUE)) {
+  df <- read_parquet(file_path) |>
+    arrange(DISPATCHINTERVAL, RUNNO, SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+    select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+    distinct(DISPATCHINTERVAL, RUNNO, SETTLEMENTDATE, .keep_all = TRUE) |>
+    select(-DISPATCHINTERVAL, -RUNNO)
+    
+  write_parquet(df, file_path)
+}
+
+open_dataset(temp_dir) |>
+  arrange(REGIONID, Y) |>
+  select(-Y) |>
+  write_dataset(file.path(dest_dir, 'DISPATCHREGIONSUM'),
+                partitioning = c('REGIONID'))
+
+open_dataset(file.path(dest_dir, 'DISPATCHREGIONSUM')) |> head() |> collect() |> View()

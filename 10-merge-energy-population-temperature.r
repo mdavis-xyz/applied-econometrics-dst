@@ -16,11 +16,19 @@ energy <- energy |>
   mutate(
     interval_start = interval_end - INTERVAL_LENGTH,
     Date = date(interval_start),
+    weekend = lubridate::wday(Date) %in% c(1,7),
   )
     
 #Merge
 energy_n <- left_join(energy, temp_pop, by = c("Date", "regionid"))
 energy_n <- energy_n %>%  fill(temperature, .direction = "down") %>% fill(population, .direction = "up")
+
+# now do per capita stuff
+energy_n <- energy_n |>
+  mutate(
+    co2_per_capita = co2 / population,
+    energy_mwh_per_capita = energy_mwh / population,
+  )
 
 # check whether our sparse population data
 # registers a change in population during our 8 week events

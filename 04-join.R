@@ -289,6 +289,32 @@ df <- region_power_emissions |>
     dst_now_here = dst_here_anytime & dst_now_anywhere,
   )
   
+# add renewables data
+# aggregated per day, even though it's 5 minute data
+# otherwise we'll have a collider issue
+renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
+  select(SETTLEMENTDATE, REGIONID, TOTALINTERMITTENTGENERATION) |>
+  rename(
+    interval_end = SETTLEMENTDATE,
+    regionid = REGIONID,
+    total_renewables = TOTALINTERMITTENTGENERATION,
+  ) |>
+  mutate(
+    d = date(interval_end),
+  ) |>
+  summarise(
+    total_renewables_today = sum(total_renewables),
+    .by = c(regionid, d)
+  ) |>
+  collect()
+df <- df |> 
+  mutate(
+    interval_start = date(interval_end - minutes(5)),
+    d = date(interval_start)
+  ) |>
+  left_join(renewables, by=c('regionid', 'd'))
+
+
 # Save Result -------------------------------------------------------------
 
 dest_path <- file.path(data_dir, '04-joined.parquet')
