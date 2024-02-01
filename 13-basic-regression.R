@@ -30,8 +30,8 @@ summary(model)
 vcov <- vcovHC(model, cluster = ~ d)
 std_err_clustered <- sqrt(diag(vcov))
 result <- std_err_clustered['dst_now_hereTRUE']
-stargazer(std_err_clustered, type="text", out="results/12-basic-regression-clustered-errors.txt")
-stargazer(std_err_clustered, type="html", out.header=TRUE, out="results/12-basic-regression-clustered-errors.html")
+stargazer(std_err_clustered, type="text", out="results/13-basic-regression-clustered-errors.txt")
+stargazer(std_err_clustered, type="html", out.header=TRUE, out="results/13-basic-regression-clustered-errors.html")
 
 variable_names <- names(coef(model))
 exclude_cols <- variable_names[!grepl("dst_transition_id", variable_names)]
@@ -40,7 +40,7 @@ stargazer(
   type = "html",
   se = list(std_err_clustered),
   out.header = TRUE,
-  out = "results/12-basic-regression.html",
+  out = "results/13-basic-regression.html",
   omit=c('dst_transition_id', 'regionid'),
   omit.labels=c('Omitted time-region fixed effects', 'Omitted region fixed effects')
 )

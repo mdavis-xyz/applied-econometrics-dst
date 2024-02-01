@@ -15,9 +15,9 @@ temp_pop <- read_csv(file_path_csv)
 energy <- energy |>
   mutate(
     interval_start = interval_end - INTERVAL_LENGTH,
-    Date = date(interval_start),
-    weekend = lubridate::wday(Date) %in% c(1,7),
-  )
+    weekend = lubridate::wday(d) %in% c(1,7),
+  ) |>
+  rename(Date=d)
     
 #Merge
 energy_n <- left_join(energy, temp_pop, by = c("Date", "regionid"))
