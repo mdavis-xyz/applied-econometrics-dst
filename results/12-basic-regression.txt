@@ -1,0 +1,473 @@
+
+===========================================================================
+                                                Dependent variable:        
+                                         ----------------------------------
+                                                   co2_per_capita          
+---------------------------------------------------------------------------
+dst_here_anytime                                      -25.754              
+                                                                           
+                                                                           
+dst_now_anywhere                                       1.755               
+                                                                           
+                                                                           
+dst_now_here                                           -0.874              
+                                                                           
+                                                                           
+total_renewables_today                                -0.0001              
+                                                                           
+                                                                           
+weekend                                                -3.654              
+                                                                           
+                                                                           
+temperature                                            -0.867              
+                                                                           
+                                                                           
+I(temperature2)                                        0.020               
+                                                                           
+                                                                           
+solar_exposure                                         -0.107              
+                                                                           
+                                                                           
+regionidQLD1                                                               
+                                                                           
+                                                                           
+regionidSA1                                           -30.254              
+                                                                           
+                                                                           
+regionidTAS1                                          -72.932              
+                                                                           
+                                                                           
+regionidVIC1                                           44.609              
+                                                                           
+                                                                           
+dst_transition_id2010-start                           -10.815              
+                                                                           
+                                                                           
+dst_transition_id2010-stop                             -1.224              
+                                                                           
+                                                                           
+dst_transition_id2011-start                            -2.674              
+                                                                           
+                                                                           
+dst_transition_id2011-stop                             -0.581              
+                                                                           
+                                                                           
+dst_transition_id2012-start                           -16.288              
+                                                                           
+                                                                           
+dst_transition_id2012-stop                            -12.448              
+                                                                           
+                                                                           
+dst_transition_id2013-start                           -13.093              
+                                                                           
+                                                                           
+dst_transition_id2013-stop                            -10.425              
+                                                                           
+                                                                           
+dst_transition_id2014-start                           -18.059              
+                                                                           
+                                                                           
+dst_transition_id2014-stop                            -13.114              
+                                                                           
+                                                                           
+dst_transition_id2015-start                           -14.078              
+                                                                           
+                                                                           
+dst_transition_id2015-stop                            -17.927              
+                                                                           
+                                                                           
+dst_transition_id2016-start                           -21.119              
+                                                                           
+                                                                           
+dst_transition_id2016-stop                            -16.969              
+                                                                           
+                                                                           
+dst_transition_id2017-start                           -19.577              
+                                                                           
+                                                                           
+dst_transition_id2017-stop                            -15.010              
+                                                                           
+                                                                           
+dst_transition_id2018-start                           -16.832              
+                                                                           
+                                                                           
+dst_transition_id2018-stop                            -16.247              
+                                                                           
+                                                                           
+dst_transition_id2019-start                           -23.629              
+                                                                           
+                                                                           
+dst_transition_id2019-stop                            -16.165              
+                                                                           
+                                                                           
+dst_transition_id2020-start                           -26.817              
+                                                                           
+                                                                           
+dst_transition_id2020-stop                            -25.546              
+                                                                           
+                                                                           
+dst_transition_id2021-start                           -28.985              
+                                                                           
+                                                                           
+dst_transition_id2021-stop                            -25.463              
+                                                                           
+                                                                           
+dst_transition_id2022-start                           -27.922              
+                                                                           
+                                                                           
+dst_transition_id2022-stop                            -28.387              
+                                                                           
+                                                                           
+dst_transition_id2023-start                           -36.263              
+                                                                           
+                                                                           
+dst_transition_id2023-stop                            -30.574              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2010-start               9.684               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2010-start                10.752              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2010-start               11.113              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2010-start               8.229               
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2010-stop                3.066               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2010-stop                 6.719               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2010-stop                0.305               
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2010-stop                -2.215              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2011-start               -6.578              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2011-start                -6.338              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2011-start               2.736               
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2011-start               2.328               
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2011-stop                -6.804              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2011-stop                 -1.920              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2011-stop                -0.079              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2011-stop                -5.275              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2012-start               8.568               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2012-start                6.929               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2012-start               16.402              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2012-start               -4.429              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2012-stop                8.158               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2012-stop                 4.765               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2012-stop                11.563              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2012-stop                2.925               
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2013-start               -6.136              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2013-start                -6.224              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2013-start               13.223              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2013-start              -13.157              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2013-stop                -6.367              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2013-stop                 -4.322              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2013-stop                10.415              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2013-stop                -3.889              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2014-start               4.027               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2014-start                1.116               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2014-start               18.223              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2014-start               -0.592              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2014-stop                -5.058              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2014-stop                 -0.750              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2014-stop                11.830              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2014-stop                -7.315              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2015-start               3.421               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2015-start                -4.244              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2015-start               12.747              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2015-start              -11.175              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2015-stop                9.935               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2015-stop                 0.309               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2015-stop                16.602              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2015-stop                2.362               
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2016-start               13.137              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2016-start                -7.054              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2016-start               20.901              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2016-start               -7.632              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2016-stop                11.460              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2016-stop                 6.015               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2016-stop                24.688              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2016-stop                -6.674              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2017-start               13.181              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2017-start                -2.814              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2017-start               20.583              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2017-start              -30.953              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2017-stop                10.300              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2017-stop                -11.009              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2017-stop                16.022              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2017-stop               -22.567              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2018-start               9.371               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2018-start                -9.211              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2018-start               18.435              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2018-start              -39.471              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2018-stop                12.646              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2018-stop                -10.606              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2018-stop                16.204              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2018-stop               -36.017              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2019-start               11.001              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2019-start                1.325               
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2019-start               24.907              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2019-start              -37.600              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2019-stop                7.032               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2019-stop                 -8.448              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2019-stop                18.102              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2019-stop               -40.037              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2020-start               4.292               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2020-start                -1.746              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2020-start               27.156              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2020-start              -35.449              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2020-stop                6.885               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2020-stop                 -2.539              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2020-stop                25.026              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2020-stop               -31.214              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2021-start               2.170               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2021-start                -2.915              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2021-start               28.430              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2021-start              -34.656              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2021-stop                6.065               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2021-stop                 -3.860              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2021-stop                25.072              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2021-stop               -31.592              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2022-start               -2.672              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2022-start                -6.915              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2022-start               28.733              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2022-start              -34.932              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2022-stop                4.127               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2022-stop                 -6.628              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2022-stop                29.638              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2022-stop               -30.067              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2023-start               -0.162              
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2023-start                -2.695              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2023-start               36.176              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2023-start              -31.030              
+                                                                           
+                                                                           
+regionidQLD1:dst_transition_id2023-stop                4.150               
+                                                                           
+                                                                           
+regionidSA1:dst_transition_id2023-stop                 -5.522              
+                                                                           
+                                                                           
+regionidTAS1:dst_transition_id2023-stop                30.547              
+                                                                           
+                                                                           
+regionidVIC1:dst_transition_id2023-stop               -34.465              
+                                                                           
+                                                                           
+Constant                                             111.764***            
+                                                      (0.131)              
+                                                                           
+---------------------------------------------------------------------------
+Observations                                         2,338,130             
+R2                                                     0.955               
+Adjusted R2                                            0.955               
+Residual Std. Error                             7.785 (df = 2337978)       
+F Statistic                              327,250.700*** (df = 151; 2337978)
+===========================================================================
+Note:                                           *p<0.1; **p<0.05; ***p<0.01
