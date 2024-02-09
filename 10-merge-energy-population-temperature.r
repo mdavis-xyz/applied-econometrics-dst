@@ -11,10 +11,15 @@ file_path_csv <- file.path(data_dir, "09-temp-pop-merged.csv")
 
 energy <- read_parquet(file_path_parquet)
 temp_pop <- read_csv(file_path_csv)
+sunlight <- read_csv(file.path(data_dir, '02-sun-hours.csv'))
 
 energy <- energy |>
   mutate(
     interval_start = interval_end - INTERVAL_LENGTH,
+    dst_start = dst_direction == 'start',
+    days_before_transition = dst_date - d,
+    days_after_transition = d - dst_date,
+    days_into_dst = if_else(dst_start, days_after_transition, days_before_transition),
     weekend = lubridate::wday(d) %in% c(1,7),
   ) |>
   rename(Date=d)
@@ -22,6 +27,14 @@ energy <- energy |>
 #Merge
 energy_n <- left_join(energy, temp_pop, by = c("Date", "regionid"))
 energy_n <- energy_n %>%  fill(temperature, .direction = "down") %>% fill(population, .direction = "up")
+
+# add sunlight hours (not sunlight irradiance)
+energy_n <- sunlight |>
+  rename(
+    Date=d,
+    sun_hours_per_day=sun_hours
+  ) |>
+  right_join(energy_n)
 
 # now do per capita stuff
 energy_n <- energy_n |>
