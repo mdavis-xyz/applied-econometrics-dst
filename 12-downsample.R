@@ -9,7 +9,7 @@ data_dir <- "/home/matthew/data"
 pq_path <- file.path(data_dir, "10-energy-merged.parquet")
 df <- read_parquet(pq_path)
 
-df |> 
+daily <- df |> 
   summarise(
     energy_mwh = sum(energy_mwh),
     energy_mwh_per_capita = sum(energy_mwh_per_capita),
@@ -27,6 +27,7 @@ df |>
       dst_direction,
       dst_start,
       dst_transition_id,
+      dst_transition_id_and_region,
       after_transition,
       dst_now_anywhere,
       dst_here_anytime,
@@ -36,11 +37,12 @@ df |>
       days_into_dst,
       weekend
     )
-  ) |>
-  write_parquet(file.path(data_dir, "12-energy-daily.parquet"))
+  )
+daily |> write_parquet(file.path(data_dir, "12-energy-daily.parquet"))
+daily |> write_csv(file.path(data_dir, "12-energy-daily.csv"))
 
 
-df |> mutate(hr = hour(interval_start)) |>
+hourly <- df |> mutate(hr = hour(interval_start)) |>
   summarise(
     energy_mwh = sum(energy_mwh),
     energy_mwh_per_capita = sum(energy_mwh_per_capita),
@@ -59,6 +61,7 @@ df |> mutate(hr = hour(interval_start)) |>
       dst_direction,
       dst_start,
       dst_transition_id,
+      dst_transition_id_and_region,
       after_transition,
       dst_now_anywhere,
       dst_here_anytime,
@@ -68,5 +71,6 @@ df |> mutate(hr = hour(interval_start)) |>
       days_into_dst,
       weekend
     )
-  ) |>
-  write_parquet(file.path(data_dir, "12-energy-hourly.parquet"))
+  )
+hourly |> write_parquet(file.path(data_dir, "12-energy-hourly.parquet"))
+hourly |> write_csv(file.path(data_dir, "12-energy-hourly.csv"))

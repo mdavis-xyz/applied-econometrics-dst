@@ -17,10 +17,11 @@ energy <- energy |>
   mutate(
     interval_start = interval_end - INTERVAL_LENGTH,
     dst_start = dst_direction == 'start',
-    days_before_transition = dst_date - d,
-    days_after_transition = d - dst_date,
+    days_before_transition = as.integer(dst_date - d),
+    days_after_transition = as.integer(d - dst_date),
     days_into_dst = if_else(dst_start, days_after_transition, days_before_transition),
     weekend = lubridate::wday(d) %in% c(1,7),
+    dst_transition_id_and_region = paste(dst_transition_id, regionid, sep='-')
   ) |>
   rename(Date=d)
     

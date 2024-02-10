@@ -24,11 +24,19 @@
 # Except for the last row per generator, for which we use TOTALCLEARED.
 # (Generators may fail to achieve TOTALCLEARED by the end of the interval.
 #  So we use the next INITIALMW if we can.)
+
+
+# imports -----------------------------------------------------------------
+
 library(arrow)
 library(tidyverse)
 library(R.utils)
 library(ids)
 library(duckdb)
+
+
+# constants ---------------------------------------------------------------
+
 
 data_dir <- '/home/matthew/data/'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
@@ -38,6 +46,9 @@ dest_dir <- file.path(data_dir, '03-A-deduplicated')
 dst_transitions_path <- 'data/03-dst-dates.csv'
 
 source_path <-  file.path(source_dir, 'DISPATCHLOAD')
+
+
+# DISPATCHLOAD ------------------------------------------------------------
 
 duids <- open_dataset(source_dispatchload_dir) |>
   select(DUID) |>
@@ -134,6 +145,9 @@ for (duid in duids) {
 
 dir.create(dest_dir, recursive = TRUE)
 
+
+# small tables ------------------------------------------------------------
+
 # now deduplicate the other tables
 # which are all small, so it's straightforward
 # note that this deduplication is removing > 50% of rows
@@ -165,12 +179,53 @@ open_dataset(file.path(source_dir, 'STATION')) |>
   distinct(STATIONID, .keep_all = TRUE) |>
   write_parquet(file.path(dest_dir, 'STATION.parquet'))
 
+open_dataset(file.path(source_dir, 'BILLING_CO2E_PUBLICATION')) |>
+  arrange(CONTRACTYEAR, REGIONID, SETTLEMENTDATE, WEEKNO, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
+  distinct(CONTRACTYEAR, REGIONID, SETTLEMENTDATE, WEEKNO, .keep_all = TRUE) |>
+  # this data has entries per region, and "NEM" for all of the NEM
+  # delete that, keep per region
+  filter(REGIONID != 'NEM') |>
+  mutate(
+    # convert datetime at midnight at the start of a day
+    # to that date
+    SETTLEMENTDATE=date(SETTLEMENTDATE)
+  ) |>
+  write_parquet(file.path(dest_dir, 'BILLING_CO2E_PUBLICATION.parquet'))
+
+
+open_dataset(file.path(source_dir, 'TRADINGINTERCONNECT')) |>
+  arrange(INTERCONNECTORID, PERIODID, RUNNO, SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
+  distinct(INTERCONNECTORID, PERIODID, RUNNO, SETTLEMENTDATE, .keep_all = TRUE) |>
+  write_parquet(file.path(dest_dir, 'TRADINGINTERCONNECT.parquet'))
+
+open_dataset(file.path(source_dir, 'INTERCONNECTOR')) |>
+  arrange(INTERCONNECTORID, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
+  distinct(INTERCONNECTORID, .keep_all = TRUE) |>
+  write_parquet(file.path(dest_dir, 'INTERCONNECTOR.parquet'))
+
+
+open_dataset(file.path(source_dir, 'ROOFTOP_PV_ACTUAL')) |>
+  arrange(INTERVAL_DATETIME, REGIONID, TYPE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+  collect() |>
+  distinct(INTERVAL_DATETIME, REGIONID, TYPE, .keep_all = TRUE) |>
+  write_parquet(file.path(dest_dir, 'ROOFTOP_PV_ACTUAL.parquet'))
+
+
+# DISPATCHREGIONSUM -------------------------------------------------------
+
 # this one is large
 # but hopefully if we only select a few columns
 # it will be small
 temp_dir <- file.path(intermediate_dir, 'DISPATCHREGIONSUM')
 open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
-  select(DISPATCHINTERVAL, INTERVENTION, REGIONID, RUNNO, SETTLEMENTDATE, LASTCHANGED, TOTALDEMAND, NETINTERCHANGE, EXCESSGENERATION, INITIALSUPPLY, CLEAREDSUPPLY, TOTALINTERMITTENTGENERATION, UIGF, SEMISCHEDULE_CLEAREDMW, SEMISCHEDULE_COMPLIANCEMW, SS_SOLAR_UIGF, SS_WIND_UIGF, SS_SOLAR_CLEAREDMW, SS_WIND_CLEAREDMW, SS_SOLAR_AVAILABILITY, SS_WIND_AVAILABILITY, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+  select(DISPATCHINTERVAL, INTERVENTION, REGIONID, RUNNO, SETTLEMENTDATE, LASTCHANGED, TOTALDEMAND, NETINTERCHANGE, EXCESSGENERATION, INITIALSUPPLY, CLEAREDSUPPLY, TOTALINTERMITTENTGENERATION, DEMAND_AND_NONSCHEDGEN, UIGF, SEMISCHEDULE_CLEAREDMW, SEMISCHEDULE_COMPLIANCEMW, SS_SOLAR_UIGF, SS_WIND_UIGF, SS_SOLAR_CLEAREDMW, SS_WIND_CLEAREDMW, SS_SOLAR_AVAILABILITY, SS_WIND_AVAILABILITY, SCHEMA_VERSION, TOP_TIMESTAMP) |>
   filter(INTERVENTION == 0) |>
   select(-INTERVENTION) |>
   mutate(
