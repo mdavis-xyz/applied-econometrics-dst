@@ -43,6 +43,7 @@ energy_n <- sunlight |>
 energy_n <- energy_n |>
   mutate(
     co2_per_capita = co2 / population,
+    co2_midday_per_capita = co2_midday / population,
     energy_mwh_per_capita = energy_mwh / population,
   )
 

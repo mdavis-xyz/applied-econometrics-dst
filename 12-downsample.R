@@ -17,6 +17,9 @@ daily <- df |>
     energy_mwh_per_capita = sum(energy_mwh_per_capita),
     co2 = sum(co2),
     co2_per_capita = sum(co2_per_capita),
+    # midday co2 was already summed over a few hours
+    # don't sum again. Then it will be (tonnes co2)^2
+    co2_midday_per_capita = mean(co2_midday_per_capita),
     total_renewables_today=mean(total_renewables_today),
     population=mean(population),
     temperature=mean(temperature),
@@ -49,6 +52,9 @@ hourly <- df |> mutate(hr = hour(interval_start)) |>
     energy_mwh_per_capita = sum(energy_mwh_per_capita),
     co2 = sum(co2),
     co2_per_capita = sum(co2_per_capita),
+    # midday co2 was already summed over a few hours
+    # don't sum again. Then it will be (tonnes co2)^2
+    co2_midday_per_capita = sum(co2_midday_per_capita),
     total_renewables_today=mean(total_renewables_today),
     population=mean(population),
     temperature=mean(temperature),

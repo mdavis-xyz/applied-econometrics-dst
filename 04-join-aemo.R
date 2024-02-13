@@ -595,7 +595,7 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
 
 df <- df |>
   mutate(
-    interval_start = date(interval_end - minutes(5)),
+    interval_start = interval_end - minutes(5),
     d = date(interval_start)
   ) |>
   left_join(renewables, by=c('regionid', 'd'))
@@ -603,6 +603,31 @@ df <- df |>
 stopifnot(! df |> pull(interval_end) |> is.na() |> any())
 stopifnot(! df |> pull(interval_end) |> date() |> is.na() |> any())
 stopifnot(! df |> pull(interval_start) |> is.na() |> any())
+
+
+# midday emissions --------------------------------------------------------
+# as per kellog and wolf, grab 12:00-14:30 values (local time)
+# Rooftop solar data doesn't exist prior to 2016
+# so we can't get 'load' (without counting rooftop solar as negative load)
+# but we can get midday emissions
+df <- df |>
+  mutate(
+    # SA1 is consistently 30 minutes behind VIC, NSW etc
+    # and then they shift their clock 1 hour
+    local_time_shift = hours(1) * dst_now_here - minutes(30) * (regionid == 'SA1'),
+    interval_end_local = interval_end + local_time_shift,
+    interval_start_local = interval_start + local_time_shift,
+  )
+midday_co2 <- df |>
+  filter(hour(interval_start_local) >= 12) |>
+  filter(hour(interval_end_local) < 14 | (hour(interval_end_local) == 14 & minute(interval_end_local) <= 30)) |>
+  summarise(
+    co2_midday=sum(co2),
+    .by=c(regionid, d)
+  )
+df <- df |> left_join(midday_co2)
+    
+
 
 # Save Result -------------------------------------------------------------
 
