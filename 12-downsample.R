@@ -6,6 +6,8 @@ library(tidyverse)
 
 data_dir <- "/home/matthew/data"
 
+Sys.setenv(TZ='UTC') # see README.md
+
 pq_path <- file.path(data_dir, "10-energy-merged.parquet")
 df <- read_parquet(pq_path)
 
@@ -40,7 +42,6 @@ daily <- df |>
   )
 daily |> write_parquet(file.path(data_dir, "12-energy-daily.parquet"))
 daily |> write_csv(file.path(data_dir, "12-energy-daily.csv"))
-
 
 hourly <- df |> mutate(hr = hour(interval_start)) |>
   summarise(

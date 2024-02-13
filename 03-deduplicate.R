@@ -38,6 +38,8 @@ library(duckdb)
 # constants ---------------------------------------------------------------
 
 
+Sys.setenv(TZ='UTC')
+
 data_dir <- '/home/matthew/data/'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')

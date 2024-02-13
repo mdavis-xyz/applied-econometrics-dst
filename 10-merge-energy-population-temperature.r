@@ -3,6 +3,8 @@ library(arrow)
 
 data_dir <- "/home/matthew/data"
 
+Sys.setenv(TZ='UTC') # see README.md
+
 # data has this frequency
 INTERVAL_LENGTH = minutes(5)
 

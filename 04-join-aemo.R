@@ -67,6 +67,21 @@
 #   This tells us which interconnector connects which regions
 #   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_199.htm#1
 
+# ROOFTOP_PV_ACTUAL
+#   Rooftop solar generally is counted as negative load,
+#   because it's "behind the meter".
+#   So it's excluded from the data about other generation.
+#   This table has that data.
+#   Per half hour. Only an estimate.
+#   There are different types of overlapping estimates.
+#   So choose carefully.
+#   "Estimate of regional Rooftop Solar actual generation for each half-hour interval in a day"
+#   We don't actually use this in the end.
+#   (We use solar data from elsewhere)
+#   Except to check time zone correctness.
+#   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_111.htm#1
+
+
 # imports -----------------------------------------------------------------
 
 library(tidyverse)
@@ -74,6 +89,13 @@ library(arrow)
 
 
 # constants ---------------------------------------------------------------
+
+# this var sets the timezone assumed for datetimes
+# use UTC not Brisbane, because the data is TZ naive of Brisbane
+# If we omit this, R will use Paris, which messes with some -5min arithmatic
+# see README.md
+Sys.setenv(TZ='UTC')
+#Sys.setenv(TZ='Australia/Brisbane')
 
 # the column SETTLEMENTDATE is typically the end of the time interval
 # which are 5 minutes long
@@ -147,6 +169,85 @@ interconnector <- read_parquet(
 )
 
 
+
+rooftop <- read_parquet(
+  file.path(source_dir, 'ROOFTOP_PV_ACTUAL.parquet')
+)
+
+
+# Unit test timezones -----------------------------------------------------
+# Since we're using polars, pyarrow, R read_parquet and R open_dataset
+# sometimes timezones aren't handled consistently.
+# Check it's sensible.
+
+# First, plot average solar generation over the 24h in a day.
+# check it's centered around midday.
+
+
+# for each half hour, region
+# take TYPE=='DAILY' if present
+# else 'MEASUREMENT'
+# else 'SATELLITE'
+# (conveniently this happens to be alphabetical order)
+# and if there's a tie, choose the highest QI
+# (quality)
+
+rooftop <- rooftop |>
+  arrange(REGIONID, INTERVAL_DATETIME, TYPE, desc(QI)) |>
+  distinct(REGIONID, INTERVAL_DATETIME, .keep_all = TRUE) |>
+  select(REGIONID, INTERVAL_DATETIME, POWER) |>
+  rename(
+    regionid = REGIONID,
+    rooftop_solar_power = POWER,
+    interval_end = INTERVAL_DATETIME
+  ) |>
+  # this table breaks down QLD1 into
+  # QLDC, QLDN (queensland north, centre, south)
+  # discard the breakdown, keep only per-region sum
+  # QLD1, NSW1 etc (region ends in 1)
+  filter(
+    str_ends(regionid, "1") 
+  )
+
+# plot solar throughout the day
+rooftop |>
+  mutate(
+    # off by 5 minutes, but close enough for a graph we're gonna eye-ball
+    h = hour(interval_end)
+  ) |>
+  summarise(
+    rooftop_solar_power = max(rooftop_solar_power, na.rm = TRUE),
+    .by=c(regionid, h)
+  ) |>
+  ggplot(aes(x=h, y=rooftop_solar_power, color=regionid)) +
+  geom_line()
+
+# now calculate mathematically
+# so we can test this with an assertion
+night_solar_frac <- rooftop |>
+  mutate(
+    during_daylight=if_else(between(hour(interval_end), 4, 21), 'day', 'night'),
+  ) |>
+  summarise(
+    solar=mean(rooftop_solar_power, na.rm=TRUE),
+    .by=c(during_daylight, regionid)
+  ) |>
+  pivot_wider(names_from=during_daylight, values_from=solar) |>
+  summarise(x=mean(night / (night + day))) |>
+  pull(x)
+stopifnot(night_solar_frac < 0.001)
+
+# When the timezones are done wrong
+# subtracting 5 minutes, across a clock-forward transition
+# results in NA
+# test this doesn't happen
+bad_dts <- dispatchload |> 
+  select(SETTLEMENTDATE) |> 
+  distinct() |> 
+  collect() |> 
+  mutate(interval_start=SETTLEMENTDATE - minutes(5)) |> 
+  filter(is.na(interval_start))
+stopifnot(! any(bad_dts))
 
 # List all DUIDs we care about --------------------------------------------
 
@@ -411,6 +512,7 @@ df <- rbind(
   )
 gc()
 
+
 stopifnot(all(df$energy_mwh >= 0))
 stopifnot(all(df$co2 >= 0))
 
@@ -418,7 +520,7 @@ stopifnot(all(df$co2 >= 0))
 # add back in the data from before adjusting for import/export
 # so we can use either later on
 # to see how big of an impact import/export makes
-region_power_emissions <- region_power_emissions |>
+df <- region_power_emissions |>
   select(-data_source) |>
   rename(
     co2_before_import_export = co2,
@@ -426,6 +528,8 @@ region_power_emissions <- region_power_emissions |>
   ) |>
   left_join(df) |>
   relocate(co2_before_import_export, energy_mwh_before_import_export, .after = last_col())
+
+region_power_emissions
 
 # add DST info ------------------------------------------------------------
 
@@ -447,9 +551,9 @@ dst_transitions <- read_csv(dst_transitions_path) |>
   ) 
 
 # now join DST info with main dataframe
-df <- region_power_emissions |>
-  collect() |>
-  left_join(dst_transitions, 
+
+df <- df |>
+  inner_join(dst_transitions, 
             by=join_by(
               interval_end > dst_window_start,
               interval_end <= dst_window_end
@@ -465,6 +569,7 @@ df <- region_power_emissions |>
     dst_here_anytime = regionid != 'QLD1',
     dst_now_here = dst_here_anytime & dst_now_anywhere,
   )
+
 
 # add renewables data
 # aggregated per day, even though it's 5 minute data
@@ -487,17 +592,20 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
     .by = c(regionid, d)
   ) |>
   collect()
-df <- df |> 
+
+df <- df |>
   mutate(
     interval_start = date(interval_end - minutes(5)),
     d = date(interval_start)
   ) |>
   left_join(renewables, by=c('regionid', 'd'))
 
+stopifnot(! df |> pull(interval_end) |> is.na() |> any())
+stopifnot(! df |> pull(interval_end) |> date() |> is.na() |> any())
+stopifnot(! df |> pull(interval_start) |> is.na() |> any())
 
 # Save Result -------------------------------------------------------------
 
 dest_path <- file.path(data_dir, '04-joined.parquet')
 df |> 
   write_parquet(dest_path)
-

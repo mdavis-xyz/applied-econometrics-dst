@@ -29,3 +29,17 @@ Our code doesn't look at these. That's just for humans to look at to understand 
 
 The `unused` folder is an archive of scripts which are no longer in use, or just investigation stuff that we don't want to delete.
 
+## Timezone
+
+AEMO data is in 'market time', `Australia/Brisbane`, UTC+10, no DST.
+
+Note that When R reads datetimes from parquet, it can treat some datetimes (I'm not sure if they're naive, or Australia/Brisbane ones) as local. i.e. Paris.
+It won't show you that it's done this. You only see this if you extract a single datetime and print it. When viewing the whole dataframe, you'll see UTC.
+But when you subtract 5 minutes from a datetime (to get interval start from interval end), if that datetime happens to be the first 5 minutes after the *French* DST clock-forward transition, R will return NULL. Even though subtracting 5 minutes from a naive or UTC or Australia/Brisbane time is valid.
+To avoid this, we set the timezone to UTC in the top of some R files.
+
+```
+Sys.setenv(TZ='UTC')
+```
+(Setting to `Australia/Brisbane` does not work. We end up off by 10 hours.)
+There's a unit test in `04-join-aemo.R` to test that whatever we do is right.
