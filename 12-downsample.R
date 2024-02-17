@@ -1,6 +1,14 @@
 # take 5-minute data
 # downsample to hourly and daily files
 
+
+# all the midday values are 'typical' 5 minute
+# (e.g. mwh per 5 minutes)
+# multiply so that the values are what they would be
+# if everything was as it was at midday, for the whole day (or whole hour).
+# (i.e. multiply by intervals_per_day)
+# so we can compare apples for apples
+
 library(arrow)
 library(tidyverse)
 
@@ -8,18 +16,25 @@ data_dir <- "/home/matthew/data"
 
 Sys.setenv(TZ='UTC') # see README.md
 
+# how many 5-minute intervals per day or hour
+interval_mins <- 5 # minutes
+intervals_per_h <- 60 / interval_mins
+intervals_per_day <- 24 * intervals_per_h
+
 pq_path <- file.path(data_dir, "10-energy-merged.parquet")
 df <- read_parquet(pq_path)
 
 daily <- df |> 
   summarise(
-    energy_mwh = sum(energy_mwh),
-    energy_mwh_per_capita = sum(energy_mwh_per_capita),
-    co2 = sum(co2),
     co2_per_capita = sum(co2_per_capita),
-    # midday co2 was already summed over a few hours
-    # don't sum again. Then it will be (tonnes co2)^2
-    co2_midday_per_capita = mean(co2_midday_per_capita),
+    
+    energy_mwh_per_capita = sum(energy_mwh_per_capita),
+    energy_mwh_adj_rooftop_solar_per_capita = sum(energy_mwh_adj_rooftop_solar_per_capita),
+    
+    energy_mwh_midday_per_capita = intervals_per_day * mean(energy_mwh_midday_per_capita),
+    energy_mwh_adj_rooftop_solar_midday_per_capita = intervals_per_day * mean(energy_mwh_adj_rooftop_solar_midday_per_capita),
+    co2_midday_per_capita = intervals_per_day * mean(co2_midday_per_capita),
+    
     total_renewables_today=mean(total_renewables_today),
     population=mean(population),
     temperature=mean(temperature),
@@ -48,13 +63,15 @@ daily |> write_csv(file.path(data_dir, "12-energy-daily.csv"))
 
 hourly <- df |> mutate(hr = hour(interval_start)) |>
   summarise(
-    energy_mwh = sum(energy_mwh),
-    energy_mwh_per_capita = sum(energy_mwh_per_capita),
-    co2 = sum(co2),
     co2_per_capita = sum(co2_per_capita),
-    # midday co2 was already summed over a few hours
-    # don't sum again. Then it will be (tonnes co2)^2
-    co2_midday_per_capita = sum(co2_midday_per_capita),
+    
+    energy_mwh_per_capita = sum(energy_mwh_per_capita),
+    energy_mwh_adj_rooftop_solar_per_capita = sum(energy_mwh_adj_rooftop_solar_per_capita),
+    
+    energy_mwh_midday_per_capita = intervals_per_h * mean(energy_mwh_midday_per_capita),
+    energy_mwh_adj_rooftop_solar_midday_per_capita = intervals_per_h * mean(energy_mwh_adj_rooftop_solar_midday_per_capita),
+    co2_midday_per_capita = intervals_per_h * mean(co2_midday_per_capita),
+    
     total_renewables_today=mean(total_renewables_today),
     population=mean(population),
     temperature=mean(temperature),

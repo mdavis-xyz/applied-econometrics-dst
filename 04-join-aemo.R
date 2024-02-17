@@ -102,7 +102,7 @@ Sys.setenv(TZ='UTC')
 min_per_interval <- 5
 min_per_hour <- 60
 h_per_interval <- min_per_interval / min_per_hour
-
+min_per_half_hour <- min_per_hour / 2
 # Load the parquet files --------------------------------------------------
 
 data_dir <- '/home/matthew/data'
@@ -198,8 +198,11 @@ rooftop <- rooftop |>
   select(REGIONID, INTERVAL_DATETIME, POWER) |>
   rename(
     regionid = REGIONID,
-    rooftop_solar_power = POWER,
-    interval_end = INTERVAL_DATETIME
+    rooftop_solar_power_mw = POWER,
+    hh_end = INTERVAL_DATETIME
+  ) |>
+  mutate(
+    hh_start = hh_end - minutes(min_per_half_hour),
   ) |>
   # this table breaks down QLD1 into
   # QLDC, QLDN (queensland north, centre, south)
@@ -213,23 +216,23 @@ rooftop <- rooftop |>
 rooftop |>
   mutate(
     # off by 5 minutes, but close enough for a graph we're gonna eye-ball
-    h = hour(interval_end)
+    h = hour(hh_end)
   ) |>
   summarise(
-    rooftop_solar_power = max(rooftop_solar_power, na.rm = TRUE),
+    rooftop_solar_power_mw = max(rooftop_solar_power_mw, na.rm = TRUE),
     .by=c(regionid, h)
   ) |>
-  ggplot(aes(x=h, y=rooftop_solar_power, color=regionid)) +
+  ggplot(aes(x=h, y=rooftop_solar_power_mw, color=regionid)) +
   geom_line()
 
 # now calculate mathematically
 # so we can test this with an assertion
 night_solar_frac <- rooftop |>
   mutate(
-    during_daylight=if_else(between(hour(interval_end), 4, 21), 'day', 'night'),
+    during_daylight=if_else(between(hour(hh_end), 4, 21), 'day', 'night'),
   ) |>
   summarise(
-    solar=mean(rooftop_solar_power, na.rm=TRUE),
+    solar=mean(rooftop_solar_power_mw, na.rm=TRUE),
     .by=c(during_daylight, regionid)
   ) |>
   pivot_wider(names_from=during_daylight, values_from=solar) |>
@@ -245,7 +248,7 @@ bad_dts <- dispatchload |>
   select(SETTLEMENTDATE) |> 
   distinct() |> 
   collect() |> 
-  mutate(interval_start=SETTLEMENTDATE - minutes(5)) |> 
+  mutate(interval_start=SETTLEMENTDATE - minutes(min_per_interval)) |> 
   filter(is.na(interval_start))
 stopifnot(! any(bad_dts))
 
@@ -595,7 +598,7 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
 
 df <- df |>
   mutate(
-    interval_start = interval_end - minutes(5),
+    interval_start = interval_end - minutes(min_per_interval),
     d = date(interval_start)
   ) |>
   left_join(renewables, by=c('regionid', 'd'))
@@ -604,6 +607,27 @@ stopifnot(! df |> pull(interval_end) |> is.na() |> any())
 stopifnot(! df |> pull(interval_end) |> date() |> is.na() |> any())
 stopifnot(! df |> pull(interval_start) |> is.na() |> any())
 
+
+# add rooftop solar -------------------------------------------------------
+# note that rooftop solar is half hour
+# df is 5 minute
+# use zero-order interpolation (copy-paste the same value 6 times)
+df <- df |> left_join(rooftop,
+                      by = join_by(interval_end <= hh_end,
+                                   interval_start >= hh_start,
+                                   regionid == regionid)) |>
+  mutate(rooftop_solar_energy_mwh = rooftop_solar_power_mw * h_per_interval)
+            
+# add rooftop solar to load
+# e.g. if 1GW of load, and 0.2GW of solar
+# AEMO reports that as 0.8GW of load
+# (because they can't 'see' the rooftop solar)
+# but really it's 1GW
+# here we undo that bias
+df <- df |>
+  mutate(
+    energy_mwh_adj_rooftop_solar = energy_mwh + rooftop_solar_energy_mwh
+  )
 
 # midday emissions --------------------------------------------------------
 # as per kellog and wolf, grab 12:00-14:30 values (local time)
@@ -622,7 +646,13 @@ midday_co2 <- df |>
   filter(hour(interval_start_local) >= 12) |>
   filter(hour(interval_end_local) < 14 | (hour(interval_end_local) == 14 & minute(interval_end_local) <= 30)) |>
   summarise(
-    co2_midday=sum(co2),
+    # this is the co2 tonnes per 5-minute interval around midday
+    co2_midday=mean(co2),
+    # this is the average energy generated in a 5 minute period
+    # across the many 'midday'ish periods
+    energy_mwh_midday=mean(energy_mwh),
+    energy_mwh_before_import_export_midday=mean(energy_mwh_before_import_export),
+    energy_mwh_adj_rooftop_solar_midday=mean(energy_mwh_adj_rooftop_solar),
     .by=c(regionid, d)
   )
 df <- df |> left_join(midday_co2)

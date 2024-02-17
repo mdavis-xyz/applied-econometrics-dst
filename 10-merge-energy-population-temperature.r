@@ -45,6 +45,19 @@ energy_n <- energy_n |>
     co2_per_capita = co2 / population,
     co2_midday_per_capita = co2_midday / population,
     energy_mwh_per_capita = energy_mwh / population,
+    energy_mwh_midday_per_capita = energy_mwh_midday / population,
+    energy_mwh_adj_rooftop_solar_per_capita = energy_mwh_adj_rooftop_solar / population,
+    energy_mwh_adj_rooftop_solar_midday_per_capita = energy_mwh_adj_rooftop_solar_midday / population,
+  ) |>
+  # now drop the stuff that's not per capita
+  # to save space
+  select(
+    -co2,
+    -co2_midday,
+    -energy_mwh,
+    -energy_mwh_midday,
+    -energy_mwh_adj_rooftop_solar,
+    -energy_mwh_adj_rooftop_solar_midday,
   )
 
 # check whether our sparse population data
@@ -61,6 +74,6 @@ energy_n |>
 
 #Save
 write_csv(energy_n, file = file.path(data_dir, "10-energy-merged.csv"))
-#write_csv(energy_n, file = file.path(data_dir, "10-energy-merged.csv.gz"))
+write_csv(energy_n, file = file.path(data_dir, "10-energy-merged.csv.gz"))
 write_parquet(energy_n, sink = file.path(data_dir, "10-energy-merged.parquet"))
 print("Done")
