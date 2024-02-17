@@ -6,7 +6,7 @@ data_dir <- "/home/matthew/data"
 Sys.setenv(TZ='UTC') # see README.md
 
 # data has this frequency
-INTERVAL_LENGTH = minutes(5)
+INTERVAL_LENGTH <- minutes(5)
 
 file_path_parquet <- file.path(data_dir, "04-joined.parquet")
 file_path_csv <- file.path(data_dir, "09-temp-pop-merged.csv")
@@ -42,8 +42,8 @@ energy_n <- sunlight |>
 # now do per capita stuff
 energy_n <- energy_n |>
   mutate(
-    co2_per_capita = co2 / population,
-    co2_midday_per_capita = co2_midday / population,
+    co2_t_per_capita = co2_t / population,
+    co2_t_midday_per_capita = co2_t_midday / population,
     energy_mwh_per_capita = energy_mwh / population,
     energy_mwh_midday_per_capita = energy_mwh_midday / population,
     energy_mwh_adj_rooftop_solar_per_capita = energy_mwh_adj_rooftop_solar / population,
@@ -52,8 +52,8 @@ energy_n <- energy_n |>
   # now drop the stuff that's not per capita
   # to save space
   select(
-    -co2,
-    -co2_midday,
+    -co2_t,
+    -co2_t_midday,
     -energy_mwh,
     -energy_mwh_midday,
     -energy_mwh_adj_rooftop_solar,

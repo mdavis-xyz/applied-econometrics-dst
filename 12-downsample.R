@@ -21,21 +21,30 @@ interval_mins <- 5 # minutes
 intervals_per_h <- 60 / interval_mins
 intervals_per_day <- 24 * intervals_per_h
 
+# kilograms per tonne
+kg_per_t <- 1000
+
+kwh_per_mwh <- 1000
+mwh_per_gwh <- 1000
+gwh_per_twh <- 1000
+mwh_per_twh <- mwh_per_gwh * gwh_per_twh
+
 pq_path <- file.path(data_dir, "10-energy-merged.parquet")
 df <- read_parquet(pq_path)
 
 daily <- df |> 
   summarise(
-    co2_per_capita = sum(co2_per_capita),
+    co2_kg_per_capita = sum(co2_t_per_capita) * kg_per_t,
     
-    energy_mwh_per_capita = sum(energy_mwh_per_capita),
-    energy_mwh_adj_rooftop_solar_per_capita = sum(energy_mwh_adj_rooftop_solar_per_capita),
+    energy_kwh_per_capita = kwh_per_mwh * sum(energy_mwh_per_capita),
+    energy_kwh_adj_rooftop_solar_per_capita = sum(energy_mwh_adj_rooftop_solar_per_capita) * kwh_per_mwh,
     
-    energy_mwh_midday_per_capita = intervals_per_day * mean(energy_mwh_midday_per_capita),
-    energy_mwh_adj_rooftop_solar_midday_per_capita = intervals_per_day * mean(energy_mwh_adj_rooftop_solar_midday_per_capita),
-    co2_midday_per_capita = intervals_per_day * mean(co2_midday_per_capita),
+    energy_kwh_midday_per_capita = intervals_per_day * mean(energy_mwh_midday_per_capita) * kwh_per_mwh,
+    energy_kwh_adj_rooftop_solar_midday_per_capita = intervals_per_day * mean(energy_mwh_adj_rooftop_solar_midday_per_capita) * kwh_per_mwh,
+    co2_kg_midday_per_capita = intervals_per_day * mean(co2_t_midday_per_capita) * kg_per_t,
     
-    total_renewables_today=mean(total_renewables_today),
+    # should be the same values all day
+    total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,
     population=mean(population),
     temperature=mean(temperature),
     solar_exposure=mean(solar_exposure),
@@ -63,16 +72,17 @@ daily |> write_csv(file.path(data_dir, "12-energy-daily.csv"))
 
 hourly <- df |> mutate(hr = hour(interval_start)) |>
   summarise(
-    co2_per_capita = sum(co2_per_capita),
+    co2_kg_per_capita = sum(co2_t_per_capita) * kg_per_t,
     
-    energy_mwh_per_capita = sum(energy_mwh_per_capita),
-    energy_mwh_adj_rooftop_solar_per_capita = sum(energy_mwh_adj_rooftop_solar_per_capita),
+    energy_kwh_per_capita = sum(energy_mwh_per_capita) * kwh_per_mwh,
+    energy_kwh_adj_rooftop_solar_per_capita = sum(energy_mwh_adj_rooftop_solar_per_capita) * kwh_per_mwh,
     
-    energy_mwh_midday_per_capita = intervals_per_h * mean(energy_mwh_midday_per_capita),
-    energy_mwh_adj_rooftop_solar_midday_per_capita = intervals_per_h * mean(energy_mwh_adj_rooftop_solar_midday_per_capita),
-    co2_midday_per_capita = intervals_per_h * mean(co2_midday_per_capita),
+    energy_kwh_midday_per_capita = intervals_per_h * mean(energy_mwh_midday_per_capita) * kwh_per_mwh,
+    energy_kwh_adj_rooftop_solar_midday_per_capita = intervals_per_h * mean(energy_mwh_adj_rooftop_solar_midday_per_capita) * kwh_per_mwh,
+    co2_kg_midday_per_capita = intervals_per_h * mean(co2_t_midday_per_capita) * kg_per_t,
     
-    total_renewables_today=mean(total_renewables_today),
+    # should be the same values all day
+    total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,
     population=mean(population),
     temperature=mean(temperature),
     solar_exposure=mean(solar_exposure),

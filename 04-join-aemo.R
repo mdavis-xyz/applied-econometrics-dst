@@ -103,6 +103,8 @@ min_per_interval <- 5
 min_per_hour <- 60
 h_per_interval <- min_per_interval / min_per_hour
 min_per_half_hour <- min_per_hour / 2
+h_per_day <- 24
+
 # Load the parquet files --------------------------------------------------
 
 data_dir <- '/home/matthew/data'
@@ -393,11 +395,11 @@ region_power_emissions <- dispatchload |>
   inner_join(duid_static, by='DUID') |>
   mutate(
     energy_mwh = if_else(POWER > 0, POWER, 0) * h_per_interval,
-    co2 = energy_mwh * CO2E_EMISSIONS_FACTOR
+    co2_t = energy_mwh * CO2E_EMISSIONS_FACTOR
   ) |>
   summarize(
     energy_mwh = sum(energy_mwh, na.rm = TRUE),
-    co2 = sum(co2, na.rm = TRUE),
+    co2_t = sum(co2_t, na.rm = TRUE),
     .by=c(REGIONID, SETTLEMENTDATE),
   ) |>
   rename(
@@ -460,12 +462,12 @@ interconnectors <- left_join(tradinginterconnect, interconnector) |>
 interconnectors <- region_power_emissions |>
   rename(
     src_region_energy_mwh = energy_mwh,
-    src_region_co2 = co2,
+    src_region_co2_t = co2_t,
     REGIONFROM = regionid
   ) |>
   right_join(interconnectors) |>
   mutate(
-    co2 = energy_mwh * (src_region_co2 / src_region_energy_mwh)
+    co2_t = energy_mwh * (src_region_co2_t / src_region_energy_mwh)
   )
 
 # now we want to concatenate 3 dataframes:
@@ -480,7 +482,7 @@ export <- interconnectors |>
   mutate(
     # negate these
     # to reassign to the destination region
-    co2 = -co2,
+    co2_t = -co2_t,
     energy_mwh = -energy_mwh,
     data_source = 'export',
   )
@@ -493,23 +495,23 @@ import <- interconnectors |>
 region_power_emissions$data_source <- 'local generation'
 
 stopifnot(! any(is.na(import$energy_mwh >= 0)))
-stopifnot(! any(is.na(import$co2 >= 0)))
+stopifnot(! any(is.na(import$co2_t >= 0)))
 stopifnot(! any(is.na(export$energy_mwh >= 0)))
-stopifnot(! any(is.na(export$co2 >= 0)))
+stopifnot(! any(is.na(export$co2_t >= 0)))
 stopifnot(! any(is.na(region_power_emissions$energy_mwh >= 0)))
-stopifnot(! any(is.na(region_power_emissions$co2 >= 0)))
+stopifnot(! any(is.na(region_power_emissions$co2_t >= 0)))
   
 # aggressive memory management
 # because the next step uses lots of memory
 gc() 
 
 df <- rbind(
-    import |> select(co2, energy_mwh, regionid, interval_end), 
-    export |> select(co2, energy_mwh, regionid, interval_end), 
-    region_power_emissions |> select(co2, energy_mwh, regionid, interval_end)
+    import |> select(co2_t, energy_mwh, regionid, interval_end), 
+    export |> select(co2_t, energy_mwh, regionid, interval_end), 
+    region_power_emissions |> select(co2_t, energy_mwh, regionid, interval_end)
   ) |>
   summarise(
-    co2 = sum(co2),
+    co2_t = sum(co2_t),
     energy_mwh = sum(energy_mwh),
     .by=c(regionid, interval_end)
   )
@@ -517,7 +519,7 @@ gc()
 
 
 stopifnot(all(df$energy_mwh >= 0))
-stopifnot(all(df$co2 >= 0))
+stopifnot(all(df$co2_t >= 0))
 
 
 # add back in the data from before adjusting for import/export
@@ -526,11 +528,11 @@ stopifnot(all(df$co2 >= 0))
 df <- region_power_emissions |>
   select(-data_source) |>
   rename(
-    co2_before_import_export = co2,
+    co2_t_before_import_export = co2_t,
     energy_mwh_before_import_export = energy_mwh
   ) |>
   left_join(df) |>
-  relocate(co2_before_import_export, energy_mwh_before_import_export, .after = last_col())
+  relocate(co2_t_before_import_export, energy_mwh_before_import_export, .after = last_col())
 
 region_power_emissions
 
@@ -582,16 +584,14 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
   rename(
     interval_end = SETTLEMENTDATE,
     regionid = REGIONID,
-    total_renewables = TOTALINTERMITTENTGENERATION,
+    total_renewables_mw = TOTALINTERMITTENTGENERATION,
   ) |>
   mutate(
     d = date(interval_end),
     
-    # convert units from MW to GW
-    total_renewables = total_renewables / 1000
   ) |>
   summarise(
-    total_renewables_today = sum(total_renewables),
+    total_renewables_today_mwh = sum(total_renewables_mw) * h_per_day,
     .by = c(regionid, d)
   ) |>
   collect()
@@ -642,12 +642,12 @@ df <- df |>
     interval_end_local = interval_end + local_time_shift,
     interval_start_local = interval_start + local_time_shift,
   )
-midday_co2 <- df |>
+midday_co2_t <- df |>
   filter(hour(interval_start_local) >= 12) |>
   filter(hour(interval_end_local) < 14 | (hour(interval_end_local) == 14 & minute(interval_end_local) <= 30)) |>
   summarise(
     # this is the co2 tonnes per 5-minute interval around midday
-    co2_midday=mean(co2),
+    co2_t_midday=mean(co2_t),
     # this is the average energy generated in a 5 minute period
     # across the many 'midday'ish periods
     energy_mwh_midday=mean(energy_mwh),
@@ -655,7 +655,7 @@ midday_co2 <- df |>
     energy_mwh_adj_rooftop_solar_midday=mean(energy_mwh_adj_rooftop_solar),
     .by=c(regionid, d)
   )
-df <- df |> left_join(midday_co2)
+df <- df |> left_join(midday_co2_t)
     
 
 
