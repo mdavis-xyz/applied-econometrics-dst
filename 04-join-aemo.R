@@ -444,7 +444,7 @@ interconnectors <- left_join(tradinginterconnect, interconnector) |>
     REGIONFROM = ifelse(REGIONFROM == "SNOWY1", NA, REGIONFROM),
   ) |>
   filter(
-    # remove the intereconnector from NSW to SNOWY
+    # remove the interconnector from NSW to SNOWY
     # Since we're treating SNOWY as part of NSW
     REGIONFROM != REGIONTO
   ) |>
@@ -472,7 +472,7 @@ interconnectors <- region_power_emissions |>
 
 # now we want to concatenate 3 dataframes:
 # interconnectors, for the source region (export)
-# interconnectors, for the desination region (import)
+# interconnectors, for the destination region (import)
 # region_power_emissions, for what's not imported/exported
 
 export <- interconnectors |>

@@ -9,9 +9,6 @@
 # Thus we can't deduplicate it directly.
 # So we partition by DUID, to get 500 smaller files,
 # and deduplicate each chunk.
-# and we filter dates not close to DST transitions.
-# (Initially I wanted to do this much later in the pipeline,
-#  but this is necessary to cull the data to be more manageable.)
 # This still uses up almost all the memory on my laptop
 # (16GB + some swap)
 # So shut down other apps when running this.
@@ -44,6 +41,7 @@ data_dir <- '/home/matthew/data/'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
 intermediate_dir <-  file.path(data_dir, '03-A-partitioned-duplicated')
+intermediate_dir_2 <-  file.path(data_dir, '03-A-partitioned-by-month')
 dest_dir <- file.path(data_dir, '03-A-deduplicated')
 dst_transitions_path <- 'data/03-dst-dates.csv'
 
@@ -62,25 +60,12 @@ duids <- open_dataset(source_dispatchload_dir) |>
   
 gc(full = TRUE) # garbage collection
 
-# cull everything except this many days from DST transitions
-window_size <- 4*7
-
-dst_transitions <- read_csv(dst_transitions_path) |>
-  rename(
-    dst_date = date,
-    dst_direction = direction) |>
-  mutate(
-    dst_direction = factor(dst_direction),
-    dst_window_start = dst_date - window_size,
-    dst_window_end = dst_date + window_size,
-  )
-
 # deliberately using a for loop, not a map call
 # to keep memory usage low (otherwise we'll fill up all memory)
 for (duid in duids) {
-  cat(paste("Loading", duid, "\n"))
+  cat(paste("Extracting", duid, "\n"))
   
-  temp_path <- file.path(intermediate_dir, 'DISPATCHLOAD', URLencode(duid, reserved=TRUE))
+  temp_path <- file.path(intermediate_dir, paste0('DISPATCHLOAD/DUID=', URLencode(duid, reserved=TRUE)))
   gc(full = TRUE) # garbage collection
 
   # read the original whole file
@@ -102,7 +87,7 @@ for (duid in duids) {
 
 for (duid in duids) {
   cat(paste("Rewriting", duid, "\n"))
-  temp_path <- file.path(intermediate_dir, 'DISPATCHLOAD', URLencode(duid, reserved=TRUE))
+  temp_path <- file.path(intermediate_dir, paste0('DISPATCHLOAD/DUID=', URLencode(duid, reserved=TRUE)))
   # read what we just wrote
   # all into memory in one go
   # then deduplicate
@@ -111,18 +96,7 @@ for (duid in duids) {
     arrange(SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
     # we can use distinct now it's a normal dataframe
     distinct(SETTLEMENTDATE, .keep_all = TRUE) |>
-    # join with DST transition times
-    left_join(dst_transitions, 
-              by=join_by(
-                # SETTLEMENT date is the end of the interval
-                # so midnight is for the previous day
-                # When comparing datetime to date,
-                # R treats the date as midnight at the start of that day
-                SETTLEMENTDATE > dst_window_start,
-                SETTLEMENTDATE <= dst_window_end
-              )
-    ) |>
-    filter(! is.na(dst_direction)) |>
+    
     mutate(DUID = duid) |>
     
     # change INITIALMW and TOTALCLEARED into POWER
@@ -132,9 +106,7 @@ for (duid in duids) {
     ) |>
     
     # now drop everything we don't need.
-    # including DST information.
     # This is to keep this data small.
-    # we'll add back DST information later.
     select(DUID, SETTLEMENTDATE, POWER) |>
     
     write_dataset(
@@ -144,6 +116,15 @@ for (duid in duids) {
     )
   gc(full = TRUE) # garbage collection
 }
+
+
+open_dataset(file.path(dest_dir, 'DISPATCHLOAD')) |>
+  write_dataset(
+    temp_dir,
+    partitioning=c('DUID'),
+    write_statistics=FALSE,
+    max_rows_per_group=1024*1024
+  )
 
 dir.create(dest_dir, recursive = TRUE)
 
@@ -255,3 +236,69 @@ open_dataset(temp_dir) |>
                 partitioning = c('REGIONID'))
 
 open_dataset(file.path(dest_dir, 'DISPATCHREGIONSUM')) |> head() |> collect() |> View()
+
+# this one is large
+# but hopefully if we only select a few columns
+# it will be small
+temp_dir <- file.path(intermediate_dir, 'DISPATCHREGIONSUM')
+open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
+  select(SETTLEMENTDATE, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+  filter(INTERVENTION == 0) |>
+  select(-INTERVENTION) |>
+  mutate(
+    Y = year(SETTLEMENTDATE)
+  ) |>
+  write_dataset(
+    temp_dir,
+    partitioning=c('REGIONID', 'Y')
+  )
+
+for (file_path in list.files(temp_dir, recursive = TRUE, full.names = TRUE)) {
+  df <- read_parquet(file_path) |>
+    arrange(DISPATCHINTERVAL, RUNNO, SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+    select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+    distinct(DISPATCHINTERVAL, RUNNO, SETTLEMENTDATE, .keep_all = TRUE) |>
+    select(-DISPATCHINTERVAL, -RUNNO)
+    
+  write_parquet(df, file_path)
+}
+
+open_dataset(temp_dir) |>
+  arrange(REGIONID, Y) |>
+  select(-Y) |>
+  write_dataset(file.path(dest_dir, 'DISPATCHREGIONSUM'),
+                partitioning = c('REGIONID'))
+
+open_dataset(file.path(dest_dir, 'DISPATCHREGIONSUM')) |> head() |> collect() |> View()
+
+
+# DISPATCHLOAD 2 ----------------------------------------------------------
+
+# this one is large
+# but hopefully if we only select a few columns
+# it will be small
+temp_dir <- file.path(intermediate_dir, 'DISPATCHLOAD')
+temp_dir
+open_dataset(file.path(dest_dir, 'DISPATCHLOAD')) |>
+  select(DUID, INTERVENTION, RUNNO, SETTLEMENTDATE, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+  filter(INTERVENTION == 0) |>
+  select(-INTERVENTION) |>
+  write_dataset(
+    temp_dir,
+    partitioning=c('DUID'),
+    write_statistics=FALSE,
+    max_rows_per_group=1024*1024
+  )
+
+for (file_path in list.files(temp_dir, recursive = TRUE, full.names = TRUE)) {
+  df <- read_parquet(file_path) |>
+    arrange(RUNNO, SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+    select(-SCHEMA_VERSION, -TOP_TIMESTAMP) |>
+    distinct(RUNNO, SETTLEMENTDATE, .keep_all = TRUE) |>
+    select(-RUNNO)
+  
+  write_parquet(df, file_path)
+}
+
+open_dataset(file.path(dest_dir, 'DISPATCHLOAD')) |> head() |> collect() |> View()
+
