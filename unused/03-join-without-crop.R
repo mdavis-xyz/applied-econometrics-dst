@@ -41,12 +41,12 @@ Sys.setenv(TZ='UTC')
 data_dir <- '/home/matthew/data/'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
-partitioned_dir <- file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-by-month-raw')
+dispatchload_partitioned_dir <- file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-by-month-raw')
 month_dir <-  file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-by-region-month')
 duid_standing_path <- file.path(data_dir, '03-duid-standing.parquet')
 import_export_path <- file.path(data_dir, '03-import-export.parquet')
 interconnector_power_path <- file.path(data_dir, '03-interconnector-power.parquet')
-dst_transitions_path <- 'data/03-dst-dates.csv'
+dst_transitions_path <- 'data/02-dst-dates.csv'
 dest_path <- file.path(data_dir, '03-joined-all.parquet')
 
 # 5 minute intervals
@@ -54,6 +54,9 @@ h_per_interval <- 1/12
 
 # minutes per half hour
 min_per_hh <- 30
+
+# hours per day
+h_per_day <- 24
 
 # reference tables --------------------------------------------------------
 
@@ -111,17 +114,17 @@ df <- open_dataset(file.path(source_dir, 'DISPATCHLOAD')) |>
     SETTLEMENTDATE_MONTH=month(SETTLEMENTDATE),
     SETTLEMENTDATE_YEAR=year(SETTLEMENTDATE),
   ) |>
-  write_dataset(partitioned_dir, 
+  write_dataset(dispatchload_partitioned_dir, 
                 partitioning=c("SETTLEMENTDATE_YEAR", "SETTLEMENTDATE_MONTH"),
                 existing_data_behavior="delete_matching")
 
-for (y in 2009:2024){
+for (y in 2009:2023){
   for (m in 1:12){
     print(paste(y, m))
     start_date <- make_date(year=y, month=m)
     end_date <- make_date(year=y, month=m) + months(1)
     # open the DISPATCHLOAD dataset
-    df <- open_dataset(partitioned_dir) |>
+    df <- open_dataset(dispatchload_partitioned_dir) |>
       filter(SETTLEMENTDATE_MONTH == m, SETTLEMENTDATE_YEAR == y) |>
       collect()
     if (nrow(df) == 0){
@@ -272,6 +275,11 @@ df <- rbind(
     ENERGY_MWH = sum(ENERGY_MWH),
     .by=c(REGIONID, HH_END)
   )
+
+# save space
+rm(import)
+rm(export)
+rm(region_power_emissions)
 gc()
 
 # add rooftop solar -------------------------------------------------------
@@ -356,7 +364,7 @@ dst_transitions <- read_csv(dst_transitions_path) |>
 # (plus extra)
 # and the info for the nearest DST transition
 # to make joins later
-dst_dates_all <- tibble(d=seq(min(dst_transitions$dst_date), max(dst_transitions$dst_date |> date()), by="1 day")) |>
+dst_dates_all <- tibble(d=seq(min(dst_transitions$dst_date), max(dst_transitions$dst_date), by="1 day")) |>
   # now we do a 'nearest' join
   # join on just one matching row
   left_join(dst_transitions |> mutate(d=dst_date)) |>
@@ -388,7 +396,7 @@ dst_dates_all <- tibble(d=seq(min(dst_transitions$dst_date), max(dst_transitions
     dst_start = dst_direction == 'start',
     days_into_dst = if_else(dst_start, days_after_transition, days_before_transition),
   ) |>
-  filter(year(d) >= 2009)
+  filter(year(d) >= 2008)
   
 # now join DST info with main dataframe
 
@@ -399,8 +407,6 @@ df <- df |>
   ) |>
   left_join(dst_dates_all) |>
   mutate(
-    # TODO: do exact time of day the transition happens (2am)
-    # TODO: manually check that the join is not off by 1 day
     after_transition = HH_END > dst_date,
     
     dst_now_anywhere = if_else(dst_direction == 'start', after_transition, !after_transition),
@@ -408,6 +414,57 @@ df <- df |>
     dst_now_here = dst_here_anytime & dst_now_anywhere,
   )
 
+no_dst_info <- df |> filter(is.na(dst_now_here))
+stopifnot((no_dst_info |> nrow()) == 0)
+
+# In our time period, there's one particular day
+# that's 94 days into DST, and one that's -94
+# because the duration of DST (or not) differs slightly each year
+# mark this as an outlier.
+# we'll do the regressions with and without it later.
+df$days_into_dst_extreme_outlier <- df$days_into_dst %in% c(min(df$days_into_dst), max(df$days_into_dst))
+
+samples_per_days_into_dst <- df |> summarise(n=n(), .by=days_into_dst)
+typical_sample_count <- samples_per_days_into_dst |> pull(n) |> abs() |> median()
+outlier_days <- samples_per_days_into_dst |> filter(abs(n) < typical_sample_count) |> pull(days_into_dst)
+df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
+
+# add renewables ----------------------------------------------------------
+
+renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
+  # deduplicate
+  select(INTERVENTION, REGIONID, SETTLEMENTDATE, LASTCHANGED, TOTALINTERMITTENTGENERATION, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+  filter(INTERVENTION == 0) |>
+  select(-INTERVENTION) |>
+  arrange(SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
+  select(-SCHEMA_VERSION, -TOP_TIMESTAMP, -LASTCHANGED) |>
+  collect() |>
+  distinct(SETTLEMENTDATE, REGIONID, .keep_all = TRUE) |>
+  # now aggregate to daily level
+  # (because 5-minute data is a side effect of treatment)
+  mutate(
+    # SETTLEMENTDATE is actually a 5 minute datetime
+    # despite the name
+    d=date(SETTLEMENTDATE)
+  ) |>
+  summarise(
+    # TOTALINTERMITTENTGENERATION is megawatts (power)
+    total_renewables_today_mwh = mean(TOTALINTERMITTENTGENERATION, na.rm = TRUE) * h_per_day,
+    .by=c(REGIONID, d)
+  ) |>
+  arrange(d, REGIONID)
+    
+df <- left_join(df, renewables)
+
+# df starts with the last hh period before midnight
+# renewables starts with the first period after midnight
+first_hh_end <- min(df$HH_END)
+stopifnot(hour(first_hh_end) == 0)
+stopifnot(minute(first_hh_end) == 0)
+df <- df |> filter(HH_END != first_hh_end)
+
+# save space
+rm(renewables)
 
 # midday emissions --------------------------------------------------------
 # as per kellog and wolf, grab 12:00-14:30 values (local time)
@@ -444,4 +501,4 @@ df <- df |> left_join(midday_co2_t)
 df <- df |> clean_names(case='snake')
 
 df |> write_parquet(dest_path)
-
+dest_path

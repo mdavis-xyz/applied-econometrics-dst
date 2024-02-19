@@ -8,7 +8,7 @@ Sys.setenv(TZ='UTC') # see README.md
 # data has this frequency
 INTERVAL_LENGTH <- minutes(5)
 
-file_path_parquet <- file.path(data_dir, "04-joined.parquet")
+file_path_parquet <- file.path(data_dir, "03-joined-all.parquet")
 file_path_csv <- file.path(data_dir, "09-temp-pop-merged.csv")
 
 energy <- read_parquet(file_path_parquet)
@@ -17,12 +17,12 @@ sunlight <- read_csv(file.path(data_dir, '02-sun-hours.csv'))
 
 energy <- energy |>
   mutate(
-    interval_start = interval_end - INTERVAL_LENGTH,
     dst_start = dst_direction == 'start',
     days_before_transition = as.integer(dst_date - d),
     days_after_transition = as.integer(d - dst_date),
     days_into_dst = if_else(dst_start, days_after_transition, days_before_transition),
-    weekend = lubridate::wday(d) %in% c(1,7),
+    day_of_week=as.numeric(lubridate::wday(d)),
+    weekend = day_of_week %in% c(1,7),
     dst_transition_id_and_region = paste(dst_transition_id, regionid, sep='-')
   ) |>
   rename(Date=d)
@@ -60,17 +60,10 @@ energy_n <- energy_n |>
     -energy_mwh_adj_rooftop_solar_midday,
   )
 
-# check whether our sparse population data
-# registers a change in population during our 8 week events
-energy_n |>
-  summarise(
-    n = n_distinct(population),
-    .by=c(regionid, dst_transition_id)
-  ) |>
-  filter(n > 1) |>
-  head()
-# answer is no. So we have no discontinuous steps 
-# in population during our transitions. Phew
+# our weather data, AEMO data etc
+# has slightly different endings
+# choose a round date to end on
+energy_n <- energy_n |> filter(year(hh_start) < 2024)
 
 #Save
 write_csv(energy_n, file = file.path(data_dir, "10-energy-merged.csv"))

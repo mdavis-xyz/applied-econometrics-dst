@@ -38,7 +38,6 @@
 #   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_254.htm#1
 #   This contains emissions intensity per physical unit (without dates)
 #   relevant columns: GENSETID, CO2E_EMISSIONS_FACTOR, CO2E_ENERGY_SOURCE
-#   TODO: figure out what units CO2E_EMISSIONS_FACTOR is in
 # dualloc
 #   we use this to map GENSETID to DUID
 #   remember that there can be more than one GENSETID per DUID
