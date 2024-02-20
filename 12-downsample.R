@@ -28,6 +28,7 @@ kwh_per_mwh <- 1000
 mwh_per_gwh <- 1000
 gwh_per_twh <- 1000
 mwh_per_twh <- mwh_per_gwh * gwh_per_twh
+g_per_kg <- 1000
 
 pq_path <- file.path(data_dir, "10-energy-merged.parquet")
 df <- read_parquet(pq_path)
@@ -51,6 +52,7 @@ daily <- df |>
     energy_kwh_midday_per_capita = hh_per_day * mean(energy_mwh_midday_per_capita) * kwh_per_mwh,
     energy_kwh_adj_rooftop_solar_midday_per_capita = hh_per_day * mean(energy_mwh_adj_rooftop_solar_midday_per_capita) * kwh_per_mwh,
     co2_kg_midday_per_capita = hh_per_day * mean(co2_t_midday_per_capita) * kg_per_t,
+    co2_kg_per_capita_vs_midday = co2_kg_per_capita - co2_kg_midday_per_capita,
     
     # should be the same values all day
     total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,
@@ -92,6 +94,7 @@ hourly <- df |> mutate(hr = hour(hh_start)) |>
     energy_kwh_midday_per_capita = hh_per_h * mean(energy_mwh_midday_per_capita) * kwh_per_mwh,
     energy_kwh_adj_rooftop_solar_midday_per_capita = hh_per_h * mean(energy_mwh_adj_rooftop_solar_midday_per_capita) * kwh_per_mwh,
     co2_kg_midday_per_capita = hh_per_h * mean(co2_t_midday_per_capita) * kg_per_t,
+    co2_g_per_capita_vs_midday = co2_kg_per_capita - co2_kg_midday_per_capita * g_per_kg,
     
     # should be the same values all day
     total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,

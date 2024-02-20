@@ -63,7 +63,7 @@ ggplot() +
     x = "Days into DST",
     y = "CO2 per capita diff normalised",
     title = "DD prior trend graph",
-    subtitle = "CO2 per capita minus midday CO2 per capita,\nde-meaned by region, de-meaned by day of week\nWinter on left, summer on right",
+    subtitle = "CO2 per capita minus midday CO2 per capita,\nde-meaned by region, de-meaned by day of week\nWinter on left, summer on right\n4 linear fits added for {pre vs post} x {treated x untreated} (without weighting by population)",
   ) 
 
 ggsave("plots/prior-trend-fe.png", width=12, height=8)
@@ -87,7 +87,7 @@ ggplot() +
     x = "Days into DST",
     y = "CO2 per capita diff",
     title = "DD prior trend graph",
-    subtitle = "CO2 per capita, mean per days into DST, by treated/untreated\nWinter on left, summer on right",
+    subtitle = "CO2 per capita, mean per days into DST, by treated/untreated\nWinter on left, summer on right\n4 linear fits added for {pre vs post} x {treated x untreated} (without weighting by population)",
   ) 
 
 ggsave("plots/prior-trend.png", width=12, height=8)
@@ -109,15 +109,12 @@ daily |>
     x = "Days into DST",
     y = "CO2 per capita diff normalised",
     title = "DD prior trend graph",
-    subtitle = "CO2 per capita minus midday CO2 per capita,\nde-meaned by region, de-meaned by day of week\nWinter on left, summer on right",
+    subtitle = "CO2 per capita minus midday CO2 per capita, mean per {days into DST}, by treated/untreated, weighted by population\nde-meaned by region, de-meaned by day of week (fixed effects)\nWinter on left, summer on right",
   ) 
 ggsave("plots/prior-trend-dots-fe.png", width=12, height=8)
 
 daily_raw |>
   filter(! days_into_dst_outlier) |>
-  mutate(
-    treated = (regionid != 'QLD1'),
-  ) |>
   summarise(
     co2=weighted.mean(co2_kg_per_capita, population),
     .by=c(treated, days_into_dst)
@@ -129,6 +126,45 @@ daily_raw |>
     x = "Days into DST",
     y = "CO2 per capita diff",
     title = "DD prior trend graph",
-    subtitle = "CO2 per capita, mean per days into DST, by treated/untreated\nWinter on left, summer on right",
+    subtitle = "CO2 per capita, mean per {days into DST}, by treated/untreated, weighted by population\nWinter on left, summer on right, weekly cycle visible",
   ) 
 ggsave("plots/prior-trend-dots.png", width=12, height=8)
+
+daily_raw |>
+  filter(! days_into_dst_outlier) |>
+  summarise(
+    co2=weighted.mean(co2_kg_per_capita_vs_midday, population),
+    .by=c(treated, days_into_dst)
+  ) |>
+  ggplot(aes(x=days_into_dst, y=co2, color=treated)) +
+  geom_point() +
+  geom_vline(xintercept=0) +
+  labs(
+    x = "Days into DST",
+    y = "CO2 per capita diff",
+    title = "DD prior trend graph",
+    subtitle = "CO2 per capita minus midday emissions rate, mean per {days into DST}, by treated/untreated, weighted by population",
+  ) 
+ggsave("plots/prior-trend-dots-midday-diff.png", width=12, height=8)
+
+
+daily_raw |>
+  mutate(
+    co2_kg_per_capita = co2_kg_per_capita - co2_kg_midday_per_capita
+  ) |>
+  filter(regionid %in% c('NSW1', 'QLD1')) |>
+  filter(! days_into_dst_outlier) |>
+  summarise(
+    co2=weighted.mean(co2_kg_per_capita, population),
+    .by=c(regionid, days_into_dst)
+  ) |>
+  ggplot(aes(x=days_into_dst, y=co2, color=regionid)) +
+  geom_point() +
+  geom_vline(xintercept=0) +
+  labs(
+    x = "Days into DST",
+    y = "CO2 per capita diff",
+    title = "DD prior trend graph",
+    subtitle = "CO2 per capita minus midday emissions rate, mean per {days into DST}\nonly NSW (treated) and QLD (untreated), weighted by population",
+  ) 
+ggsave("plots/prior-trend-dots-midday-diff-nsw-qld-only.png", width=12, height=8)
