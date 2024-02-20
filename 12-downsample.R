@@ -78,6 +78,7 @@ daily <- df |>
       days_into_dst_outlier,
       days_into_dst_extreme_outlier,
       day_of_week,
+      public_holiday,
       weekend
     )
   )
@@ -121,6 +122,7 @@ hourly <- df |> mutate(hr = hour(hh_start)) |>
       days_into_dst_outlier,
       days_into_dst_extreme_outlier,
       day_of_week,
+      public_holiday,
       weekend
     )
   )

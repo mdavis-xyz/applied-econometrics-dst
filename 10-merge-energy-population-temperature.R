@@ -14,6 +14,7 @@ file_path_csv <- file.path(data_dir, "09-temp-pop-merged.csv")
 energy <- read_parquet(file_path_parquet)
 temp_pop <- read_csv(file_path_csv)
 sunlight <- read_csv(file.path(data_dir, '02-sun-hours.csv'))
+holidays <- read_csv(file.path(data_dir, '06-public-holidays.csv'))
 
 energy <- energy |>
   mutate(
@@ -28,8 +29,9 @@ energy <- energy |>
   rename(Date=d)
     
 #Merge
-energy_n <- left_join(energy, temp_pop, by = c("Date", "regionid"))
-energy_n <- energy_n %>%  fill(temperature, .direction = "down") %>% fill(population, .direction = "up")
+energy_n <- left_join(energy, temp_pop, by = c("Date", "regionid")) |>
+            fill(temperature, .direction = "down") |>
+            fill(population, .direction = "up")
 
 # add sunlight hours (not sunlight irradiance)
 energy_n <- sunlight |>
@@ -64,6 +66,13 @@ energy_n <- energy_n |>
 # has slightly different endings
 # choose a round date to end on
 energy_n <- energy_n |> filter(year(hh_start) < 2024)
+
+# add public holidays
+energy_n <- holidays |>
+  mutate(public_holiday=TRUE) |>
+  right_join(energy_n) |> 
+  replace_na(list(public_holiday=FALSE))
+  
 
 #Save
 write_csv(energy_n, file = file.path(data_dir, "10-energy-merged.csv"))
