@@ -95,7 +95,7 @@ hourly <- df |> mutate(hr = hour(hh_start)) |>
     energy_kwh_midday_per_capita = hh_per_h * mean(energy_mwh_midday_per_capita) * kwh_per_mwh,
     energy_kwh_adj_rooftop_solar_midday_per_capita = hh_per_h * mean(energy_mwh_adj_rooftop_solar_midday_per_capita) * kwh_per_mwh,
     co2_kg_midday_per_capita = hh_per_h * mean(co2_t_midday_per_capita) * kg_per_t,
-    co2_g_per_capita_vs_midday = co2_kg_per_capita - co2_kg_midday_per_capita * g_per_kg,
+    co2_g_per_capita_vs_midday = (co2_kg_per_capita - co2_kg_midday_per_capita) * g_per_kg,
     
     # should be the same values all day
     total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,
@@ -128,3 +128,21 @@ hourly <- df |> mutate(hr = hour(hh_start)) |>
   )
 hourly |> write_parquet(file.path(data_dir, "12-energy-hourly.parquet"))
 hourly |> write_csv(file.path(data_dir, "12-energy-hourly.csv"))
+
+
+# sanity check
+# compare hourly and daily
+daily |>
+  summarise(
+    #co2_kg_per_capita=sum(co2_kg_per_capita),
+    #co2_kg_midday_per_capita=sum(co2_kg_midday_per_capita),
+    co2_kg_per_capita_vs_midday=sum(co2_kg_per_capita_vs_midday),
+    .by=regionid
+  )
+hourly |>
+  summarise(
+    #co2_kg_per_capita=sum(co2_kg_per_capita),
+    #co2_kg_midday_per_capita=sum(co2_kg_midday_per_capita),
+    co2_g_per_capita_vs_midday=sum(co2_g_per_capita_vs_midday),
+    .by=regionid
+  )
