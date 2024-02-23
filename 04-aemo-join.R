@@ -339,7 +339,7 @@ df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
 
 renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
   # deduplicate
-  select(INTERVENTION, REGIONID, SETTLEMENTDATE, LASTCHANGED, TOTALINTERMITTENTGENERATION, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+  select(INTERVENTION, REGIONID, SETTLEMENTDATE, LASTCHANGED, TOTALINTERMITTENTGENERATION, UIGF, SCHEMA_VERSION, TOP_TIMESTAMP) |>
   filter(INTERVENTION == 0) |>
   select(-INTERVENTION) |>
   arrange(SETTLEMENTDATE, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP), desc(LASTCHANGED)) |>
@@ -356,6 +356,7 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
   summarise(
     # TOTALINTERMITTENTGENERATION is megawatts (power)
     total_renewables_today_mwh = mean(TOTALINTERMITTENTGENERATION, na.rm = TRUE) * h_per_day,
+    total_renewables_today_mwh_uigf = mean(UIGF, na.rm = TRUE) * h_per_day,
     .by=c(REGIONID, d)
   ) |>
   arrange(d, REGIONID)

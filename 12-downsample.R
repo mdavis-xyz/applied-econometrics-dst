@@ -29,6 +29,7 @@ daily <- df |>
     
     # should be the same values all day
     total_renewables_today_twh=mean(total_renewables_today_twh),
+    total_renewables_today_twh_uigf=mean(total_renewables_today_twh_uigf),
     population=mean(population),
     temperature=mean(temperature),
     solar_exposure=mean(solar_exposure),

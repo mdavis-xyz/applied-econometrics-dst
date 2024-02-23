@@ -45,7 +45,10 @@ energy <- energy |>
     dst_start = dst_direction == 'start',
     days_before_transition = as.integer(dst_date - d),
     days_after_transition = as.integer(d - dst_date),
-    days_into_dst = if_else(dst_start, days_after_transition, days_before_transition),
+    # days_into_dst=0 on the day clocks go forward
+    # days_into_dst=0 on the day *before* clocks go back
+    # (since clocks change shortly after midnight)
+    days_into_dst = if_else(dst_start, days_after_transition, days_before_transition-1),
     day_of_week=as.numeric(lubridate::wday(d)),
     weekend = day_of_week %in% c(1,7),
     dst_transition_id_and_region = paste(dst_transition_id, regionid, sep='-')
@@ -99,7 +102,6 @@ energy_n <- holidays |>
 # for an explanation of with_tz vs force_tz, see
 # https://r4ds.had.co.nz/dates-and-times.html#time-zones
 energy_n <- energy_n |>
-  filter(year(hh_end) == 2020) |>
   mutate(
     hh_start = hh_end - minutes(min_per_hh),
     midday_control = (hour(hh_start) >= 12) & (hour(hh_end) < 15),
@@ -113,7 +115,6 @@ energy_n <- energy_n |>
 # we manually add an hour
 # (and note that SA is constantly offset by half an hour, plus DST)
 energy_n <- energy_n |>
-  filter(year(hh_end) == 2020) |>
   mutate(
     hh_start = hh_end - minutes(min_per_hh),
     midday_control = (hour(hh_start) >= 12) & (hour(hh_end) < 15),
@@ -147,7 +148,8 @@ wind <- wind |>
   rename(
     Date=date,
     wind_km_per_h=avg_wind_speed_km_per_h
-  ) 
+  ) |>
+  select(-max_wind_speed_km_per_h) # drop column with missing data
 
 # add to main dataframe
 energy_n <- energy_n |>
@@ -166,8 +168,9 @@ energy_n <- energy_n |>
     energy_kwh_adj_rooftop_solar_per_capita = energy_mwh_adj_rooftop_solar_per_capita * kwh_per_mwh,
     
     total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,
+    total_renewables_today_twh_uigf=mean(total_renewables_today_mwh_uigf) / mwh_per_twh,
   ) |>
-  select(-co2_t_per_capita, -energy_mwh_per_capita, -energy_mwh_adj_rooftop_solar_per_capita, -total_renewables_today_mwh)
+  select(-co2_t_per_capita, -energy_mwh_per_capita, -energy_mwh_adj_rooftop_solar_per_capita, -total_renewables_today_mwh, total_renewables_today_mwh_uigf)
 
 energy_n |> 
   select(
