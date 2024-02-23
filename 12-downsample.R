@@ -33,6 +33,7 @@ daily <- df |>
     temperature=mean(temperature),
     solar_exposure=mean(solar_exposure),
     sun_hours_per_day=mean(sun_hours_per_day),
+    wind_km_per_h=mean(wind_km_per_h),
     .by = c(
       # these two are what we're really grouping by
       Date,

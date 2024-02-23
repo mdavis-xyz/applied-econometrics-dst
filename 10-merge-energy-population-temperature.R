@@ -38,6 +38,7 @@ energy <- read_parquet(file_path_parquet)
 temp_pop <- read_csv(file_path_csv)
 sunlight <- read_csv(file.path(data_dir, '02-sun-hours.csv'))
 holidays <- read_csv(file.path(data_dir, '06-public-holidays.csv'))
+wind <- read_csv(file.path(data_dir, '05-wind.csv'))
 
 energy <- energy |>
   mutate(
@@ -132,6 +133,25 @@ energy_n <- energy_n |>
   # drop stuff we don't need
   # to save space
   select(-shift_from_market_time)
+
+# Add wind data
+# we're missing a lot of max wind speed data
+# but only one average wind speed record
+stopifnot(sum(is.na(wind$avg_wind_speed_km_per_h)) <= 1)
+
+# fill in that one gap, linear interpolation
+wind <- wind |>
+  group_by(regionid) |>
+  arrange(date) |>
+  mutate(avg_wind_speed_km_per_h = zoo::na.approx(avg_wind_speed_km_per_h, na.rm = FALSE)) |>
+  rename(
+    Date=date,
+    wind_km_per_h=avg_wind_speed_km_per_h
+  ) 
+
+# add to main dataframe
+energy_n <- energy_n |>
+  left_join(wind)
 
 # do division to get per-capita 
 # also normalise values by changing units
