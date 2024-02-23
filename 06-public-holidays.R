@@ -1,8 +1,10 @@
 library(tidyverse)
 
-holidays_1 <- read_csv("data/holidays/Aus_public_hols_2009-2022-1.csv", col_select=c("Date", "State"))
+data_dir <- "/home/matthew/data"
 
-holidays_2 <- read_csv("data/holidays/australian-public-holidays-combined-2021-2024.csv") |>
+holidays_1 <- read_csv(file.path(data_dir, "holidays/Aus_public_hols_2009-2022-1.csv"), col_select=c("Date", "State"))
+
+holidays_2 <- read_csv(file.path(data_dir, "holidays/australian-public-holidays-combined-2021-2024.csv")) |>
   rename(State=Jurisdiction) |>
   select(Date, State) |>
   mutate(
@@ -17,4 +19,4 @@ holidays <- rbind(holidays_1, holidays_2) |>
   distinct() |>
   arrange(Date)
 
-holidays |> write_csv("data/06-public-holidays.csv")
+holidays |> write_csv(file.path(data_dir, "06-public-holidays.csv"))

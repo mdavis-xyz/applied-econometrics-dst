@@ -252,7 +252,8 @@ df <- df |>
   mutate(
     rooftop_solar_energy_mwh = rooftop_solar_power_mw * h_per_interval,
     energy_mwh_adj_rooftop_solar = ENERGY_MWH + rooftop_solar_energy_mwh
-  )
+  ) |>
+  select(-rooftop_solar_power_mw)
 
 # add DST info ------------------------------------------------------------
 
@@ -370,33 +371,6 @@ df <- df |> filter(HH_END != first_hh_end)
 
 # save space
 rm(renewables)
-
-# midday emissions --------------------------------------------------------
-# as per kellog and wolf, grab 12:00-14:30 values (local time)
-# Rooftop solar data doesn't exist prior to 2016
-# so we can't get 'load' (without counting rooftop solar as negative load)
-# but we can get midday emissions
-df <- df |>
-  mutate(
-    # SA1 is consistently 30 minutes behind VIC, NSW etc
-    # and then they shift their clock 1 hour
-    local_time_shift = hours(1) * dst_now_here - minutes(30) * (REGIONID == 'SA1'),
-    HH_END_local = HH_END + local_time_shift,
-    HH_START_local = HH_START + local_time_shift,
-  )
-midday_co2_t <- df |>
-  filter(hour(HH_START_local) >= 12) |>
-  filter(hour(HH_END_local) < 14 | (hour(HH_END_local) == 14 & minute(HH_END_local) <= 30)) |>
-  summarise(
-    # this is the co2 tonnes per 5-minute interval around midday
-    co2_t_midday=mean(CO2_T),
-    # this is the average energy generated in a 5 minute period
-    # across the many 'midday'ish periods
-    energy_mwh_midday=mean(ENERGY_MWH),
-    energy_mwh_adj_rooftop_solar_midday=mean(energy_mwh_adj_rooftop_solar),
-    .by=c(REGIONID, d)
-  )
-df <- df |> left_join(midday_co2_t)
 
 # save --------------------------------------------------------------------
 
