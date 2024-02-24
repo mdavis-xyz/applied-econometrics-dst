@@ -25,11 +25,10 @@
 # (That's the memory intense part. But proportionally smaller if it's only one month.)
 # And then combine the aggrergation
 #
-# This still uses up almost all the memory on my laptop
-# (16GB + some swap)
+# This still uses up a lot of memory.
+# It runs on my 16GB laptop. If you have only 8GB, it should still work.
 # So shut down other apps when running this.
-# It won't work on a laptop with only 8GB of memory.
-# This takes several hours to run!
+# This takes half an hour to run.
 
 # acronyms:
 # DUID = dispatchable unit ID
@@ -94,12 +93,39 @@ library(janitor)
 Sys.setenv(TZ='UTC')
 
 data_dir <- '/home/matthew/data/'
+#data_dir <- '/media/matthew/nemweb/AppliedEconometrics/data'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
-dispatchload_partitioned_dir <- file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-by-month-raw')
-month_dir <-  file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-by-region-month')
-duid_standing_path <- file.path(data_dir, '03-duid-standing.parquet')
-import_export_path <- file.path(data_dir, '03-import-export.parquet')
+dispatchload_partitioned_dir <- file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-month-raw')
+month_dir <-  file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-region-month')
+duid_standing_path <- file.path(data_dir, '01-E-duid-standing.parquet')
+import_export_path <- file.path(data_dir, '01-E-import-export.parquet')
+
+start_year <- 2009
+end_year <- 2023
+
+
+# initial repartition -----------------------------------------------------
+
+
+# Let's take the one large parquet file
+# and write one file per month
+# We break this up into one pass of the file per year
+# so that this can run on a 8GB machine.
+for (y in start_year:end_year){
+  print(paste0("Repartitioning year=", y))
+  open_dataset(file.path(source_dir, 'DISPATCHLOAD')) |>
+    filter(INTERVENTION == 0) |>
+    select(DUID, SETTLEMENTDATE, RUNNO, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION, TOP_TIMESTAMP) |>
+    mutate(
+      SETTLEMENTDATE_MONTH=month(SETTLEMENTDATE),
+      SETTLEMENTDATE_YEAR=year(SETTLEMENTDATE),
+    ) |>
+    filter(SETTLEMENTDATE_YEAR == y) |>
+    write_dataset(dispatchload_partitioned_dir, 
+                  partitioning=c("SETTLEMENTDATE_YEAR", "SETTLEMENTDATE_MONTH"),
+                  existing_data_behavior="delete_matching")
+}
 
 # reference tables --------------------------------------------------------
 
@@ -139,33 +165,22 @@ duid_standing <- genunits |>
 duid_standing |>
   write_parquet(duid_standing_path)
 
-# repartition -------------------------------------------------------------
 
-# Let's take the one large parquet file
-# and write one file per month
-df <- open_dataset(file.path(source_dir, 'DISPATCHLOAD')) |>
-  filter(INTERVENTION == 0) |>
-  select(DUID, SETTLEMENTDATE, RUNNO, LASTCHANGED, INITIALMW, TOTALCLEARED, SCHEMA_VERSION, TOP_TIMESTAMP) |>
-  mutate(
-    SETTLEMENTDATE_MONTH=month(SETTLEMENTDATE),
-    SETTLEMENTDATE_YEAR=year(SETTLEMENTDATE),
-  ) |>
-  write_dataset(dispatchload_partitioned_dir, 
-                partitioning=c("SETTLEMENTDATE_YEAR", "SETTLEMENTDATE_MONTH"),
-                existing_data_behavior="delete_matching")
+# main per-month processing ---------------------------------------------------------
 
 # For each month: (i.e. small enough to fit into memory)
 #   calculate average power per generator
 #   join with emissions and region info
 #   aggregate per half hour, per region
-for (y in 2009:2023){
+for (y in start_year:end_year){
+  
   for (m in 1:12){
     print(paste(y, m))
     start_date <- make_date(year=y, month=m)
     end_date <- make_date(year=y, month=m) + months(1)
     # open the DISPATCHLOAD dataset
     df <- open_dataset(dispatchload_partitioned_dir) |>
-      filter(SETTLEMENTDATE_MONTH == m, SETTLEMENTDATE_YEAR == y) |>
+      filter(SETTLEMENTDATE_YEAR == y, SETTLEMENTDATE_MONTH == m) |>
       collect()
     if (nrow(df) == 0){
       # we start mid-way through 2009
