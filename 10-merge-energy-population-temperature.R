@@ -40,15 +40,96 @@ min_per_hh <- 30
 # minutes per hour
 min_per_h <- 60
 
-# read source data --------------------------------------------------------
 
-energy <- read_parquet(file.path(data_dir, "03-joined-all.parquet"))
-temp_pop <- read_csv(file.path(data_dir, "09-temp-pop-merged.csv"))
-dst_transitions <- read_csv(file.path(data_dir, '02-dst-dates.csv'))
-sunlight <- read_csv(file.path(data_dir, '03-sun-hours.csv'))
-wind <- read_csv(file.path(data_dir, '05-wind.csv'))
-holidays <- read_csv(file.path(data_dir, '06-public-holidays.csv'))
+# load energy source data --------------------------------------------------------
 
+energy <- read_parquet(file.path(data_dir, "01-F-aemo-joined-all.parquet"))
+
+# Local time, midday control and other time info --------------------------------------
+
+# We want to convert fixed Brisbane UTC+10 time to local time
+# (because that's what Kellog does)
+# Note that R can't handle a column of datetimes in different timezones
+# (It throws an error, or silently coerces them to the same timezone)
+# so we have to group by time zone, do the conversion,
+# pretend it's UTC, then ungroup
+# To see the difference between with_tz and force_tz, see
+# https://r4ds.had.co.nz/dates-and-times.html#time-zones
+
+
+region_tz <- tribble(
+  ~regionid, ~tz,
+  "QLD1", "Australia/Brisbane",
+  "NSW1", "Australia/Sydney",
+  "VIC1", "Australia/Melbourne",
+  "TAS1", "Australia/Hobart",
+  "SA1" , "Australia/Adelaide",
+) 
+df <- energy |>
+  left_join(region_tz, by=c("regionid")) |>
+  group_by(regionid) |>
+  mutate(
+    hh_end_fixed = force_tz(hh_end, tzone = "Australia/Brisbane"),
+    hh_end_local = force_tz(with_tz(hh_end_fixed, tzone=tz), "UTC"),
+    
+    hh_start_fixed = hh_end_fixed - minutes(min_per_hh),
+    hh_start_local = hh_end_local - minutes(min_per_hh),
+    
+    date_local = date(hh_start_local),
+    date_fixed = date(hh_start_fixed),
+    
+    midday_control_local = (hour(hh_start_local) >= 12) & (hour(hh_end_local) < 15),
+    midday_control_fixed = (hour(hh_start_fixed) >= 12) & (hour(hh_end_fixed) < 15),
+    
+    # get time of day, as a single number
+    # (e.g. 1:30-2:00pm is 13.5)
+    hr_local = hour(hh_start_local) + minute(hh_start_local) / min_per_h,
+    hr_fixed = hour(hh_start_fixed) + minute(hh_start_fixed) / min_per_h,
+    
+    # true for 12:00-14:30
+    midday_control_local = (hour(hh_start_local) >= 12) & (hour(hh_end_local) < 15),
+    midday_control_fixed = (hour(hh_start_fixed) >= 12) & (hour(hh_end_fixed) < 15),
+
+    day_of_week_local=as.numeric(lubridate::wday(date_local)),
+    day_of_week_fixed=as.numeric(lubridate::wday(date_fixed)),
+    
+    weekend_local = day_of_week_local %in% c(1,7),
+    weekend_fixed = day_of_week_fixed %in% c(1,7),
+    
+  ) |>
+  ungroup() |>
+  # drop stuff we don't need
+  # to save space
+  select(-hh_end, -d)
+
+
+# Public Holidays ---------------------------------------------------------
+# we read public holiday data from two files
+# because neither one on it's own covers the full time period we care about
+
+holidays_1 <- read_csv(file.path(data_dir, "holidays/Aus_public_hols_2009-2022-1.csv"), 
+                       col_select=c("Date", "State"))
+
+holidays_2 <- read_csv(file.path(data_dir, "holidays/australian-public-holidays-combined-2021-2024.csv")) |>
+  rename(State=Jurisdiction) |>
+  select(Date, State) |>
+  mutate(
+    Date=ymd(Date)
+  )
+
+holidays <- rbind(holidays_1, holidays_2) |>
+  mutate(
+    regionid = paste0(str_to_upper(State), "1"),
+  ) |>
+  select(-State) |>
+  distinct() |>
+  arrange(Date)
+
+df <- holidays |>
+  rename(date_local=Date) |>
+  mutate(public_holiday=TRUE) |>
+  right_join(df, by=c("date_local", "regionid")) |> 
+  replace_na(list(public_holiday=FALSE))
 
 # Join DST data to energy -------------------------------------------------
 
@@ -58,6 +139,7 @@ holidays <- read_csv(file.path(data_dir, '06-public-holidays.csv'))
 # then we join that to the larger energy dataframe.
 # Note that clock changes happen on the same day in all treatment regions.
 
+dst_transitions <- read_csv(file.path(data_dir, '02-dst-dates.csv'))
 dst_transitions <- dst_transitions |>
   rename(
     dst_date = date,
@@ -74,7 +156,7 @@ dst_transitions <- dst_transitions |>
 dst_dates_all <- tibble(d=seq(min(dst_transitions$dst_date), max(dst_transitions$dst_date), by="1 day")) |>
   # now we do a 'nearest' join
   # join on just one matching row
-  left_join(dst_transitions |> mutate(d=dst_date)) |>
+  left_join(dst_transitions |> mutate(d=dst_date), by="d") |>
   # forward fill, and call that next
   rename(
     last_dst_direction=dst_direction,
@@ -105,16 +187,13 @@ dst_dates_all <- tibble(d=seq(min(dst_transitions$dst_date), max(dst_transitions
   ) |>
   filter(year(d) >= 2008)
 
-# now join DST info with energy
+# now join DST info to main dataframe
 
-df <- energy |>
+df <- dst_dates_all |>
+  rename(date_local=d) |>
+  right_join(df, by="date_local") |>
   mutate(
-    hh_start=hh_end - minutes(min_per_hh),
-    d = date(hh_start)
-  ) |>
-  left_join(dst_dates_all) |>
-  mutate(
-    after_transition = hh_end > dst_date,
+    after_transition = hh_end_local > dst_date,
     
     dst_now_anywhere = if_else(dst_direction == 'start', after_transition, !after_transition),
     dst_here_anytime = regionid != 'QLD1',
@@ -139,95 +218,48 @@ df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
     
 # Add temperature and population ------------------------------------------
 
-df <- df |>
-  rename(Date=d) |>
-  left_join(temp_pop, by = c("Date", "regionid")) |>
+temp_pop <- read_csv(file.path(data_dir, "09-temp-pop-merged.csv")) |>
+  rename(date_local=Date)
+
+df <- left_join(df, temp_pop, by = c("date_local", "regionid")) |>
             fill(temperature, .direction = "down") |>
             fill(population, .direction = "up")
 
 
 # add sunlight hours (not sunlight irradiance) ----------------------------
+sunlight <- read_csv(file.path(data_dir, '03-sun-hours.csv'))
 df <- sunlight |>
   rename(
-    Date=d,
+    date_local=d,
     sun_hours_per_day=sun_hours
   ) |>
   right_join(df)
 
 
-# Midday control and other time info --------------------------------------
-
-# add public holidays
-df <- holidays |>
-  mutate(public_holiday=TRUE) |>
-  right_join(df) |> 
-  replace_na(list(public_holiday=FALSE))
-  
-
-# add a dummy for if this is our 'midday' control
-# As per the Kellog Olympics paper, we use 12:00-14:30
-# note that this is all in market/Brisbane/fixed time (UTC+10)
-# But in terms of R, these are timezone unaware times
-# for an explanation of with_tz vs force_tz, see
-# https://r4ds.had.co.nz/dates-and-times.html#time-zones
-df <- df |>
-  mutate(
-    hh_start = hh_end - minutes(min_per_hh),
-    midday_control = (hour(hh_start) >= 12) & (hour(hh_end) < 15),
-  )
-
-
-# We want to also add local times, in case that comes in handy.
-# Note that R can't handle a column a datetimes in different timezones
-# (It throws an error.)
-# So instead of calling with_tz, force_tz etc
-# we manually add an hour
-# (and note that SA is constantly offset by half an hour, plus DST)
-df <- df |>
-  mutate(
-    hh_start = hh_end - minutes(min_per_hh),
-    midday_control = (hour(hh_start) >= 12) & (hour(hh_end) < 15),
-    # get time of day, as a single number
-    # (e.g. 1:30-2:00pm is 13.5)
-    hr = hour(hh_start) + minute(hh_start) / min_per_h,
-
-    day_of_week=as.numeric(lubridate::wday(Date)),
-    weekend = day_of_week %in% c(1,7),
-    
-    # this will of course be wrong for one hour, at each transition
-    # but we'll exclude those days when looking at local time
-    shift_from_market_time = if_else(regionid == 'SA1', SA_offset, minutes(0)) + if_else(dst_now_here, hours(1), hours(0)),
-    hh_end_local = hh_end + shift_from_market_time,
-    hh_start_local = hh_start + shift_from_market_time,
-    midday_control_local = (hour(hh_start_local) >= 12) & (hour(hh_end_local) < 15),
-    date_local = date(hh_start_local),
-    hr_local = hour(hh_start_local) + minute(hh_start_local) / min_per_h,
-  ) |>
-  # drop stuff we don't need
-  # to save space
-  select(-shift_from_market_time)
-
 
 # Wind data ---------------------------------------------------------------
+
+
+# fill in that one gap, linear interpolation
+wind <- read_csv(file.path(data_dir, '05-wind.csv'))
 
 # we're missing a lot of max wind speed data
 # but only one average wind speed record
 stopifnot(sum(is.na(wind$avg_wind_speed_km_per_h)) <= 1)
 
-# fill in that one gap, linear interpolation
 wind <- wind |>
   group_by(regionid) |>
   arrange(date) |>
   mutate(avg_wind_speed_km_per_h = zoo::na.approx(avg_wind_speed_km_per_h, na.rm = FALSE)) |>
   rename(
-    Date=date,
+    date_local=date,
     wind_km_per_h=avg_wind_speed_km_per_h
   ) |>
   select(-max_wind_speed_km_per_h) # drop column with missing data
 
 # add to main dataframe
 df <- df |>
-  left_join(wind)
+  left_join(wind, by=c("date_local", "regionid"))
 
 
 # Per capita calculations -------------------------------------------------
@@ -263,8 +295,9 @@ df <- df |>
 # has slightly different endings
 # choose a round date to end on
 df <- df |> 
-  filter(year(hh_start) < 2024) |>
-  arrange(Date, regionid)
+  filter(year(date_local) < 2024) |>
+  filter(date_local >= make_date(2009, 7, 1)) |>
+  arrange(date_local, regionid)
 
 
 # Save output -------------------------------------------------------------
