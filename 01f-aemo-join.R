@@ -5,7 +5,7 @@
 # This one should take about 30 seconds to run.
 #
 # In this script we're going to add a few more tables
-# e.g. DST info, renewables info etc.
+# e.g. renewables info
 #
 # We want to adjust for import/export between regions
 # (if NSW imports coal power from QLD, the emissions from those coal plants
@@ -59,11 +59,10 @@ Sys.setenv(TZ='UTC')
 
 data_dir <- '/home/matthew/data/'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
-region_power_dir <-  file.path(data_dir, '03-A-DISPATCHLOAD-partitioned-by-region-month')
-import_export_path <- file.path(data_dir, '03-import-export.parquet')
-interconnector_power_path <- file.path(data_dir, '03-interconnector-power.parquet')
-dst_transitions_path <- 'data/02-dst-dates.csv'
-dest_path <- file.path(data_dir, '03-joined-all.parquet')
+region_power_dir <-  file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-region-month')
+import_export_path <- file.path(data_dir, '01-F-import-export-local')
+interconnector_power_path <- file.path(data_dir, '01-F-interconnector-power.parquet')
+dest_path <- file.path(data_dir, '01-F-aemo-joined-all.parquet')
 
 # 5 minute intervals
 h_per_interval <- 1/12
@@ -144,9 +143,13 @@ interconnectors_month <- open_dataset(region_power_dir) |>
 # interconnectors, for the source region (export)
 # interconnectors, for the destination region (import)
 # region_power_emissions, for what's not imported/exported
+# But this takes up a lot of memory.
+# So we write the intermediate data to disk
+# partitioned by what we want to eventually group by.
+# Then arrow can do the aggregation in a memory-efficient manner.
 
-
-export <- interconnectors_month |>
+# export energy
+interconnectors_month |>
   rename(
     REGIONID = REGIONFROM,
   ) |>
@@ -157,35 +160,40 @@ export <- interconnectors_month |>
     ENERGY_MWH = -ENERGY_MWH,
     DATA_SOURCE = 'export',
   ) |>
-  collect()
+  select(CO2_T, ENERGY_MWH, REGIONID, HH_END, DATA_SOURCE) |>
+  write_dataset(import_export_path, 
+                partitioning=c("REGIONID", "DATA_SOURCE"),
+                existing_data_behavior="delete_matching")
+# import energy
 import <- interconnectors_month |>
   rename(
     REGIONID = REGIONTO,
   ) |>
   mutate(DATA_SOURCE='import') |>
-  collect()
-
-region_power_emissions <- open_dataset(region_power_dir) |>
+  write_dataset(import_export_path, 
+                partitioning=c("REGIONID", "DATA_SOURCE"),
+                existing_data_behavior="delete_matching")
+# local generation
+open_dataset(region_power_dir) |>
   mutate(
     DATA_SOURCE = 'local generation'
-  ) |> collect()
+  ) |>
+  write_dataset(import_export_path, 
+                partitioning=c("REGIONID", "DATA_SOURCE"),
+                existing_data_behavior="delete_matching")
 
-df <- rbind(
-  import |> select(CO2_T, ENERGY_MWH, REGIONID, HH_END), 
-  export |> select(CO2_T, ENERGY_MWH, REGIONID, HH_END), 
-  region_power_emissions |> select(CO2_T, ENERGY_MWH, REGIONID, HH_END)
-) |>
+# save space
+rm(interconnectors_month)
+rm(tradinginterconnect)
+
+df <- open_dataset(import_export_path) |>
   summarise(
     CO2_T = sum(CO2_T),
     ENERGY_MWH = sum(ENERGY_MWH),
     .by=c(REGIONID, HH_END)
-  )
+  ) |>
+  collect()
 
-# save space
-rm(import)
-rm(export)
-rm(region_power_emissions)
-gc()
 
 # add rooftop solar -------------------------------------------------------
 # note that rooftop solar is half hour, which is what we've got
@@ -255,86 +263,6 @@ df <- df |>
   ) |>
   select(-rooftop_solar_power_mw)
 
-# add DST info ------------------------------------------------------------
-
-dst_transitions <- read_csv(dst_transitions_path) |>
-  rename(
-    dst_date = date,
-    dst_direction = direction) |>
-  mutate(
-    dst_direction = factor(dst_direction),
-    dst_transition_id = paste(year(dst_date), dst_direction, sep='-'),
-  ) 
-
-# create a tibble with all dates we care about
-# (plus extra)
-# and the info for the nearest DST transition
-# to make joins later
-dst_dates_all <- tibble(d=seq(min(dst_transitions$dst_date), max(dst_transitions$dst_date), by="1 day")) |>
-  # now we do a 'nearest' join
-  # join on just one matching row
-  left_join(dst_transitions |> mutate(d=dst_date)) |>
-  # forward fill, and call that next
-  rename(
-    last_dst_direction=dst_direction,
-    last_dst_transition_id=dst_transition_id,
-    last_dst_date=dst_date,
-  ) |> 
-  mutate(
-    next_dst_direction=last_dst_direction,
-    next_dst_transition_id=last_dst_transition_id,
-    next_dst_date=last_dst_date,
-  ) |>
-  fill(last_dst_direction, last_dst_transition_id, last_dst_date, .direction="down") |>
-  fill(next_dst_direction, next_dst_transition_id, next_dst_date, .direction="up") |> 
-  mutate(
-    distance_to_last_dst=abs(as.integer(d - last_dst_date)),
-    distance_to_next_dst=abs(as.integer(d - next_dst_date)),
-    next_is_closest=distance_to_next_dst <= distance_to_last_dst,
-    dst_direction = if_else(next_is_closest, next_dst_direction, last_dst_direction),
-    dst_transition_id = if_else(next_is_closest, next_dst_transition_id, last_dst_transition_id),
-    dst_date = if_else(next_is_closest, next_dst_date, last_dst_date),
-  ) |>
-  select(d, dst_date, dst_direction, dst_transition_id) |>
-  mutate(
-    days_before_transition = as.integer(dst_date - d),
-    days_after_transition = as.integer(d - dst_date),
-    dst_start = dst_direction == 'start',
-    days_into_dst = if_else(dst_start, days_after_transition, days_before_transition),
-  ) |>
-  filter(year(d) >= 2008)
-
-# now join DST info with main dataframe
-
-df <- df |>
-  mutate(
-    HH_START=HH_END - minutes(min_per_hh),
-    d = date(HH_START)
-  ) |>
-  left_join(dst_dates_all) |>
-  mutate(
-    after_transition = HH_END > dst_date,
-    
-    dst_now_anywhere = if_else(dst_direction == 'start', after_transition, !after_transition),
-    dst_here_anytime = REGIONID != 'QLD1',
-    dst_now_here = dst_here_anytime & dst_now_anywhere,
-  )
-
-no_dst_info <- df |> filter(is.na(dst_now_here))
-stopifnot((no_dst_info |> nrow()) == 0)
-
-# In our time period, there's one particular day
-# that's 94 days into DST, and one that's -94
-# because the duration of DST (or not) differs slightly each year
-# mark this as an outlier.
-# we'll do the regressions with and without it later.
-df$days_into_dst_extreme_outlier <- df$days_into_dst %in% c(min(df$days_into_dst), max(df$days_into_dst))
-
-samples_per_days_into_dst <- df |> summarise(n=n(), .by=days_into_dst)
-typical_sample_count <- samples_per_days_into_dst |> pull(n) |> abs() |> median()
-outlier_days <- samples_per_days_into_dst |> filter(abs(n) < typical_sample_count) |> pull(days_into_dst)
-df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
-
 # add renewables ----------------------------------------------------------
 
 renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
@@ -361,7 +289,9 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
   ) |>
   arrange(d, REGIONID)
 
-df <- left_join(df, renewables)
+df <- df |>
+  mutate(d=date(HH_END - minutes(min_per_hh))) |>
+  left_join(renewables)
 
 # df starts with the last hh period before midnight
 # renewables starts with the first period after midnight
@@ -369,9 +299,6 @@ first_hh_end <- min(df$HH_END)
 stopifnot(hour(first_hh_end) == 0)
 stopifnot(minute(first_hh_end) == 0)
 df <- df |> filter(HH_END != first_hh_end)
-
-# save space
-rm(renewables)
 
 # save --------------------------------------------------------------------
 
