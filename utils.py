@@ -1,3 +1,6 @@
+# This script contains custom functions which we want to re-use across all our .ipynb playbooks
+# It's a python library.
+# But you don't need to pip install anything. Just make sure that you open Jupyter lab from the directory that contains this script.
 import os
 from multiprocessing import current_process
 from itertools import islice
@@ -50,8 +53,8 @@ class Logger:
 def renice():
     try:
         os.nice(19)
-    except OSError as e: # ignore error, this is probably on Windows
-        print(f"Unable to change process niceness {e}. Continuing")
+    except (AttributeError, OSError) as e: # on Windows
+        print(f"Unable to change process niceness {e}. Continuing anyway.")
         pass
 
 

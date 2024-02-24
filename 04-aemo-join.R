@@ -380,5 +380,8 @@ rm(renewables)
 # let's make it consistent
 df <- df |> clean_names(case='snake')
 
+# make order intuitive
+df <- df |> arrange(d, regionid)
+
 df |> write_parquet(dest_path)
 dest_path

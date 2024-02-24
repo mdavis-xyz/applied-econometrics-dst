@@ -185,6 +185,7 @@ energy_n |>
 #Save
 # CSV for stata
 # parquet for the next R script
+energy_n <- energy_n |> arrange(Date, regionid)
 write_csv(energy_n, file = file.path(data_dir, "10-half-hourly.csv"))
 write_parquet(energy_n, sink = file.path(data_dir, "10-half-hourly.parquet"))
 
