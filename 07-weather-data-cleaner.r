@@ -21,6 +21,10 @@ first_year <- 2009
 kwh_per_megajoule = 10^3 / (60^2)
 
 # Define the city-region mapping
+# The first one is for capital cities.
+# This is for temperature, which drives load, which is mostly in cities.
+# the second one is for wind and solar, in the middle of the regions.
+# This drives generation, which is dispersed across the region.
 city_region_map_1 <- c(
   'adelaide' = 'SA1', 
   'brisbane' = 'QLD1',
@@ -101,12 +105,14 @@ clean_and_combine_sunshine <- function(file_path) {
   # Correct NaN
   sunshine_data <- sunshine_data %>%
     mutate(rolling_mean = rollapply(solar_exposure, 3, mean, align = "center", fill = NA)) %>%
-    mutate(solar_exposure = ifelse(is.na(solar_exposure), rolling_mean, solar)) %>%
+    mutate(solar_exposure = ifelse(is.na(solar_exposure), rolling_mean, solar_exposure)) %>%
     select(-rolling_mean)
   
   # Extract the city name from the file name
-  city_name <- str_remove(str_remove(basename(file_path), 'sunshine_'), '.csv')
+  city_name <- str_remove(str_remove(basename(file_path), 'sunshine-'), '.csv')
   region_code <- city_region_map_2[city_name]
+  print(paste("Trying to find region for city", city_name, ", found ", region_code))
+  stopifnot(! is.na(region_code))
   sunshine_data$regionid <- region_code
   
   # Return cleaned data
@@ -129,10 +135,13 @@ solar <- bind_rows(all_sunshine)
 merged_weather <- left_join(temperature, solar, by=c("Date", "regionid")) 
 
 # check if any data is missing
-missing_data <- merged_data %>%
+merged_weather %>%
   group_by(regionid) %>%
-  summarise(any(is.na(temperature)))
-summarise(any(is.na(solar_exposure)))
+  summarise(
+    na_temperature=mean(is.na(temperature)),
+    na_solar=mean(is.na(solar_exposure))
+  )
+
 
 # Save merged data to CSV
 write_csv(merged_weather, file.path(data_dir, '07-weather-merged-R.csv'))
