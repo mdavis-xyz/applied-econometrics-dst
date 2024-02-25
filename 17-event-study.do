@@ -1,6 +1,7 @@
 clear all
-cd "C:\Users\Alex\Desktop\Alex\Toulouse School of Economics\Semester 2\Applied Economics TP\Project\Data"
-import delimited using "10-half-hourly.csv"
+*cd "C:\Users\Alex\Desktop\Alex\Toulouse School of Economics\Semester 2\Applied Economics TP\Project\Data"
+cd "/home/matthew/applied_repo"
+import delimited using "data/10-half-hourly.csv"
 
 //Transforming data
 gen date_new=date(date_local,"YMD")
@@ -66,9 +67,9 @@ gen not_midday = 0
 replace not_midday = 1 if midday_control_local == "FALSE"
 drop midday_control_local
 
-save "12-energy-hourly-changed.dta", replace
+save "data/12-energy-hourly-changed.dta", replace
 
-use "12-energy-hourly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
@@ -79,14 +80,14 @@ eststo Elec_DDD
 esttab CO2_DDD Elec_DDD using "DDD-results.tex", label se stats(r2 r2_a) replace
 
 /// Event Study plot
-use "12-energy-hourly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
 eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study With All States"))
 
 //doing base DiD regressions
-use "12-energy-hourly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 

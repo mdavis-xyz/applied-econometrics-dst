@@ -5,8 +5,12 @@ library(ggplot2)
 library(sandwich)
 library(lmtest)
 
-data_dir <- "C:/Users/Alex/Desktop/Alex/Toulouse School of Economics/Semester 2/Applied Economics TP/Project/Data"
+#data_dir <- "C:/Users/Alex/Desktop/Alex/Toulouse School of Economics/Semester 2/Applied Economics TP/Project/Data"
+data_dir <- "data"
+results_dir <- "results"
+
 file_path_parquet <- file.path(data_dir, "10-half-hourly.parquet")
+
 
 df <- read_parquet(file_path_parquet)
 summary(df)
@@ -38,7 +42,7 @@ stargazer(DiD_CO2_base, DiD_Elec_base, DiD_CO2_controls, DiD_Elec_controls, type
           title = "CO2 and electricity consumption Results - DiD w/o controls", align = TRUE,
           dep.var.labels = c("Kg CO2 p.c.","Kwh energy p.c.","Kg CO2 p.c.","Kwh energy p.c."), covariate.labels = 
           c("Treatment", "Time", "Time*Treatment", "Weekend", "Public holidays","Temperature", "Temperature2",
-          "Wind3", "Solar exposure"), out = file.path(data_dir, "DiD_Results.txt"), 
+          "Wind3", "Solar exposure"), out = file.path(results_dir, "DiD_Results.txt"), 
           font.size = "small", float.env = "sidewaystable")
 
 ####### DDD Regression:   #######################
@@ -76,7 +80,7 @@ DDDElec_stargazer = coeftest(DDD_Elec_controls, vcov = clustered_se)
 stargazer(DDDCO2_stargazer, DDDElec_stargazer, type = "latex", title = "Results for CO2 and electricity consumption DDD with controls", align = TRUE,
           dep.var.labels = c("Kg CO2 p.c.","Kwh energy consumption p.c."), covariate.labels = c("Treatment", "Time", "Time*Treatment", 
           "Midday", "Midday*Treatment", "Midday*Time", "Midday*Time*Treatment", "Weekend", "Public holidays",
-          "Temperature", "Temperature2", "Wind3", "Solar exposure"), out = file.path(data_dir, "DDD.txt"), 
+          "Temperature", "Temperature2", "Wind3", "Solar exposure"), out = file.path(results_dir, "DDD.txt"), 
           font.size = "small", float.env = "sidewaystable")
 
 
@@ -86,7 +90,6 @@ stargazer(DDDCO2_stargazer, DDDElec_stargazer, type = "latex", title = "Results 
 
 
 ##### Local vs. Fixed:
-# Assuming your data frame is named your_data
 DDD_CO2_controls_fixed <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
                        + midday_control_fixed + I(dst_here_anytime*midday_control_fixed) + I(dst_now_anywhere*midday_control_fixed)
                        + I(dst_now_here*midday_control_fixed)
@@ -102,6 +105,6 @@ summary(clustered_se)
 DDDCO2_Fixed_stargazer = coeftest(DDD_CO2_controls_fixed, vcov = clustered_se)
 stargazer(DDDCO2_stargazer, DDDCO2_Fixed_stargazer, type = "text", title = "Results for CO2 Local vs. Fixed", align = TRUE,
           dep.var.labels = c("CO2 per capita","Kwh energy consumption per capita"), covariate.labels = c("Treatment", "Time", "Time*Treatment"),
-          out = file.path(data_dir, "DDD_local_vs_fixed.txt"))
+          out = file.path(results_dir, "DDD_local_vs_fixed.txt"))
 
 

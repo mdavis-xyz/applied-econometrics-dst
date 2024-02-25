@@ -1,3 +1,11 @@
+# our data files are so large we don't want to include them in git generally
+# With some exceptions (e.g. the AEMO .xlsx file)
+# To unignore, just do `git add --force myfile`
+data
+
+
+# stata temp files
+*.do.stswp
 
 # R files
 .Rproj.user
