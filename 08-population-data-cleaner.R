@@ -13,14 +13,19 @@ data_dir <- 'data'
 population_raw <- read_csv(file.path(data_dir, "population data/population-australia-raw.csv"))
 
 # First data cleaning
+# Doesn't work with |> instead of  %>%
 population <- population_raw %>%
   select(1, (ncol(.) - 8):ncol(.)) %>% 
   slice(10:n())
 colnames(population) <- c("Date", "NSW1", "VIC1", "QLD1", "SA1", "WA1", "TAS1", "NT1", "ACT1","AUS")
 
-# Include Australian Capital Territory in New South Wales
+# Cast to numbers
 population[2:ncol(population)] <- lapply(population[2:ncol(population)], as.numeric)
+
+# Include Australian Capital Territory in New South Wales
 population$NSW1 <- population$NSW1 + population$ACT1
+
+# drop regions that aren't part of the study
 population <- population %>% select(-c(ACT1, AUS, NT1, WA1))
 
 # Transform dates to datetime format
