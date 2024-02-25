@@ -10,7 +10,6 @@ from random import shuffle
 class Logger:
     def __init__(self, path='data/logs.txt', flush=False):
         self.path = path
-        self.reset()
         self.f = open(self.path, 'a')
         self._flush = flush
         
