@@ -12,28 +12,40 @@ df <- read_parquet(file_path_parquet)
 summary(df)
 str(df)
 
-didreg_simple <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here,data = df)
-summary(didreg_simple)
+#Correct Midday variable
+df$not_midday <- !df$midday_control_local
 
-# Difference in Differences
-# Assuming your data frame is named your_data
-DiD_controls <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3) + solar_exposure, data = df, weights = df$population)
-summary(DiD_controls)
 
-# Cluster-robust standard errors
-clustered_se <- vcovHC(DiD_controls, cluster = ~regionid)
-summary(clustered_se)
+# Base Regressions for Co2 and Elec and Controls resp.
+#Base
+reg_CO2_simple <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here,data = df)
+clustered_se <- vcovHC(reg_CO2_simple, cluster = ~regionid)
+DiD_CO2_base = coeftest(reg_CO2_simple, vcov = clustered_se)
+#Controls
+reg_CO2_controls <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + solar_exposure, data = df, weights = df$population)
+clustered_se <- vcovHC(reg_CO2_controls, cluster = ~regionid)
+DiD_CO2_controls = coeftest(reg_CO2_controls, vcov = clustered_se)
+#Elec
+reg_Elec_simple <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here,data = df)
+clustered_se <- vcovHC(reg_Elec_simple, cluster = ~regionid)
+DiD_Elec_base = coeftest(reg_Elec_simple, vcov = clustered_se)
+#Controls
+reg_Elec_controls <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + solar_exposure, data = df, weights = df$population)
+clustered_se <- vcovHC(reg_Elec_controls, cluster = ~regionid)
+DiD_Elec_controls = coeftest(reg_Elec_controls, vcov = clustered_se)
 
-# Display the coefficients and clustered standard errors
-coeftest(DiD_controls, vcov = clustered_se)
+stargazer(DiD_CO2_base, DiD_Elec_base, DiD_CO2_controls, DiD_Elec_controls, type = "latex", 
+          title = "CO2 and electricity consumption Results - DiD w/o controls", align = TRUE,
+          dep.var.labels = c("Kg CO2 p.c.","Kwh energy p.c.","Kg CO2 p.c.","Kwh energy p.c."), covariate.labels = 
+          c("Treatment", "Time", "Time*Treatment", "Weekend", "Public holidays","Temperature", "Temperature2",
+          "Wind3", "Solar exposure"), out = file.path(data_dir, "DiD_Results.txt"), 
+          font.size = "small", float.env = "sidewaystable")
 
 ####### DDD Regression:   #######################
-
-# Assuming your data frame is named your_data
 DDD_CO2_controls <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
-                   + midday_control_local + I(dst_here_anytime*midday_control_local) + I(dst_now_anywhere*midday_control_local)
-                   + I(dst_now_here*midday_control_local)
-                   + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3) + solar_exposure,
+                   + not_midday + I(dst_here_anytime*not_midday) + I(dst_now_anywhere*not_midday)
+                   + I(dst_now_here*not_midday)
+                   + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + solar_exposure,
                    data = df, weights = df$population)
 summary(DDD_CO2_controls)
 
@@ -46,9 +58,9 @@ DDDCO2_stargazer = coeftest(DDD_CO2_controls, vcov = clustered_se)
 
 ##### Electricity Consumption regression
 DDD_Elec_controls <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
-                       + midday_control_local + I(dst_here_anytime*midday_control_local) + I(dst_now_anywhere*midday_control_local)
-                       + I(dst_now_here*midday_control_local)
-                       + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3) + solar_exposure,
+                       + not_midday + I(dst_here_anytime*not_midday) + I(dst_now_anywhere*not_midday)
+                       + I(dst_now_here*not_midday)
+                       + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + solar_exposure,
                        data = df, weights = df$population)
 summary(DDD_Elec_controls)
 
@@ -66,6 +78,12 @@ stargazer(DDDCO2_stargazer, DDDElec_stargazer, type = "latex", title = "Results 
           "Midday", "Midday*Treatment", "Midday*Time", "Midday*Time*Treatment", "Weekend", "Public holidays",
           "Temperature", "Temperature2", "Wind3", "Solar exposure"), out = file.path(data_dir, "DDD.txt"), 
           font.size = "small", float.env = "sidewaystable")
+
+
+
+
+
+
 
 ##### Local vs. Fixed:
 # Assuming your data frame is named your_data
