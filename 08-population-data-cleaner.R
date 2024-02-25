@@ -5,31 +5,40 @@ library(tidyr)
 library(lubridate)
 
 # Set data directory
-#data_dir <- "/home/matthew/data/"
-#data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
 data_dir <- 'data'
 
+pop_path <- file.path(data_dir, "population data/population-australia-raw.csv")
+
+# Define constants
+first_year <- 2009
+
 # Load data
-population_raw <- read_csv(file.path(data_dir, "population data/population-australia-raw.csv"))
 
-# First data cleaning
-population <- population_raw %>%
-  select(1, (ncol(.) - 8):ncol(.)) %>% 
-  slice(10:n())
-colnames(population) <- c("Date", "NSW1", "VIC1", "QLD1", "SA1", "WA1", "TAS1", "NT1", "ACT1","AUS")
+# the file is a bit messy
+# So we skip the first few rows of metadata
+# and start reading from the "series ID" row.
+# We hard-code here which ID is which.
+# (This mapping will never be changed upstream.)
+rows_to_skip = 9 # number of rows before the header
+mappings = tribble(
+  ~"series", ~"regionid",
+  "A2060843J", "NSW1",
+  "A2060844K", "VIC1",
+  "A2060845L", "QLD1",
+  "A2060846R", "SA1",
+  "A2060848V", "TAS1",
+  # this last one is the Australian Capital Territory
+  # AEMO electrical data includes it in NSW
+  "A2060850F", "NSW1",
+)
 
-# Include Australian Capital Territory in New South Wales
-population[2:ncol(population)] <- lapply(population[2:ncol(population)], as.numeric)
-population$NSW1 <- population$NSW1 + population$ACT1
-population <- population %>% select(-c(ACT1, AUS, NT1, WA1))
-
-# Transform dates to datetime format
-population <- population %>%
-  mutate(Date = parse_date(Date, "%b-%Y"))%>%
-  filter(Date >= as.Date("2008-12-01"))
-
-# Pivot the dataframe to have one column per state
-population <- population %>% pivot_longer(cols = -Date, names_to = "regionid", values_to = "population")
+population <- read_csv(pop_path, skip=rows_to_skip) |> 
+  rename(date=`Series ID`) |> # this was the row label, make it a column label
+  pivot_longer(-date, names_to="series") |>
+  right_join(mappings) |>
+  select(-series) |>
+  mutate(date=parse_date(date, "%b-%Y")) |> # e.g. "Sep-1981"
+  filter(year(date) > first_year)
 
 # Save data to CSV
 write_csv(population, file.path(data_dir, "08-population-australia-merged.csv"))
