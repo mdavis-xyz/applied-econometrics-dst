@@ -9,6 +9,7 @@ from random import shuffle
 
 class Logger:
     def __init__(self, path='data/logs.txt', flush=False):
+        create_dir(file=path)
         self.path = path
         self.f = open(self.path, 'a')
         self._flush = flush

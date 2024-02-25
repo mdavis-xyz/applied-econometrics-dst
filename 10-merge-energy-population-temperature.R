@@ -288,6 +288,32 @@ df <- df |>
     -total_renewables_today_mwh_uigf,
   )
 
+
+# add midday float --------------------------------------------------------
+# we already have a dummy column for if this half our is a midday control period
+# But for the event study graphs, we want to be able to incorporate this control into our y value.
+# Because you can't do a normal event study graph for a DDD, only a DD.
+
+# calculate the CO2 emissions at midday
+# per region, per local date
+# and normalise it to be half-hour emissions (even though our 'midday' is 5 half-hours long)
+# this makes it easily comparable.
+midday_emissions <- df |>
+  filter(midday_control_local) |>
+  summarise(
+    co2_kg_per_capita_midday=mean(co2_kg_per_capita),
+    energy_kwh_per_capita_midday=mean(energy_kwh_per_capita),
+    .by=c(regionid, date_local)
+  )
+  
+df <- df |>
+  left_join(midday_emissions, by=c("regionid", "date_local")) |>
+  mutate(
+    energy_kwh_per_capita_vs_midday=energy_kwh_per_capita - energy_kwh_per_capita_midday,
+    co2_kg_per_capita_vs_midday=co2_kg_per_capita - co2_kg_per_capita_midday
+  )
+
+
 # tidy up -----------------------------------------------------------------
 
 

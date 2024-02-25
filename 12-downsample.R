@@ -36,34 +36,32 @@ stopifnot(nrow(minutes_) == 2)
 # calculate number of half hours per day
 # this is not always 42, because of daylight savings
 hh_per_day_df <- df |> summarise(
-    hh_per_day=n(),
+    num_half_hours=n(),
+    day_length_scale_factor=num_half_hours / (2*24),
     .by=c(regionid, date_local)
   )
-midday_df <- df |>
-  filter(midday_control_local) |>
-  summarise(
-    midday_co2_kg_per_capita=mean(co2_kg_per_capita),
-    midday_energy_kwh_per_capita=mean(energy_kwh_per_capita),
-    .by=c(date_local, regionid)
-  ) |>
-  left_join(hh_per_day_df, by=c("regionid", "date_local")) |>
-  mutate(
-    midday_co2_kg_per_capita = midday_co2_kg_per_capita / hh_per_day,
-    midday_energy_kwh_per_capita = midday_energy_kwh_per_capita / hh_per_day,
-  ) |>
-  select(-hh_per_day)
-df <- df |> left_join(midday_df)
 
+# multiply some values by day_length_scale_factor
+# to account for the fact that some days have a bit fewer/more than 48 half hours
+# i.e. it's a normalisation
 daily <- df |> 
+  left_join(hh_per_day_df) |>
   summarise(
-    co2_kg_per_capita = sum(co2_kg_per_capita) * kg_per_t,
+    # this is the same value every group
+    # but R complains because it doesn't know that
+    day_length_scale_factor = mean(day_length_scale_factor), 
     
-    energy_kwh_per_capita = sum(energy_kwh_per_capita),
-    energy_kwh_adj_rooftop_solar_per_capita = sum(energy_kwh_adj_rooftop_solar_per_capita),
+    co2_kg_per_capita = sum(co2_kg_per_capita) * day_length_scale_factor * kg_per_t,
+    
+    energy_kwh_per_capita = sum(energy_kwh_per_capita) * day_length_scale_factor,
+    energy_kwh_adj_rooftop_solar_per_capita = sum(energy_kwh_adj_rooftop_solar_per_capita) * day_length_scale_factor,
+    
+    energy_kwh_per_capita_vs_midday = sum(energy_kwh_per_capita_vs_midday) * day_length_scale_factor,
+    co2_kg_per_capita_vs_midday = sum(co2_kg_per_capita_vs_midday) * day_length_scale_factor,
     
     # should be the same values all day
-    midday_co2_kg_per_capita=mean(midday_co2_kg_per_capita),
-    midday_energy_kwh_per_capita=mean(midday_energy_kwh_per_capita),
+    energy_kwh_per_capita_midday=mean(energy_kwh_per_capita_midday),
+    co2_kg_per_capita_midday=mean(co2_kg_per_capita_midday),
     total_renewables_today_twh=mean(total_renewables_today_twh),
     total_renewables_today_twh_uigf=mean(total_renewables_today_twh_uigf),
     population=mean(population),
@@ -71,6 +69,7 @@ daily <- df |>
     solar_exposure=mean(solar_exposure),
     sun_hours_per_day=mean(sun_hours_per_day),
     wind_km_per_h=mean(wind_km_per_h),
+    
     .by = c(
       # these two are what we're really grouping by
       date_local,
