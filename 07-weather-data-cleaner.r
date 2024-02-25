@@ -6,8 +6,9 @@ library(zoo)
 library(arrow)
 
 # Specify the directory where your CSV files are stored 
-data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
+#data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
 # data_dir <- '/home/matthew/data'
+data_dir <- 'data'
 temperature_dir <- file.path(data_dir, 'weather data')
 sunshine_dir <- file.path(data_dir, 'sunshine data')
 

@@ -62,19 +62,14 @@ encode dst_transition_id,gen(dst_transition1)
 gen wind = real(wind_km_per_h)
 gen wind_3 = wind*wind*wind
 
-//transform midday_local to just midday
-gen not_midday = 0
-replace not_midday = 1 if midday_control_local == "FALSE"
-drop midday_control_local
-
 save "data/12-energy-hourly-changed.dta", replace
 
 use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
 
-reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
 
 esttab CO2_DDD Elec_DDD using "DDD-results.tex", label se stats(r2 r2_a) replace

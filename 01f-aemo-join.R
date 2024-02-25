@@ -57,7 +57,7 @@ library(janitor)
 
 Sys.setenv(TZ='UTC')
 
-data_dir <- '/home/matthew/data/'
+data_dir <- 'data'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 region_power_dir <-  file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-region-month')
 import_export_path <- file.path(data_dir, '01-F-import-export-local')

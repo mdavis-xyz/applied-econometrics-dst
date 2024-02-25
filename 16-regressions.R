@@ -16,10 +16,6 @@ df <- read_parquet(file_path_parquet)
 summary(df)
 str(df)
 
-#Correct Midday variable
-df$not_midday <- !df$midday_control_local
-
-
 # Base Regressions for Co2 and Elec and Controls resp.
 #Base
 reg_CO2_simple <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here,data = df)
@@ -47,8 +43,8 @@ stargazer(DiD_CO2_base, DiD_Elec_base, DiD_CO2_controls, DiD_Elec_controls, type
 
 ####### DDD Regression:   #######################
 DDD_CO2_controls <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
-                   + not_midday + I(dst_here_anytime*not_midday) + I(dst_now_anywhere*not_midday)
-                   + I(dst_now_here*not_midday)
+                   + not_midday_control_local + I(dst_here_anytime*not_midday_control_local) + I(dst_now_anywhere*not_midday_control_local)
+                   + I(dst_now_here*not_midday_control_local)
                    + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + solar_exposure,
                    data = df, weights = df$population)
 summary(DDD_CO2_controls)
@@ -62,8 +58,8 @@ DDDCO2_stargazer = coeftest(DDD_CO2_controls, vcov = clustered_se)
 
 ##### Electricity Consumption regression
 DDD_Elec_controls <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
-                       + not_midday + I(dst_here_anytime*not_midday) + I(dst_now_anywhere*not_midday)
-                       + I(dst_now_here*not_midday)
+                       + not_midday_control_local + I(dst_here_anytime*not_midday_control_local) + I(dst_now_anywhere*not_midday_control_local)
+                       + I(dst_now_here*not_midday_control_local)
                        + weekend_local + public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + solar_exposure,
                        data = df, weights = df$population)
 summary(DDD_Elec_controls)

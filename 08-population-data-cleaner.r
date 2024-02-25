@@ -6,7 +6,8 @@ library(lubridate)
 
 # Set data directory
 #data_dir <- "/home/matthew/data/"
-data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
+#data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
+data_dir <- 'data'
 
 # Load data
 population_raw <- read_csv(file.path(data_dir, "population data/population-australia-raw.csv"))

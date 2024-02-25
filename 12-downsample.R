@@ -7,7 +7,7 @@
 library(arrow)
 library(tidyverse)
 
-data_dir <- "/home/matthew/data"
+data_dir <- "data"
 
 Sys.setenv(TZ='UTC') # see README.md
 

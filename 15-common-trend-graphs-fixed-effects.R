@@ -1,7 +1,7 @@
 library(arrow)
 library(tidyverse)
 
-data_dir <- "/home/matthew/data/"
+data_dir <- "data"
 daily_raw <- read_parquet(file.path(data_dir, "12-energy-daily.parquet")) |>
   mutate(
     treated = (regionid != 'QLD1')

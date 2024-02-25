@@ -92,8 +92,7 @@ library(janitor)
 
 Sys.setenv(TZ='UTC')
 
-data_dir <- '/home/matthew/data/'
-#data_dir <- '/media/matthew/nemweb/AppliedEconometrics/data'
+data_dir <- 'data'
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
 dispatchload_partitioned_dir <- file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-month-raw')

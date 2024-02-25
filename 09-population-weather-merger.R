@@ -4,7 +4,8 @@ library(zoo)
 
 # Set data directory
 #data_dir <- "/home/matthew/data/"
-data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
+#data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
+data_dir <- 'data'
 
 # Load data
 weather <- read_csv(file.path(data_dir, "07-weather-merged.csv"))

@@ -13,7 +13,9 @@ library(arrow)
 
 # Constants and configuration ---------------------------------------------
 
-data_dir <- "/home/matthew/data"
+# relative to this file
+# although you can specify an absolute path if you wish.
+data_dir <- "data"
 
 Sys.setenv(TZ='UTC') # see README.md
 
@@ -80,6 +82,11 @@ df <- energy |>
     
     midday_control_local = (hour(hh_start_local) >= 12) & (hour(hh_end_local) < 15),
     midday_control_fixed = (hour(hh_start_fixed) >= 12) & (hour(hh_end_fixed) < 15),
+    
+    # True if it is NOT midday
+    # For our DDD this is the way we normally want to think about this.
+    not_midday_control_local = !midday_control_local,
+    not_midday_control_fixed = !midday_control_fixed,
     
     # get time of day, as a single number
     # (e.g. 1:30-2:00pm is 13.5)
