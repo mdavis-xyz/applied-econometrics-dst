@@ -132,18 +132,15 @@ solar <- bind_rows(all_sunshine)
 #### Merge ####
 
 # merge weather data
-merged_weather <- left_join(temperature, solar, by=c("Date", "regionid")) 
+merged_weather <- left_join(temperature, solar, by= c("Date", "regionid"))
 
-# check if any data is missing
-merged_weather %>%
+# Fill in gaps which are larger than one day in a row by interpolating linearly 
+merged_weather <- merged_weather %>%
   group_by(regionid) %>%
-  summarise(
-    na_temperature=mean(is.na(temperature)),
-    na_solar=mean(is.na(solar_exposure))
-  )
-
+  mutate(solar_exposure = approx(x = 1:n(), y = solar_exposure, method = "linear", n = n())$y) %>% 
+  mutate(temperature = approx(x = 1:n(), y = temperature, method = "linear", n = n())$y)
 
 # Save merged data to CSV
-write_csv(merged_weather, file.path(data_dir, '07-weather-merged-R.csv'))
+write_csv(merged_weather, file.path(data_dir, '07-weather-merged.csv'))
 cat('All data merged and saved to CSV\n')
 
