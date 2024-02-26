@@ -124,7 +124,7 @@ eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperatu
 graph export "results/EventStudy-MiddayElec.png", replace
 
 /////////////////// Doing Event Study by transition direction
-use "data/12-energy-daily-yearly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=1 //DST start so only October to November direction
@@ -132,7 +132,7 @@ drop if dst_start !=1 //DST start so only October to November direction
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
 
-use "data/12-energy-daily-yearly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=0 //DST stop so only March to June direction
