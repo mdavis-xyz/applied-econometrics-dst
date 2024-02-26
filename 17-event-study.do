@@ -62,6 +62,8 @@ encode dst_transition_id,gen(dst_transition1)
 gen wind = real(wind_km_per_h)
 gen wind_3 = wind*wind*wind
 
+encode not_midday_control_local, gen(not_midday)
+
 save "data/12-energy-hourly-changed.dta", replace
 //doing base DiD regressions
 use "data/12-energy-hourly-changed.dta", clear
@@ -89,22 +91,23 @@ use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
-eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2"))
+eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2 kg per capita") xtitle("days until DST transition") title("Event Study - CO2 Emissions"))
 graph export "results/EventStudy-Co2.png", replace
 
-eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2"))
+eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Kwh energy per capita") xtitle("days until DST transition") title("Event Study - Electricity Consumption"))
 graph export "results/EventStudy-Elec.png", replace
 
 /////////////////////////////DDD Design and Event Study //////////////////////////
 
 use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression - adjusting for midday emissions
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
-
-reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
 
-reg energy_wh_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+//wrong regression?
+//reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+
+reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
 
 esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", label se stats(r2 r2_a) replace
