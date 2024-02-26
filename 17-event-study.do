@@ -70,7 +70,7 @@ use "data/12-energy-hourly-changed.dta", clear
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = population], vce(cluster regionid1)
 eststo CO2_Base
 //Controls
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DiD
 
 /// Elec_DiD
@@ -79,7 +79,7 @@ reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = popu
 eststo Elec_Base
 
 // Controls
-reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DiD
 
 esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", label se stats(r2 r2_a) replace
@@ -119,19 +119,6 @@ graph export "results/EventStudy-MiddayCo2.png", replace
 
 eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Kwh energy p.c.") xtitle("days until DST transition") title("Event Study - Energy - Midday Normalised"))
 graph export "results/EventStudy-MiddayElec.png", replace
-
-////////////////////////Matthew Code ////////////////////////
-save "data/12-energy-hourly-changed.dta", replace
-
-use "data/12-energy-hourly-changed.dta", clear
-/// DDD regression
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
-eststo CO2_DDD
-
-reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
-eststo Elec_DDD
-
-esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", label se stats(r2 r2_a) replace
 
 /////////////////// Doing Event Study by transition direction
 use "data/12-energy-daily-yearly-changed.dta", clear
