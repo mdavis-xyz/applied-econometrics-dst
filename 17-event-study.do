@@ -62,6 +62,8 @@ encode dst_transition_id,gen(dst_transition1)
 gen wind = real(wind_km_per_h)
 gen wind_3 = wind*wind*wind
 
+encode not_midday_control_local, gen(not_midday)
+
 save "data/12-energy-hourly-changed.dta", replace
 //doing base DiD regressions
 use "data/12-energy-hourly-changed.dta", clear
@@ -89,22 +91,23 @@ use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
-eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2"))
+eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") title("Event Study - CO2 Emissions"))
 graph export "results/EventStudy-Co2.png", replace
 
-eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2"))
+eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Kwh energy p.c.") xtitle("Days until DST transition") title("Event Study - Electricity Consumption"))
 graph export "results/EventStudy-Elec.png", replace
 
 /////////////////////////////DDD Design and Event Study //////////////////////////
 
 use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression - adjusting for midday emissions
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
-
-reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
 
-reg energy_wh_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+//wrong regression?
+//reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+
+reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
 
 esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", label se stats(r2 r2_a) replace
@@ -114,28 +117,43 @@ use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
-eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised"))
+eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 g per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday Normalised"))
 graph export "results/EventStudy-MiddayCo2.png", replace
 
-eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Kwh energy p.c.") xtitle("days until DST transition") title("Event Study - Energy - Midday Normalised"))
+eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") xtitle("Days until DST transition") title("Event Study - Energy - Midday Normalised"))
 graph export "results/EventStudy-MiddayElec.png", replace
 
 /////////////////// Doing Event Study by transition direction
-use "data/12-energy-daily-yearly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
-drop if dst_start !=1 //DST start so only October to November direction
+drop if dst_start !=1 //DST start so only July to December direction
 
-eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
+eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
 
-use "data/12-energy-daily-yearly-changed.dta", clear
+use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
-drop if dst_start !=0 //DST stop so only March to June direction
+drop if dst_start !=0 //DST stop so only January to June direction
 
-eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
+eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
 
+//////// Additional Robustness checks //////////
+// DDD dropping Tasmania
+use "data/12-energy-hourly-changed.dta", clear
+gen timevar = .
+replace timevar = days_into_dst if dst_here_anytime == 1
+drop if regionid == "TAS1"
 
+eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 g per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday - w/o Tasmania"))
+graph export "results/EventStudy-MiddayCo2-Dropping-Tasmania.png", replace
+
+eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") xtitle("Days until DST transition") title("Event Study - Energy - Midday - w/o Tasmania"))
+graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
+
+// DDD dropping Tasmania and using ln(co2) for interpretation
+gen ln_co2 = ln(co2_g_per_capita_vs_midday)
+eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("ln(Co2) g per capita") xtitle("Days until DST transition") title("Event Study - lnCO2 - Midday - w/o Tasmania"))
 
