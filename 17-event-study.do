@@ -140,5 +140,20 @@ drop if dst_start !=0 //DST stop so only January to June direction
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
 
+//////// Additional Robustness checks //////////
+// DDD dropping Tasmania
+use "data/12-energy-hourly-changed.dta", clear
+gen timevar = .
+replace timevar = days_into_dst if dst_here_anytime == 1
+drop if regionid == "TAS1"
 
+eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 g per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday - w/o Tasmania"))
+graph export "results/EventStudy-MiddayCo2-Dropping-Tasmania.png", replace
+
+eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") xtitle("Days until DST transition") title("Event Study - Energy - Midday - w/o Tasmania"))
+graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
+
+// DDD dropping Tasmania and using ln(co2) for interpretation
+gen ln_co2 = ln(co2_g_per_capita_vs_midday)
+eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("ln(Co2) g per capita") xtitle("Days until DST transition") title("Event Study - lnCO2 - Midday - w/o Tasmania"))
 
