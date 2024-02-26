@@ -82,7 +82,7 @@ eststo Elec_Base
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DiD
 
-esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "DiD-results.tex", label se stats(r2 r2_a) replace
+esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", label se stats(r2 r2_a) replace
 
 /// Event Study plot
 use "data/12-energy-hourly-changed.dta", clear
@@ -107,7 +107,7 @@ eststo CO2_DDD
 reg energy_wh_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
 
-esttab CO2_DDD Elec_DDD using "DDD-results.tex", label se stats(r2 r2_a) replace
+esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", label se stats(r2 r2_a) replace
 
 //DDD Event study
 use "data/12-energy-hourly-changed.dta", clear
@@ -131,7 +131,7 @@ eststo CO2_DDD
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
 
-esttab CO2_DDD Elec_DDD using "DDD-results.tex", label se stats(r2 r2_a) replace
+esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", label se stats(r2 r2_a) replace
 
 /////////////////// Doing Event Study by transition direction
 use "data/12-energy-daily-yearly-changed.dta", clear
