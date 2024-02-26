@@ -14,7 +14,10 @@ Sys.setenv(TZ='UTC') # see README.md
 pq_path <- file.path(data_dir, "10-half-hourly.parquet")
 df <- read_parquet(pq_path)
 
+# unit conversions
 kg_per_t <- 1000
+kg_per_g <- 1/1000
+kwh_per_wh <- 1/1000
 
 # assert the data is half hourly
 
@@ -56,8 +59,8 @@ daily <- df |>
     energy_kwh_per_capita = sum(energy_kwh_per_capita) * day_length_scale_factor,
     energy_kwh_adj_rooftop_solar_per_capita = sum(energy_kwh_adj_rooftop_solar_per_capita) * day_length_scale_factor,
     
-    energy_kwh_per_capita_vs_midday = sum(energy_kwh_per_capita_vs_midday) * day_length_scale_factor,
-    co2_kg_per_capita_vs_midday = sum(co2_kg_per_capita_vs_midday) * day_length_scale_factor,
+    energy_kwh_per_capita_vs_midday = sum(energy_wh_per_capita_vs_midday) * day_length_scale_factor * kwh_per_wh,
+    co2_kg_per_capita_vs_midday = sum(co2_g_per_capita_vs_midday) * day_length_scale_factor * kg_per_g,
     
     # should be the same values all day
     energy_kwh_per_capita_midday=mean(energy_kwh_per_capita_midday),

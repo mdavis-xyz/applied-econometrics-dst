@@ -4,6 +4,7 @@ library(stargazer)
 library(ggplot2)
 library(sandwich)
 library(lmtest)
+library(eventstudyr)
 
 #data_dir <- "C:/Users/Alex/Desktop/Alex/Toulouse School of Economics/Semester 2/Applied Economics TP/Project/Data"
 data_dir <- "data"
@@ -11,10 +12,7 @@ results_dir <- "results"
 
 file_path_parquet <- file.path(data_dir, "10-half-hourly.parquet")
 
-
 df <- read_parquet(file_path_parquet)
-summary(df)
-str(df)
 
 # Base Regressions for Co2 and Elec and Controls resp.
 #Base
@@ -104,3 +102,34 @@ stargazer(DDDCO2_stargazer, DDDCO2_Fixed_stargazer, type = "text", title = "Resu
           out = file.path(results_dir, "DDD_local_vs_fixed.txt"))
 
 
+##### Event Study Plots:
+
+df <- df |>
+  mutate(
+    temperature2=temperature^2,
+    wind_km_per_h3=wind_km_per_h^3,
+  )
+
+mode <- EventStudy(
+  estimator="OLS",
+  data=df |> arrange(days_into_dst),
+  outcomevar="co2_kg_per_capita_vs_midday",
+  policyvar = "dst_now_anywhere",
+  idvar = "regionid",
+  timevar = "days_into_dst",
+  controls=c(
+    "weekend_fixed",
+    "public_holiday",
+    "temperature",
+    "temperature2",
+    "wind_km_per_h3",
+    "solar_exposure"),
+  FE=TRUE,
+  TFE=TRUE,
+  post = 0, 
+  overidpost = 0,
+  pre  = 0, 
+  overidpre  = 0,
+  cluster = TRUE,
+  anticipation_effects_normalization = FALSE
+)
