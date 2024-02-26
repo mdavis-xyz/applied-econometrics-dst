@@ -30,8 +30,11 @@ SA_offset <- minutes(30)
 
 # kilograms per tonne
 kg_per_t <- 1000
+# grams per kilogram
+g_per_kg <- 1000
 
 # kil-mega-giga watt hour conversion ratios
+wh_per_kwh <- 1000
 kwh_per_mwh <- 1000
 mwh_per_gwh <- 1000
 gwh_per_twh <- 1000
@@ -107,7 +110,7 @@ df <- energy |>
   ungroup() |>
   # drop stuff we don't need
   # to save space
-  select(-hh_end, -d)
+  select(-hh_end, -d, -tz)
 
 
 # Public Holidays ---------------------------------------------------------
@@ -316,8 +319,8 @@ midday_emissions <- df |>
 df <- df |>
   left_join(midday_emissions, by=c("regionid", "date_local")) |>
   mutate(
-    energy_kwh_per_capita_vs_midday=energy_kwh_per_capita - energy_kwh_per_capita_midday,
-    co2_kg_per_capita_vs_midday=co2_kg_per_capita - co2_kg_per_capita_midday
+    energy_wh_per_capita_vs_midday=(energy_kwh_per_capita - energy_kwh_per_capita_midday) * wh_per_kwh,
+    co2_g_per_capita_vs_midday=(co2_kg_per_capita - co2_kg_per_capita_midday) * g_per_kg
   )
 
 

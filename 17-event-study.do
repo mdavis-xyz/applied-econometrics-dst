@@ -90,22 +90,17 @@ gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
 eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2"))
-graph export "EventStudy-Co2.png", replace
+graph export "results/EventStudy-Co2.png", replace
 
 eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2"))
-graph export "EventStudy-Elec.png", replace
+graph export "results/EventStudy-Elec.png", replace
 
 /////////////////////////////DDD Design and Event Study //////////////////////////
+
 use "data/12-energy-hourly-changed.dta", clear
-//transform midday_local to just midday
-gen not_midday = 0
-replace not_midday = 1 if midday_control_local == "FALSE"
-drop midday_control_local
-
-save "data/12-energy-hourly-changed.dta", replace
-
-use "12-energy-hourly-changed.dta", clear
 /// DDD regression - adjusting for midday emissions
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday_control_local weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+
 reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
 
@@ -120,10 +115,10 @@ gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised"))
-graph export "EventStudy-MiddayCo2.png", replace
+graph export "results/EventStudy-MiddayCo2.png", replace
 
 eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Kwh energy p.c.") xtitle("days until DST transition") title("Event Study - Energy - Midday Normalised"))
-graph export "EventStudy-MiddayElec.png", replace
+graph export "results/EventStudy-MiddayElec.png", replace
 
 ////////////////////////Matthew Code ////////////////////////
 save "data/12-energy-hourly-changed.dta", replace
@@ -145,15 +140,15 @@ replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=1 //DST start so only October to November direction
 
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
-graph export "EventStudy-MiddayCO2-DST-Start.png", replace
+graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
 
-use "12-energy-daily-yearly-changed.dta", clear
+use "data/12-energy-daily-yearly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=0 //DST stop so only March to June direction
 
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("co2_kg_per_capita") xtitle("days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
-graph export "EventStudy-MiddayCO2-DST-Stop.png", replace
+graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
 
 
 
