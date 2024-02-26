@@ -62,6 +62,7 @@ encode dst_transition_id,gen(dst_transition1)
 gen wind = real(wind_km_per_h)
 gen wind_3 = wind*wind*wind
 
+save "data/12-energy-hourly-changed.dta", replace
 //doing base DiD regressions
 use "data/12-energy-hourly-changed.dta", clear
 
