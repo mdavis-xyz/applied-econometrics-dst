@@ -1,16 +1,16 @@
 ## Process weather data
 #This processes the raw CSVs of temperature data from the BOM, and saves it as one CSV.
+# The data was downloaded by hand from https://reg.bom.gov.au/climate/data/
 
 library(tidyverse)
 library(zoo)
 library(arrow)
+library(here)
 
 # Specify the directory where your CSV files are stored 
-#data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
-# data_dir <- '/home/matthew/data'
-data_dir <- 'data'
-temperature_dir <- file.path(data_dir, 'weather data')
-sunshine_dir <- file.path(data_dir, 'sunshine data')
+data_dir <- here::here("data")
+temperature_dir <- file.path(data_dir, 'raw/weather')
+sunshine_dir <- file.path(data_dir, 'raw/sunshine')
 
 #Start Year
 first_year <- 2009
@@ -81,6 +81,10 @@ for (file_name in list.files(temperature_dir, pattern = "\\.csv$", full.names = 
   cat(sprintf('Data cleaned and added to list for %s\n', all_temperature[[length(all_temperature)]][[1, "regionid"]]))
 }
 
+# check that we have found some data
+# (i.e. source data not silently missing)
+stopifnot(length(all_temperature) > 0)
+
 # Merge all temperature data frames
 temperature <- bind_rows(all_temperature)
 
@@ -126,6 +130,10 @@ for (file_name in list.files(sunshine_dir, pattern = "\\.csv$", full.names = TRU
   all_sunshine[[length(all_sunshine) + 1]] <- clean_and_combine_sunshine(file_name)
   cat(sprintf('Data cleaned and added to list for %s\n', all_sunshine[[length(all_sunshine)]][[1, "regionid"]]))
 }
+
+# check that we have found some data
+# (i.e. source data not silently missing)
+stopifnot(length(all_sunshine) > 0)
 
 # Merge all sunshine data frames
 solar <- bind_rows(all_sunshine)

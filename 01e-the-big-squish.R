@@ -86,13 +86,15 @@ library(R.utils)
 library(ids)
 library(duckdb)
 library(janitor)
+library(here)
 
 
 # constants ---------------------------------------------------------------
 
 Sys.setenv(TZ='UTC')
 
-data_dir <- 'data'
+# directories
+data_dir <- here::here("data")
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
 dispatchload_partitioned_dir <- file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-month-raw')
@@ -102,6 +104,14 @@ import_export_path <- file.path(data_dir, '01-E-import-export.parquet')
 
 start_year <- 2009
 end_year <- 2023
+
+# time constants
+# data granularity is 5 minutes
+# so this many hours per interval
+h_per_interval <- 5/60
+
+# minutes per half hour
+min_per_hh <- 30
 
 
 # initial repartition -----------------------------------------------------

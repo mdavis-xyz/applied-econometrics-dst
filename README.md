@@ -4,6 +4,14 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 
 [Trello Board](https://trello.com/b/IOLb1smT/applied-econometrics)
 
+## Prerequisites
+
+* Python >= 3.10 (It might work as low as 3.6, but I haven't tested)
+* Python `multiprocessing.Pool()` must work. We've found that on some installations it doesn't. If not, that's a problem with your installation, not our code. Check you can run the first code sample [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
+* Install python dependencies with `pip install -r requirements.txt`
+
+Note that we keep all the data files in `./data`. The Jupyter and R scripts use relative paths. So you should not have to change any paths in them. For Stata, you will have to change the path up the top of the script.
+
 ## Scripts
 
 First, we download the data with `01-download.ipynb`.

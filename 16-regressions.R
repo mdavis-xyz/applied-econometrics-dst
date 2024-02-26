@@ -5,10 +5,13 @@ library(ggplot2)
 library(sandwich)
 library(lmtest)
 library(eventstudyr)
+library(here)
 
-#data_dir <- "C:/Users/Alex/Desktop/Alex/Toulouse School of Economics/Semester 2/Applied Economics TP/Project/Data"
-data_dir <- "data"
-results_dir <- "results"
+Sys.setenv(TZ='UTC') # see README.md
+
+# directories
+data_dir <- here::here("data")
+results_dir <- here::here("results")
 
 file_path_parquet <- file.path(data_dir, "10-half-hourly.parquet")
 

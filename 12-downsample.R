@@ -6,8 +6,9 @@
 
 library(arrow)
 library(tidyverse)
+library(here)
 
-data_dir <- "data"
+data_dir <- here::here("data")
 
 Sys.setenv(TZ='UTC') # see README.md
 

@@ -50,6 +50,7 @@ library(R.utils)
 library(ids)
 library(duckdb)
 library(janitor)
+library(here)
 
 
 # constants ---------------------------------------------------------------
@@ -57,7 +58,8 @@ library(janitor)
 
 Sys.setenv(TZ='UTC')
 
-data_dir <- 'data'
+# directories
+data_dir <- here::here("data")
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 region_power_dir <-  file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-region-month')
 import_export_path <- file.path(data_dir, '01-F-import-export-local')
@@ -292,13 +294,6 @@ renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM')) |>
 df <- df |>
   mutate(d=date(HH_END - minutes(min_per_hh))) |>
   left_join(renewables)
-
-# df starts with the last hh period before midnight
-# renewables starts with the first period after midnight
-first_hh_end <- min(df$HH_END)
-stopifnot(hour(first_hh_end) == 0)
-stopifnot(minute(first_hh_end) == 0)
-df <- df |> filter(HH_END != first_hh_end)
 
 # save --------------------------------------------------------------------
 

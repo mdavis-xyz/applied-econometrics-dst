@@ -3,14 +3,13 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(lubridate)
+library(here)
 
 # Set data directory
-#data_dir <- "/home/matthew/data/"
-#data_dir <- 'C:/Users/David/Documents/VWL/Master Toulouse/Semester 2 M1/Applied  Metrics Project/Data'
-data_dir <- 'data'
+data_dir <- here::here("data")
 
 # Load data
-population_raw <- read_csv(file.path(data_dir, "population data/population-australia-raw.csv"))
+population_raw <- read_csv(file.path(data_dir, "raw/population/population-australia-raw.csv"))
 
 # First data cleaning
 # Doesn't work with |> instead of  %>%

@@ -9,13 +9,14 @@
 # imports -----------------------------------------------------------------
 library(tidyverse)
 library(arrow)
+library(here)
 
 
 # Constants and configuration ---------------------------------------------
 
 # relative to this file
 # although you can specify an absolute path if you wish.
-data_dir <- "data"
+data_dir <- here::here("data")
 
 Sys.setenv(TZ='UTC') # see README.md
 
@@ -117,7 +118,7 @@ df <- energy |>
 # we read public holiday data from two files
 # because neither one on it's own covers the full time period we care about
 
-holidays_1 <- read_csv(file.path(data_dir, "holidays/Aus_public_hols_2009-2022-1.csv"), 
+holidays_1 <- read_csv(file.path(data_dir, "raw/holidays/Aus_public_hols_2009-2022-1.csv"), 
                        col_select=c("Date", "State"))
 
 holidays_2 <- read_csv(file.path(data_dir, "holidays/australian-public-holidays-combined-2021-2024.csv")) |>
@@ -234,17 +235,6 @@ temp_pop <- read_csv(file.path(data_dir, "09-temp-pop-merged.csv")) |>
 df <- left_join(df, temp_pop, by = c("date_local", "regionid")) |>
             fill(temperature, .direction = "down") |>
             fill(population, .direction = "up")
-
-
-# add sunlight hours (not sunlight irradiance) ----------------------------
-sunlight <- read_csv(file.path(data_dir, '03-sun-hours.csv'))
-df <- sunlight |>
-  rename(
-    date_local=d,
-    sun_hours_per_day=sun_hours
-  ) |>
-  right_join(df)
-
 
 
 # Wind data ---------------------------------------------------------------

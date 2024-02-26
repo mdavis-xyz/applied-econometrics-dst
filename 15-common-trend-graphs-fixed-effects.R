@@ -1,7 +1,10 @@
 library(arrow)
 library(tidyverse)
+library(here)
 
-data_dir <- "data"
+Sys.setenv(TZ='UTC') # see README.md
+
+data_dir <- here::here("data")
 daily_raw <- read_parquet(file.path(data_dir, "12-energy-daily.parquet")) |>
   mutate(
     treated = (regionid != 'QLD1')
