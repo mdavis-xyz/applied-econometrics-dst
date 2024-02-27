@@ -157,3 +157,15 @@ graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
 gen ln_co2 = ln(co2_g_per_capita_vs_midday)
 eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("ln(Co2) g per capita") xtitle("Days until DST transition") title("Event Study - lnCO2 - Midday - w/o Tasmania"))
 
+//////////////  Tables with lnCO2 and ln electricity consumption ////////////////////////////////
+use "data/12-energy-hourly-changed.dta", clear
+gen ln_CO2 = ln(co2_kg_per_capita)
+gen ln_Elec = ln(energy_kwh_per_capita)
+/// DDD regression - adjusting for midday emissions
+reg ln_CO2 c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+eststo ln_CO2_DDD
+
+reg ln_Elec c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+eststo ln_Elec_DDD
+
+esttab CO2_DDD Elec_DDD using "results/ln-DDD-results.tex", label se stats(r2 r2_a) replace
