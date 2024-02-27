@@ -60,7 +60,7 @@ encode regionid, gen(regionid1)
 encode dst_transition_id,gen(dst_transition1)
 
 gen wind = real(wind_km_per_h)
-gen wind_3 = wind*wind*wind
+gen wind_3 = (wind*wind*wind)/10000
 
 encode not_midday_control_local, gen(not_midday)
 
@@ -168,4 +168,4 @@ eststo ln_CO2_DDD
 reg ln_Elec c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo ln_Elec_DDD
 
-esttab CO2_DDD Elec_DDD using "results/ln-DDD-results.tex", label se stats(r2 r2_a) replace
+esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", label se stats(r2 r2_a) replace

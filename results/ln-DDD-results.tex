@@ -1,0 +1,56 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                    &\multicolumn{1}{c}{ln\_CO2}&\multicolumn{1}{c}{ln\_Elec}\\
+\hline
+dst\_here\_anytime    &      -0.339         &      -0.404\sym{**} \\
+                    &     (0.135)         &    (0.0485)         \\
+[1em]
+dst\_now\_anywhere    &       0.162\sym{*}  &       0.149\sym{**} \\
+                    &    (0.0506)         &    (0.0285)         \\
+[1em]
+dst\_here\_anytime $\times$ dst\_now\_anywhere&     -0.0561         &     -0.0626         \\
+                    &    (0.0579)         &    (0.0520)         \\
+[1em]
+not\_midday          &      0.0536\sym{***}&      0.0305\sym{***}\\
+                    &  (4.97e-12)         &  (8.47e-12)         \\
+[1em]
+dst\_here\_anytime $\times$ not\_midday&    -0.00584         &     0.00294         \\
+                    &    (0.0245)         &    (0.0102)         \\
+[1em]
+dst\_now\_anywhere $\times$ not\_midday&     -0.0505\sym{***}&     -0.0592\sym{***}\\
+                    &(0.00000213)         &(0.00000118)         \\
+[1em]
+dst\_here\_anytime $\times$ dst\_now\_anywhere $\times$ not\_midday&      0.0122         &      0.0104         \\
+                    &    (0.0283)         &    (0.0237)         \\
+[1em]
+weekend\_local       &     -0.0778\sym{**} &     -0.0951\sym{***}\\
+                    &    (0.0122)         &    (0.0109)         \\
+[1em]
+public\_holiday      &     -0.0974\sym{*}  &      -0.112\sym{**} \\
+                    &    (0.0229)         &    (0.0151)         \\
+[1em]
+temperature         &     -0.0177         &     -0.0403         \\
+                    &    (0.0355)         &    (0.0223)         \\
+[1em]
+temperature $\times$ temperature&    0.000502         &    0.000874         \\
+                    &  (0.000584)         &  (0.000376)         \\
+[1em]
+solar\_exposure      &     -0.0180         &     -0.0148         \\
+                    &    (0.0204)         &   (0.00909)         \\
+[1em]
+wind\_3              &  -0.0000205         & 0.000000516         \\
+                    & (0.0000102)         &(0.00000204)         \\
+[1em]
+Constant            &      -0.328         &      0.0716         \\
+                    &     (0.527)         &     (0.364)         \\
+\hline
+r2                  &       0.171         &       0.396         \\
+r2\_a                &       0.171         &       0.396         \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+}
