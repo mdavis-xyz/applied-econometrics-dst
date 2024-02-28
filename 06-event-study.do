@@ -144,14 +144,14 @@ replace not_midday = 1 if not_midday_control_local == "TRUE"
 
 
 
-save "data/10-half-hourly-changed.dta", replace
+save "data/06-half-hourly.dta", replace
 
 ///////////////////////// Regressions /////////////////////////////////////////
 /*******************2. Base DiD Regressions:*************************************
 - Event studies for CO2 emissions and electricity consumption using `eventdd`.
 - Plots are generated and exported.
 - Results are stored in `results/EventStudy-Co2.png` and `results/EventStudy-Elec.png`.*/
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 
 //Base 
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = population], vce(cluster regionid1)
@@ -177,7 +177,7 @@ esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", labe
 - Results are stored in `results/EventStudy-Co2.png` and `results/EventStudy-Elec.png`.
 */
 
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
@@ -193,7 +193,7 @@ graph export "results/EventStudy-Elec.png", replace
    - Results are stored in `eststo CO2_DDD` and `eststo Elec_DDD`.
    - Event studies are exported to files.*/
 
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 /// DDD regression - adjusting for midday emissions
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
@@ -204,7 +204,7 @@ eststo Elec_DDD
 esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", label se stats(r2 r2_a) replace
 
 //DDD Event study
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
@@ -219,7 +219,7 @@ graph export "results/EventStudy-MiddayElec.png", replace
 - Results are exported to files.
 */
 
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=1 //DST start so only July to December direction
@@ -227,7 +227,7 @@ drop if dst_start !=1 //DST start so only July to December direction
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
 
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=0 //DST stop so only January to June direction
@@ -241,7 +241,7 @@ graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
    - Results are exported to files. */
    
 // DDD dropping Tasmania
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if regionid == "TAS1"
@@ -266,7 +266,7 @@ graph export "results/EventStudy-ln(MiddayCo2)-Dropping-Tasmania.png", replace
    - Results are stored in `eststo ln_CO2_DDD` and `eststo ln_Elec_DDD`.
    - Tables are generated and exported. */
 
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 gen ln_CO2 = ln(co2_kg_per_capita)
 gen ln_Elec = ln(energy_kwh_per_capita)
 /// DDD regression - adjusting for midday emissions
@@ -283,7 +283,7 @@ esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", label se stats
 - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
 */
 
-use "data/10-half-hourly-changed.dta", clear
+use "data/06-half-hourly.dta", clear
 //DDD Regression for CO2
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD_base
