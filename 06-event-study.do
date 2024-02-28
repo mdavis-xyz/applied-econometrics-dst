@@ -1,8 +1,12 @@
 ********************************************************************************
-* M1 APPLIED ECONOMETRICS, Spring 2024 *
+* M1 APPLIED ECONOMETRICS, Spring 2024 
+*
 * Applied Econometrics - Master TSE 1 - 2023/2024
-* Daylight Savings Paper: Summary statistics, Difference-in-Differences, DDD,
-* Event studies*
+* "Exploring the Influence of Daylight Saving Time on CO2 Emissions 
+* and Electricity Consumption in Australia's Electricity Grid"
+*
+* Summary statistics, Difference-in-Differences, DDD, Event studies
+*
 * LAST MODIFIED: 29/02/2024 *
 * LAST MODIFIED BY: Alexander Köhler*
 * software version: Stata 17.0 SE-Standard Edition
@@ -17,7 +21,7 @@
 //ssc install matsort
 
 /*Structure:
-In the provided Stata code, there are several sections that involve regressions and event studies. Here's an ordered summary of the sections:
+Summary of the sections:
 
 1. **Data Import and Transformation:**
    - Importing and transforming data from the CSV file.

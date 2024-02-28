@@ -1,4 +1,21 @@
+################################################################################
+# M1 APPLIED ECONOMETRICS, Spring 2024
+# Applied Econometrics - Master TSE 1 - 2023/2024
+#
+# "Exploring the Influence of Daylight Saving Time on CO2 Emissions 
+# and Electricity Consumption in Australia's Electricity Grid"
+#
 # AEMO data join
+#
+# LAST MODIFIED: 29/02/2024 
+# LAST MODIFIED BY: Matthew Davis
+#
+# memory requirement: 16GB (not tested on 8GB, may fill up memory)
+# software version: R version 4.2.2
+# processors: 11th Gen Intel(R) Core(TM) i7-1165G7
+# OS: Linux, 6.2.0-39-generic, Ubuntu
+# machine type: Laptop
+#
 #
 # We handled the big AEMO data in the previous script.
 # That last script was slow and required lots of memory.
@@ -10,12 +27,12 @@
 # We want to adjust for import/export between regions
 # (if NSW imports coal power from QLD, the emissions from those coal plants
 #  should count as NSW's emissions, not QLD's)
-
+#
 # Original AEMO column names are uppercase,
 # because that's how they were in the original AEMO files.
 # New columns we create in this file are lowercase.
 # The final result is all lowercase names.
-
+#
 # AEMO tables:
 # TRADINGINTERCONNECT
 #   This tells us about import/export between regions
@@ -40,7 +57,8 @@
 #   (We use solar data from elsewhere)
 #   Except to check time zone correctness.
 #   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_111.htm#1
-
+#
+################################################################################
 
 # imports -----------------------------------------------------------------
 
@@ -52,12 +70,6 @@ library(duckdb)
 library(janitor)
 library(here)
 
-
-# logging -----------------------------------------------------------------
-# We were told to set up logging
-dir.create(here::here("logs"), showWarnings=FALSE)
-sink(NULL) # unset from previous runs
-sink(here::here("logs/01f.txt"), split=TRUE)
 
 # constants ---------------------------------------------------------------
 
@@ -313,5 +325,3 @@ df <- df |> arrange(d, regionid)
 
 df |> write_parquet(dest_path)
 dest_path
-
-sink()

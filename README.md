@@ -5,22 +5,28 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 
 ## Prerequisites
 
+* 16GB RAM/memory
 * Python >= 3.10 (It might work as low as 3.6, but I haven't tested) [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
 * Install python dependencies with `pip install -r requirements.txt`
 * We used R version 4.2.2 Patched (2022-11-10 r83330) inside R Studio 2023.06.0 Build 421
 * To install the R packages you need for this, run
 
 ```
-install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "lmtest", "eventstudyr", "here", "broom", "zoo"))
+install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "here", "zoo", "duckdb"))
 ```
 
 * You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`06-event-study.do`)
 
 Note that we keep all the data files in `./data`. The Jupyter and R scripts use relative paths. So you should not have to change any paths in them. For Stata, you will have to change the path up the top of the script.
 
+We tested this on Ubuntu, Mac and Linux.
+
 ## What to run
 
-As discussed, our raw dataset is 1.4TB uncompressed. To do the full processing requires at least 16GB of memory, and takes days. However after the first few scripts the dataset is small enough to be a normal, manageable size. 
+As discussed, our raw dataset is 1.4TB uncompressed. To do the full processing requires at least 16GB of memory, and takes days. (The reason for the dataset being so large and complex is documented below.)
+
+After the first few scripts the dataset is small enough to be a normal, manageable size. 
+
 The scripts are numbered in the order they should be run. But you probably want to start somewhere in the middle. You have three options. The explanation of what each script does is further below.
 
 ### Option 1 - RECOMMENDED - I don't want to touch terabytes of data. I just want to run 3 scripts.
@@ -189,6 +195,16 @@ Sys.setenv(TZ='UTC')
 (Setting to `Australia/Brisbane` does not work. We end up off by 10 hours.)
 
 There's a unit test in `04-join-aemo.R` to test that whatever we do with time zones is right.
+
+## Data size - why is it so big?
+
+The dataset we download is 300GB compressed CSV, totalling 1.4TB when uncompressed. Handling datasets larger than the size of your hard drive, with individual files larger than memory, is quite a technical challenge.
+
+The dataset comes from AEMO. Their target audience are electricity industry participants, who generally want to know everything. So the data is somewhat mixed together. e.g. individual files telling you total energy (MWh) for a region also tell you the total price, and the marginal cost of electrical transmission constraints, and FCAS ancilliary service charges and so on. We were able to identify about 1/3 of files as being definitely not needed (e.g. ones about gas) prior to downloading them. Of the remainder we need to download them, unzip them, "split" them (described above), and only then can we figure out which of the final 300 tables they belong to. At that point we can discard most data.
+
+Once we get to the raw data for only the handful of AEMO tables we need (about 10GB when compressed) then we can aggregate down from 5-minutes per generator, to 30-minutes per region. (Done in `01e-the-big-squish.R`.) After that point things become manageable. e.g. we can just load the whole thing into a dataframe in R.
+
+Part of the complexity is also that electricity generators and retailers want live data (e.g. streamed, to update every 5 minutes) in a big, expensive row-based SQL database. AEMO has proprietary software to do this. It's very complex, and not publicly accessible. And for analytics it's better to use a columnar solution anyway.
 
 ## Code Versioning
 
