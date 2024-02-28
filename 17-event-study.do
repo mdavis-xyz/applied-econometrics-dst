@@ -1,6 +1,16 @@
+//ssc install estout
+//ssc install eventdd
+//ssc install reghdfe
+//ssc install matsort
+
 clear all
 cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
 //cd "/home/matthew/applied_repo"
+
+*CREATE LOG FILE 
+cap log using "Tables and Graphs from Stata", replace
+
+//Importing Data from csv
 import delimited using "data/10-half-hourly.csv"
 
 //Transforming data
@@ -66,7 +76,9 @@ gen not_midday = 0
 replace not_midday = 1 if not_midday_control_local == "TRUE"
 
 save "data/12-energy-hourly-changed.dta", replace
-//doing base DiD regressions
+
+///////////////////////// Regressions //////////////////////////////////
+///////////////////doing base DiD regressions //////////////////////////////////
 use "data/12-energy-hourly-changed.dta", clear
 
 //Base 
@@ -179,15 +191,14 @@ eststo Elec_DDD_base
 
 ///////////// Manually creating DDD Table //////////////////////////////////////
 use "data/12-energy-hourly-changed.dta", clear
-drop if not_midday == 2 //removes TRUE values, so removes the treatment group
+drop if not_midday == 1 //removes TRUE values, so removes the treatment group
 //only control group
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = population], vce(cluster regionid1)
 
 use "data/12-energy-hourly-changed.dta", clear
-drop if not_midday == 1 //removes FALSE values, so removes the Control group
+drop if not_midday == 0 //removes FALSE values, so removes the Control group
 //only control group
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = population], vce(cluster regionid1)
 
 // TREATMENT - CONTROL of midday
 // -.0323724 -  -.0413116 = 0.0089392
-
