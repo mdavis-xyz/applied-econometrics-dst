@@ -65,6 +65,7 @@ In the provided Stata code, there are several sections that involve regressions 
 
 clear all
 cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
+set linesize 80
 //cd "/home/matthew/applied_repo"
 
 *CREATE LOG FILE 
@@ -141,7 +142,68 @@ gen not_midday = 0
 replace not_midday = 1 if not_midday_control_local == "TRUE"
 
 //Generating Labels
-
+// Labeling variables
+// Labeling variables
+label variable regionid "Region ID"
+label variable midday_control_fixed "Midday(Noon time) Control (Fixed Time)"
+label variable wind_km_per_h "Wind Speed (km/h)"
+label variable dst_now_anywhere "DST Now in Any Region (Time)"
+label variable sun_hours_per_day "Sun Hours Per Day"
+label variable not_midday_control_local "Not Midday Control (Local Time)"
+label variable co2_kg_per_capita "KG CO2 Emissions per Capita per 30 Minutes"
+label variable dst_here_anytime "DST Region (Treatment)"
+label variable dst_transition_id "DST Transition ID, per year 2 IDs"
+label variable not_midday_control_fixed "Not Midday Control (Fixed Time)"
+label variable energy_kwh_per_capita "kWh Electricity Consumption per Capita per 30 Minutes"
+label variable dst_now_here "DST Active Here (Treatment*Time)"
+label variable days_before_transition "Days Before DST Transition"
+label variable hr_local "Local Half-Hour Time"
+label variable energy_kwh_adj_rooftop_solar_per "Adjusted kWh Electricity Consumption per Capita per 30 Minutes"
+label variable days_after_transition "Days After DST Transition"
+label variable hr_fixed "Fixed Half-Hour Time"
+label variable total_renewables_today_twh "Total Renewables Today (TWh)"
+label variable total_renewables_today_twh_uigf "Total Renewables Today (TWh) - Uncertain Future"
+label variable co2_kg_per_capita_midday "Kg CO2 Emissions per Capita compared to the Midday period"
+label variable regionid1 "Region ID (Encoded)"
+label variable dst_transition1 "DST Transition (Encoded)"
+label variable dst_direction "Direction of DST for given transition"
+label variable wind "Mean Wind Speed (km/h) per day"
+label variable wind_3 "Daily mean Wind Speed (km/h) Cubed"
+label variable not_midday "Not Midday time period as a 0 or 1"
+label variable rooftop_solar_energy_mwh "Rooftop Solar Energy (MWh) per day"
+label variable tz "Timezone"
+label variable hh_end_fixed "Fixed End Time"
+label variable hh_end_local "Local End Time"
+label variable hh_start_fixed "Fixed Start Time"
+label variable hh_start_local "Local Start Time"
+label variable date_fixed "Fixed Date"
+label variable midday_control_local "Midday Control (Local Time)"
+label variable midday_control_fixed "Midday Control (Fixed Time)"
+label variable not_midday_control_local "Not Midday Control (Local Time)"
+label variable not_midday_control_fixed "Not Midday Control (Fixed Time)"
+label variable hr_local "Local Half-Hour"
+label variable hr_fixed "Fixed Half-Hour"
+label variable day_of_week_local "Day of Week (Local Time)"
+label variable day_of_week_fixed "Day of Week (Fixed Time)"
+label variable weekend_local "Weekend (Local)"
+label variable weekend_fixed "Weekend (Fixed)"
+label variable public_holiday "1 if Public holiday in Region, 0 otherwise"
+label variable days_into_dst_extreme_outlier  "Days into DST for Extreme Outliers"
+label variable days_into_dst_outlier "Days into DST for Outliers"
+label variable population "Population in given State and Time period"
+label variable temperature "Mean Daily Temperature °C in given State"
+label variable solar_exposure "Solar Exposure Coefficient"
+label variable co2_kg_per_capita "KG CO2 Emissions per Capita per 30 Minutes"
+label variable energy_kwh_per_capita "kwh Electricity Consumption per Capita per 30 Minutes"
+label variable energy_kwh_per_capita_midday "Mean Electricity Consumption (kWh) per Capita during the Midday period"
+label variable co2_g_per_capita_vs_midday "CO2 Emissions (g) per Capita compared to the Midday period"
+label variable date "Date"
+label variable dst_date "DST Date"
+label variable dst_start "DST Start"
+label variable after_transition "After Transition"
+label variable dst_transition_id_and_region "DST Transition ID and Region"
+label variable energy_wh_per_capita_vs_midday "Electricity Consumption (Wh) per Capita compared to the Midday period"
+label variable days_into_dst "Number of Days into the DST transition"
 
 
 save "data/06-half-hourly.dta", replace
