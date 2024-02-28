@@ -1,6 +1,22 @@
-########################
-# Aggregation script
-########################
+################################################################################
+# M1 APPLIED ECONOMETRICS, Spring 2024
+# Applied Econometrics - Master TSE 1 - 2023/2024
+#
+# "Exploring the Influence of Daylight Saving Time on CO2 Emissions 
+# and Electricity Consumption in Australia's Electricity Grid"
+#
+# The big aggregation
+# 
+# LAST MODIFIED: 29/02/2024 
+# LAST MODIFIED BY: Alexander Köhler
+#
+#
+# memory requirement: 16GB (not tested on 8GB, may fill up memory)
+# software version: R version 4.2.2
+# processors: 11th Gen Intel(R) Core(TM) i7-1165G7
+# OS: Linux, 6.2.0-39-generic, Ubuntu
+# machine type: Laptop
+#
 # Our data is large, in particular AEMO's DISPATCHLOAD table.
 # This contains data for about 500 generators,
 # for every 5 minutes, for 14 years.
@@ -29,17 +45,17 @@
 # It runs on my 16GB laptop. If you have only 8GB, it should still work.
 # So shut down other apps when running this.
 # This takes an hour to run.
-
+#
 # acronyms:
 # DUID = dispatchable unit ID
 # GENSETID = ID of a physical generator
 # each dispatchible unit may contain multiple gensets
-
+#
 # column names are uppercase for now
 # because that's how they were in the original AEMO files
-
+#
 # We use a few AEMO tables here:
-
+#
 # DISPATCHLOAD
 #   We use this to get the actual power output of each generator
 #   AEMO docs: "DISPATCHLOAD set out the current SCADA MW and target MW for each dispatchable unit..."
@@ -77,6 +93,8 @@
 #   https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_254.htm#1
 #   This contains emissions intensity per physical unit (without dates)
 #   relevant columns: GENSETID, CO2E_EMISSIONS_FACTOR, CO2E_ENERGY_SOURCE
+#
+################################################################################
 
 # imports -----------------------------------------------------------------
 
