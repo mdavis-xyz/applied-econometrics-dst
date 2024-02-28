@@ -188,17 +188,3 @@ eststo CO2_DDD_base
 
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday  [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD_base
-
-///////////// Manually creating DDD Table //////////////////////////////////////
-use "data/12-energy-hourly-changed.dta", clear
-drop if not_midday == 1 //removes TRUE values, so removes the treatment group
-//only control group
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = population], vce(cluster regionid1)
-
-use "data/12-energy-hourly-changed.dta", clear
-drop if not_midday == 0 //removes FALSE values, so removes the Control group
-//only control group
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere [aweight = population], vce(cluster regionid1)
-
-// TREATMENT - CONTROL of midday
-// -.0323724 -  -.0413116 = 0.0089392

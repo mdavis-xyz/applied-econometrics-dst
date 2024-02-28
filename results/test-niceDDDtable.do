@@ -35,3 +35,23 @@ esttab CO2_niceDDD  using "nice_DDD-results.tex", label se stats(r2 r2_a) replac
 
 dorp if midday
 reg co2_kg_per_capita c.dst_now_anywhere##c.dst_now_anytime  weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+
+
+///////////// Manually creating DDD Table //////////////////////////////////////
+use "data/12-energy-hourly-changed.dta", clear
+drop if not_midday == 1 //removes TRUE values, so removes the treatment group
+//only control group
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+// Difference in Time for Control group
+reg co2_kg_per_capita dst_now_anywhere 
+
+
+use "data/12-energy-hourly-changed.dta", clear
+drop if not_midday == 0 //removes FALSE values, so removes the Control group
+//only control group
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+// Difference in Time for Treatment group
+// 0.0192426
+
+// TREATMENT - CONTROL of midday
+// -.0175978 - -.0186343 = 0.0089392
