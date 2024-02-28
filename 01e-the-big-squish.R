@@ -255,3 +255,5 @@ for (y in start_year:end_year){
     rm(df)
   }
 }
+
+sink()

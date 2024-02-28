@@ -439,3 +439,5 @@ inner_join(point_estimates, standard_errors) |>
     x = "Time of day",
     y = "gCO2 diff, diff"
   )
+
+sink()
