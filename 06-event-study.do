@@ -17,7 +17,7 @@
 //ssc install matsort
 
 /*Structure:
-In the provided Stata code, there are several sections that involve regressions and event studies. Here's an ordered summary of the sections:
+Summary of the sections:
 
 1. **Data Import and Transformation:**
    - Importing and transforming data from the CSV file.
