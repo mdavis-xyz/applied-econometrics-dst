@@ -8,7 +8,7 @@
 # The big aggregation
 # 
 # LAST MODIFIED: 29/02/2024 
-# LAST MODIFIED BY: Alexander Köhler
+# LAST MODIFIED BY: Matthew Davis
 #
 #
 # memory requirement: 16GB (not tested on 8GB, may fill up memory)
