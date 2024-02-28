@@ -9,20 +9,28 @@
 # imports -----------------------------------------------------------------
 library(tidyverse)
 library(arrow)
+library(zoo)
 library(here)
 
 
 # logging -----------------------------------------------------------------
 # We were told to set up logging
 dir.create(here::here("logs"), showWarnings=FALSE)
-sink(here::here("logs/01e.txt"))
+sink(NULL) # unset from previous runs
+sink(here::here("logs/04.txt"), split=TRUE)
 
 
-# Constants and configuration ---------------------------------------------
+# Paths ---------------------------------------------
 
 # relative to this file
 # although you can specify an absolute path if you wish.
 data_dir <- here::here("data")
+
+temperature_dir <- file.path(data_dir, 'raw/weather')
+sunshine_dir <- file.path(data_dir, 'raw/sunshine')
+
+# constants ---------------------------------------------------------------
+
 
 Sys.setenv(TZ='UTC') # see README.md
 
@@ -52,6 +60,36 @@ min_per_hh <- 30
 # minutes per hour
 min_per_h <- 60
 
+
+# Unit conversions:
+# 1 Joule = 1 watt second
+# 1 MJ = 10^6 Ws = 10^3 kWs = 10^3 / 60^2 kWh
+# uppercase M not lowercase, to make it clear this is mega not milli
+kwh_per_megajoule = 10^3 / (60^2)
+
+# Define the city-region mapping, for weather data to AEMO regions
+# The first one is for capital cities.
+# This is for temperature, which drives load, which is mostly in cities.
+# the second one is for wind and solar, in the middle of the regions.
+# This drives generation, which is dispersed across the region.
+capital_city_region_map <- c(
+  'adelaide' = 'SA1', 
+  'brisbane' = 'QLD1',
+  'sydney' = 'NSW1',
+  'melbourne' = 'VIC1',
+  'hobart' = 'TAS1')
+regional_city_region_map <- c(
+  'cooberpedy' = 'SA1',
+  'richmond' = 'QLD1',
+  'dubbo' = 'NSW1',
+  'bendigo'= 'VIC1',
+  'hobart' = 'TAS1')
+
+# we are joining lots of different datasets
+# with many different start/end dates
+# the intersection we are aiming for is: (inclusive)
+start_date <- make_date(2009, 7, 1)
+end_date <- make_date(2023, 12, 1)
 
 # load energy source data --------------------------------------------------------
 
@@ -127,7 +165,7 @@ df <- energy |>
 holidays_1 <- read_csv(file.path(data_dir, "raw/holidays/Aus_public_hols_2009-2022-1.csv"), 
                        col_select=c("Date", "State"))
 
-holidays_2 <- read_csv(file.path(data_dir, "holidays/australian-public-holidays-combined-2021-2024.csv")) |>
+holidays_2 <- read_csv(file.path(data_dir, "raw/holidays/australian-public-holidays-combined-2021-2024.csv")) |>
   rename(State=Jurisdiction) |>
   select(Date, State) |>
   mutate(
@@ -241,6 +279,7 @@ population_raw <- read_csv(file.path(data_dir, "raw/population/population-austra
 
 # First data cleaning
 # Doesn't work with |> instead of  %>%
+# because of (.)
 population <- population_raw %>%
   select(1, (ncol(.) - 8):ncol(.)) %>% 
   slice(10:n())
@@ -258,7 +297,7 @@ population <- population |> select(-c(ACT1, AUS, NT1, WA1))
 # Transform dates to datetime format
 population <- population |>
   mutate(Date = parse_date(Date, "%b-%Y"))|>
-  filter(Date >= as.Date("2008-12-01"))
+  filter(between(Date, start_date, end_date))
 
 # Pivot the dataframe to have one column per state
 population <- population |> pivot_longer(cols = -Date, names_to = "regionid", values_to = "population")
@@ -267,21 +306,142 @@ population <- population |> pivot_longer(cols = -Date, names_to = "regionid", va
 # Note that since our main electrical dataset ends on 31st December
 # and this population data has a record on 1st Jan
 # we want to interpolate with the known population which we will eventually drop
-population |>
-  complete(regionid, Date = seq(min(Date), make_date(2023, 12, 1), by = 1)) |> 
+population <- population |>
+  complete(regionid, Date = seq(start_date, end_date, by = 1)) |> 
   arrange(regionid, Date) |>
   group_by(regionid) |>
-  mutate(population = approx(x = Date, y = population, method = "linear", n = n(), rule=2)$y) 
+  mutate(population = approx(x = Date, y = population, method = "linear", n = n(), rule=2)$y) |>
+  ungroup()
 
-# Add temperature and population ------------------------------------------
+# join to main dataframe
+df <- population |>
+  rename(date_local=Date) |>
+  right_join(df, by=c("regionid", "date_local"))
 
-temp_pop <- read_csv(file.path(data_dir, "09-temp-pop-merged.csv")) |>
-  rename(date_local=Date)
 
-df <- left_join(df, temp_pop, by = c("date_local", "regionid")) |>
-            fill(temperature, .direction = "down") |>
-            fill(population, .direction = "up")
+# add temperature ---------------------------------------------------------
 
+
+# Define the clean and combine function for temperature data
+clean_and_combine_temp <- function(file_path) {
+  # Load the data
+  temperature_data <- read_csv(file_path)
+  
+  # Clean Data
+  temperature_data <- temperature_data |>
+    mutate(date_local = make_date(Year, Month, Day)) |>
+    select(-c(`Product code`, 
+              `Bureau of Meteorology station number`,
+              `Days of accumulation of maximum temperature`,
+              Quality,
+              Year,
+              Month, 
+              Day)) |>
+    filter(between(date_local, start_date, end_date)) |>
+    rename(temperature = `Maximum temperature (Degree C)`)
+  
+  # Correct NaN
+  temperature_data <- temperature_data |>
+    mutate(rolling_mean = rollapply(temperature, 3, mean, align = "center", fill = NA)) |>
+    mutate(temperature = ifelse(is.na(temperature), rolling_mean, temperature)) |>
+    select(-rolling_mean)
+  
+  # Extract the city name from the file name
+  city_name <- str_remove(str_remove(basename(file_path), 'weather_'), '.csv')
+  region_code <- capital_city_region_map[city_name]
+  temperature_data$regionid <- region_code
+  
+  # Return cleaned data
+  temperature_data
+}
+# Create Temperature Dataframe 
+# Loop through each CSV file in the directory 
+all_temperature <- list()
+for (file_name in list.files(temperature_dir, pattern = "\\.csv$", full.names = TRUE)) {
+  all_temperature[[length(all_temperature) + 1]] <- clean_and_combine_temp(file_name)
+  cat(sprintf('Data cleaned and added to list for %s\n', all_temperature[[length(all_temperature)]][[1, "regionid"]]))
+}
+
+# check that we have found some data
+# (i.e. source data not silently missing)
+stopifnot(length(all_temperature) > 0)
+
+# Merge all temperature data frames
+temperature <- bind_rows(all_temperature)
+
+# Fill in gaps which are larger than one day in a row by interpolating linearly 
+temperature <- temperature |>
+  group_by(regionid) |>
+  mutate(temperature = approx(
+    x = 1:n(),
+    y = temperature,
+    method = "linear",
+    n = n()
+  )$y) |>
+  ungroup()
+
+# join to main dataframe
+df <- left_join(df, temperature, by=c("regionid", "date_local"))
+
+# add sunshine ------------------------------------------------------------
+
+# Define the clean and combine function for sunshine data
+clean_and_combine_sunshine <- function(file_path) {
+  # Load the data
+  sunshine_data <- read_csv(file_path)
+  
+  # Clean Data
+  sunshine_data <- sunshine_data |>
+    mutate(date_local = make_date(Year, Month, Day)) |>
+    select(-c(`Product code`,
+              `Bureau of Meteorology station number`,
+              Year, 
+              Month, 
+              Day)) |>
+    rename(solar_exposure = `Daily global solar exposure (MJ/m*m)`) |>
+    mutate(solar_exposure = solar_exposure * kwh_per_megajoule)  |>
+    filter(between(date_local, start_date, end_date))
+  
+  # Correct NaN
+  sunshine_data <- sunshine_data |>
+    mutate(rolling_mean = rollapply(solar_exposure, 3, mean, align = "center", fill = NA)) |>
+    mutate(solar_exposure = ifelse(is.na(solar_exposure), rolling_mean, solar_exposure)) |>
+    select(-rolling_mean)
+  
+  # Extract the city name from the file name
+  city_name <- str_remove(str_remove(basename(file_path), 'sunshine-'), '.csv')
+  region_code <- regional_city_region_map[city_name]
+  print(paste("Trying to find region for city", city_name, ", found ", region_code))
+  stopifnot(! is.na(region_code))
+  sunshine_data$regionid <- region_code
+  
+  # Return cleaned data
+  sunshine_data
+}
+
+#Create Sunshine Dataframe
+all_sunshine <- list()
+for (file_name in list.files(sunshine_dir, pattern = "\\.csv$", full.names = TRUE)) {
+  all_sunshine[[length(all_sunshine) + 1]] <- clean_and_combine_sunshine(file_name)
+  cat(sprintf('Data cleaned and added to list for %s\n', all_sunshine[[length(all_sunshine)]][[1, "regionid"]]))
+}
+
+# check that we have found some data
+# (i.e. source data not silently missing)
+stopifnot(length(all_sunshine) > 0)
+
+# Merge all sunshine data frames
+sunshine <- bind_rows(all_sunshine)
+
+
+# Fill in gaps which are larger than one day in a row by interpolating linearly 
+sunshine <- sunshine |>
+  group_by(regionid) |>
+  mutate(solar_exposure = approx(x = 1:n(), y = solar_exposure, method = "linear", n = n())$y) |>
+  ungroup()
+
+# join to main dataframe
+df <- left_join(df, sunshine, by=c("regionid", "date_local"))
 
 # Wind data ---------------------------------------------------------------
 
@@ -302,6 +462,13 @@ wind <- wind |>
     wind_km_per_h=avg_wind_speed_km_per_h
   ) |>
   select(-max_wind_speed_km_per_h) # drop column with missing data
+
+# Fill in gaps which are larger than one day in a row by interpolating linearly 
+wind <- wind |>
+  group_by(regionid) |>
+  complete(date_local = seq(start_date, end_date, by = 1)) |>
+  mutate(wind_km_per_h = approx(x = 1:n(), y = wind_km_per_h, method = "linear", n = n())$y) |>
+  ungroup()
 
 # add to main dataframe
 df <- df |>
@@ -367,15 +534,22 @@ df <- df |>
 # has slightly different endings
 # choose a round date to end on
 df <- df |> 
-  filter(year(date_local) < 2024) |>
-  filter(date_local >= make_date(2009, 7, 1)) |>
+  filter(between(date_local, start_date, end_date)) |>
   arrange(date_local, regionid)
+
+
+# missing data final check ------------------------------------------------
+
+# check data has no unexpected holes
+# we know rooftop solar data is missing from 2016 onwards
+missing <- colMeans(is.na(df))
+missing <- missing[(missing > 0) & !grepl("rooftop", names(df))]
+stopifnot(length(missing) == 0)
 
 
 # Save output -------------------------------------------------------------
 # CSV for stata
 # parquet for the next R script
-
 
 write_csv(df, file = file.path(data_dir, "10-half-hourly.csv"))
 write_parquet(df, sink = file.path(data_dir, "10-half-hourly.parquet"))

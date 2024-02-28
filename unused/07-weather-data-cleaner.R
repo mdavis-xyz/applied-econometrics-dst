@@ -11,7 +11,7 @@ library(here)
 # logging -----------------------------------------------------------------
 # We were told to set up logging
 dir.create(here::here("logs"), showWarnings=FALSE)
-sink(here::here("logs/01e.txt"))
+sink(here::here("logs/07.txt"), split=TRUE)
 
 
 # Specify the directory where your CSV files are stored 

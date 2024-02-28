@@ -56,7 +56,8 @@ library(here)
 # logging -----------------------------------------------------------------
 # We were told to set up logging
 dir.create(here::here("logs"), showWarnings=FALSE)
-sink(here::here("logs/01f.txt"))
+sink(NULL) # unset from previous runs
+sink(here::here("logs/01f.txt"), split=TRUE)
 
 # constants ---------------------------------------------------------------
 

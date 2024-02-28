@@ -2,10 +2,13 @@
 # It's a python library.
 # But you don't need to pip install anything. Just make sure that you open Jupyter lab from the directory that contains this script.
 import os
+import sys
 from multiprocessing import current_process
 from itertools import islice
 import traceback
 from random import shuffle
+
+assert sys.version_info >= (3, 6), "Python version too low."
 
 class Logger:
     def __init__(self, path='data/logs.txt', flush=False):
@@ -23,15 +26,15 @@ class Logger:
     def flush(self):
         self.f.flush()
     def debug(self, msg):
-        self.write(f"DEBUG: {msg}")
+        self.write("DEBUG: " + msg)
     def info(self, msg):
-        self.write(f"INFO: {msg}")
+        self.write("INFO: " + msg)
     def warn(self, msg):
-        self.write(f"WARNING: {msg}")
+        self.write("WARNING: " + msg)
     def warning(self, msg):
         self.warn(msg)
     def error(self, msg):
-        self.write(f"ERROR: {msg}")
+        self.write("ERROR: " + msg)
     def exception(self, ex):
         # this just prints the most recent one
         traceback.print_exc(file=self.f)
@@ -54,7 +57,7 @@ def renice():
     try:
         os.nice(19)
     except (AttributeError, OSError) as e: # on Windows
-        print(f"Unable to change process niceness {e}. Continuing anyway.")
+        print("Unable to change process niceness {}. Continuing anyway.".format(e))
         pass
 
 
@@ -92,7 +95,7 @@ def batched(iterable, n):
 # choose exactly one argument
 def create_dir(dir=None, file=None):
     if dir and file:
-        raise ValueError(f"Must specify either dir or file")
+        raise ValueError("Must specify either dir or file")
     if file:
         dir = os.path.dirname(file)
     if not os.path.exists(dir):

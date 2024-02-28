@@ -9,7 +9,7 @@ data_dir <- here::here("data")
 # set up logging
 # because we were told to generate log files
 dir.create(here::here("logs"), showWarnings=FALSE)
-sink(here::here("logs/09.txt"))
+sink(here::here("logs/09.txt"), split=TRUE)
 
 # Load data
 weather <- read_csv(file.path(data_dir, "07-weather-merged.csv"))
