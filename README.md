@@ -26,7 +26,7 @@ The scripts are numbered in the order they should be run. But you probably want 
 ### Option 1 - RECOMMENDED - I don't want to touch terabytes of data. I just want to run 3 scripts.
 
 This approach is what our tutor and mentor said they want.
-This will take mintues to run, and will handle hundreds of megabytes.
+This will take minutes to run, and will handle hundreds of megabytes.
 This still includes a little bit of merging and data wrangling.
 
 To do this, run scripts `04-merge.R` onwards.
