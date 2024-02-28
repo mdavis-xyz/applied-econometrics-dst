@@ -6,7 +6,7 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 ## Prerequisites
 
 * 8GB RAM/memory. 16GB recommended. If you only have 8GB, you may need to quit all other apps to free up memory.
-* Python >= 3.10 (It might work as low as 3.6, but I haven't tested) [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
+* Python >= 3.10 (It might work as low as 3.6, but we haven't tested) [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
 * Install python dependencies with `pip install -r requirements.txt`
 * We used R version 4.2.2 Patched (2022-11-10 r83330) inside R Studio 2023.06.0 Build 421
 * To install the R packages you need for this, run
