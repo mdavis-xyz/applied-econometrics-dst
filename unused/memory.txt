@@ -1,1 +1,0 @@
-Minimum observed free memory: 306776 KB
