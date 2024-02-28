@@ -1,0 +1,43 @@
+
+> # Load data
+> weather <- read_csv(file.path(data_dir, "07-weather-merged.csv"))
+[1mindexing[0m [34m07-weather-merged.csv[0m [========================================] [32m51.60GB/s[0m, eta: [36m 0s[0m                                                                                                                                
+> population <- read_csv(file.path(data_dir, "08-population-australia-merged.csv"))
+[1mindexing[0m [34m08-population-australia-merged.csv[0m [==========================] [32m465.17MB/s[0m, eta: [36m 0s[0m                                                                                                                                
+> # Merge data frames
+> merged_df <- merge(population, weather, by = c("regionid", "Date"), all = TRUE)
+
+> # Sort values
+> merged_df <- merged_df |> arrange(regionid, Date)
+
+> # Forward fill missing values in Population column within each group
+> merged_df |>
++   arrange(regionid, Date) |> 
++   group_by(regionid) |> 
++   m .... [TRUNCATED] 
+# A tibble: 295 × 7
+# Groups:   regionid [5]
+   regionid Date       population temperature solar_exposure population_interpolated
+   <chr>    <date>          <dbl>       <dbl>          <dbl>                   <dbl>
+ 1 NSW1     2008-12-01    7352883        NA           NA                    7352883 
+ 2 NSW1     2009-03-01    7385774        26.1          6.69                 7384374.
+ 3 NSW1     2009-06-01    7408540        17            0.972                7406939.
+ 4 NSW1     2009-09-01    7435485        21.4          4.64                 7432444.
+ 5 NSW1     2009-12-01    7459363        19.4          7.61                 7455622.
+ 6 NSW1     2010-03-01    7488717        20.6          3.19                 7482818.
+ 7 NSW1     2010-06-01    7506058        18            3.22                 7501911.
+ 8 NSW1     2010-09-01    7525564        27.4          3.81                 7520069.
+ 9 NSW1     2010-12-01    7544724        21.5          3.31                 7538452.
+10 NSW1     2011-03-01    7571474        34.4          6.5                  7561482.
+# ℹ 285 more rows
+# ℹ 1 more variable: interpolation_good <lgl>
+# ℹ Use `print(n = ...)` to see more rows
+
+> # Drop Dates before 2009 and after 2023
+> merged_df <- merged_df |> filter(!(Date <= as.Date("2008-12-31") | Date >= as.Date("2024-01-01")))
+
+> # Save merged data to CSV
+> write_csv(merged_df, file.path(data_dir, '09-temp-pop-merged.csv'))
+[1mwrote[0m [32m10.95kB[0m in [36m 0s[0m, [32m612.09MB/s[0m                                                                                           [1mwrote[0m [32m1.00TB[0m in [36m 0s[0m, [32m18.69TB/s[0m                                                                                           
+> print('All data merged and saved to CSV')
+[1] "All data merged and saved to CSV"

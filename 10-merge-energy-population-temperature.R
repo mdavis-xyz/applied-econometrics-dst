@@ -12,6 +12,12 @@ library(arrow)
 library(here)
 
 
+# logging -----------------------------------------------------------------
+# We were told to set up logging
+dir.create(here::here("logs"), showWarnings=FALSE)
+sink(here::here("logs/01e.txt"))
+
+
 # Constants and configuration ---------------------------------------------
 
 # relative to this file
@@ -227,6 +233,46 @@ typical_sample_count <- samples_per_days_into_dst |> pull(n) |> abs() |> median(
 outlier_days <- samples_per_days_into_dst |> filter(abs(n) < typical_sample_count) |> pull(days_into_dst)
 df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
     
+
+# Add population ----------------------------------------------------------
+
+# Load data
+population_raw <- read_csv(file.path(data_dir, "raw/population/population-australia-raw.csv"))
+
+# First data cleaning
+# Doesn't work with |> instead of  %>%
+population <- population_raw %>%
+  select(1, (ncol(.) - 8):ncol(.)) %>% 
+  slice(10:n())
+colnames(population) <- c("Date", "NSW1", "VIC1", "QLD1", "SA1", "WA1", "TAS1", "NT1", "ACT1","AUS")
+
+# Cast to numbers
+population[2:ncol(population)] <- lapply(population[2:ncol(population)], as.numeric)
+
+# Include Australian Capital Territory in New South Wales
+population$NSW1 <- population$NSW1 + population$ACT1
+
+# drop regions that aren't part of the study
+population <- population |> select(-c(ACT1, AUS, NT1, WA1))
+
+# Transform dates to datetime format
+population <- population |>
+  mutate(Date = parse_date(Date, "%b-%Y"))|>
+  filter(Date >= as.Date("2008-12-01"))
+
+# Pivot the dataframe to have one column per state
+population <- population |> pivot_longer(cols = -Date, names_to = "regionid", values_to = "population")
+
+# now linearly interpolate the 3-month data into daily
+# Note that since our main electrical dataset ends on 31st December
+# and this population data has a record on 1st Jan
+# we want to interpolate with the known population which we will eventually drop
+population |>
+  complete(regionid, Date = seq(min(Date), make_date(2023, 12, 1), by = 1)) |> 
+  arrange(regionid, Date) |>
+  group_by(regionid) |>
+  mutate(population = approx(x = Date, y = population, method = "linear", n = n(), rule=2)$y) 
+
 # Add temperature and population ------------------------------------------
 
 temp_pop <- read_csv(file.path(data_dir, "09-temp-pop-merged.csv")) |>

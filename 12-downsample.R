@@ -8,6 +8,16 @@ library(arrow)
 library(tidyverse)
 library(here)
 
+
+# logging -----------------------------------------------------------------
+# We were told to set up logging
+dir.create(here::here("logs"), showWarnings=FALSE)
+sink(here::here("logs/01e.txt"))
+
+
+# constants and paths -----------------------------------------------------
+
+
 data_dir <- here::here("data")
 
 Sys.setenv(TZ='UTC') # see README.md

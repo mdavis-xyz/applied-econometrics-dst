@@ -98,7 +98,7 @@ Our controls are:
 
 * `sun_hours_per_day` - Number of hours between sunrise and sunset, for this day, for this region. Does not account for cloud cover. 
 * `rooftop_solar_energy_mwh` - AEMO tends to report rooftop solar generation as negative load, mixed in with actual load. (Because they can't actually measure it.) For some years we are able to separately obtain it from AEMO's estimates.  But this is only from 2016 onwards, so we don't generally use this. Units are megawatt hours (over the day, or half hour, depending on the file.  Whatever the row duration is.)
-* `population` - number of people in this region. This varies over time. The data source uses 3 month data, which we linearly interpolate. See `08-population-data-cleaner.ipynb` and `09-population-weather-merger.ipynb`. (https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2023/310104.xlsx)
+* `population` - number of people in this region. This varies over time. The data source uses 3 month data, which we linearly interpolate. These might be a fraction of a person just due to the arithmatic of interpolation. Whilst population growth tends to be exponential, over a 3 month period linear is a sufficient approximation. See `08-population-data-cleaner.ipynb` and `09-population-weather-merger.ipynb`. (https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2023/310104.xlsx) 
 * `temperature` - maximum temperature each day, in each region, in degrees C. (We use maximum not average, because that tends to be a more representative driver of air conditioner load in summer.) For each region, we choose a weather station approximately in the biggest metropolitain area of the region, as this is the point where the largest demand for heating/air conditioning exists. See `07-weather-data-cleaner.ipynb`
 All Data from: (https://reg.bom.gov.au/climate/data/). In Detail:
 (Adelaide: https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=23034
@@ -128,6 +128,11 @@ Our code doesn't look at these. That's just for humans to look at to understand 
 ## Unused
 
 The `unused` folder is an archive of scripts which are no longer in use, or just investigation stuff that we don't want to delete.
+
+## Log files
+
+The instructions specified that we must attach log files.
+The `.ipynb` jupyter scripts use a logging function (from `utils.py`) to save to one log file per script in folder `logs/`.
 
 ## Timezone
 

@@ -7,6 +7,13 @@ library(zoo)
 library(arrow)
 library(here)
 
+
+# logging -----------------------------------------------------------------
+# We were told to set up logging
+dir.create(here::here("logs"), showWarnings=FALSE)
+sink(here::here("logs/01e.txt"))
+
+
 # Specify the directory where your CSV files are stored 
 data_dir <- here::here("data")
 temperature_dir <- file.path(data_dir, 'raw/weather')

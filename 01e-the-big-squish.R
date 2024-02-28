@@ -89,6 +89,11 @@ library(janitor)
 library(here)
 
 
+# logging -----------------------------------------------------------------
+# We were told to set up logging
+dir.create(here::here("logs"), showWarnings=FALSE)
+sink(here::here("logs/01e.txt"))
+
 # constants ---------------------------------------------------------------
 
 Sys.setenv(TZ='UTC')

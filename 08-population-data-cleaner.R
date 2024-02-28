@@ -5,6 +5,13 @@ library(tidyr)
 library(lubridate)
 library(here)
 
+
+# logging -----------------------------------------------------------------
+# We were told to set up logging
+dir.create(here::here("logs"), showWarnings=FALSE)
+sink(here::here("logs/01e.txt"))
+
+
 # Set data directory
 data_dir <- here::here("data")
 
@@ -25,15 +32,15 @@ population[2:ncol(population)] <- lapply(population[2:ncol(population)], as.nume
 population$NSW1 <- population$NSW1 + population$ACT1
 
 # drop regions that aren't part of the study
-population <- population %>% select(-c(ACT1, AUS, NT1, WA1))
+population <- population |> select(-c(ACT1, AUS, NT1, WA1))
 
 # Transform dates to datetime format
-population <- population %>%
-  mutate(Date = parse_date(Date, "%b-%Y"))%>%
+population <- population |>
+  mutate(Date = parse_date(Date, "%b-%Y"))|>
   filter(Date >= as.Date("2008-12-01"))
 
 # Pivot the dataframe to have one column per state
-population <- population %>% pivot_longer(cols = -Date, names_to = "regionid", values_to = "population")
+population <- population |> pivot_longer(cols = -Date, names_to = "regionid", values_to = "population")
 
 # Save data to CSV
 write_csv(population, file.path(data_dir, "08-population-australia-merged.csv"))
