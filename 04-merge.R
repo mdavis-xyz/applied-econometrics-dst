@@ -504,8 +504,8 @@ df <- df |>
     energy_kwh_per_capita = (energy_mwh / population) * kwh_per_mwh,
     energy_kwh_adj_rooftop_solar_per_capita = (energy_mwh_adj_rooftop_solar / population) * kwh_per_mwh,
     
-    total_renewables_today_twh=mean(total_renewables_today_mwh) / mwh_per_twh,
-    total_renewables_today_twh_uigf=mean(total_renewables_today_mwh_uigf) / mwh_per_twh,
+    total_renewables_today_twh=total_renewables_today_mwh / mwh_per_twh,
+    total_renewables_today_twh_uigf=total_renewables_today_mwh_uigf / mwh_per_twh,
   ) |>
   # drop columns to save space
   select(
@@ -567,7 +567,7 @@ stopifnot(length(missing) == 0)
 # parquet for the next R script
 
 write_csv(df, file = output_file_path_hh_csv)
-write_parquet(df, sink = file.path(data_dir, output_file_path_hh_pq))
+write_parquet(df, sink = output_file_path_hh_pq)
 
 
 # downsample half hourly to daily -----------------------------------------
@@ -653,4 +653,12 @@ daily <- df |>
   )
 daily |> write_csv(output_file_path_daily)
 
-'done'
+# this script uses a lot of memory
+# free up some with aggressive garbage collection
+# to leave room for the next script.
+# (It's better if the user just restarts R. 
+#  This is in case they forget.)
+gc()
+
+print('done')
+sink()

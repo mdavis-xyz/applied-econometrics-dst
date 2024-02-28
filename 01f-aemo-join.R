@@ -109,7 +109,7 @@ interconnector <- open_dataset(file.path(source_dir, 'INTERCONNECTOR')) |>
 
 # take the dynamic data about power per interconnector
 # and join it with the static region from/to each interconnector
-interconnectors <- left_join(tradinginterconnect, interconnector) |>
+interconnectors <- left_join(tradinginterconnect, interconnector, by=c("INTERCONNECTORID")) |>
   mutate(
     ENERGY_MWH = METEREDMWFLOW * h_per_interval
   ) |>
@@ -313,3 +313,5 @@ df <- df |> arrange(d, regionid)
 
 df |> write_parquet(dest_path)
 dest_path
+
+sink()
