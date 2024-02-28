@@ -53,12 +53,6 @@ library(janitor)
 library(here)
 
 
-# logging -----------------------------------------------------------------
-# We were told to set up logging
-dir.create(here::here("logs"), showWarnings=FALSE)
-sink(NULL) # unset from previous runs
-sink(here::here("logs/01f.txt"), split=TRUE)
-
 # constants ---------------------------------------------------------------
 
 
@@ -313,5 +307,3 @@ df <- df |> arrange(d, regionid)
 
 df |> write_parquet(dest_path)
 dest_path
-
-sink()

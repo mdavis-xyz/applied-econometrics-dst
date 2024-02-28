@@ -30,14 +30,6 @@ library(arrow)
 library(zoo)
 library(here)
 
-
-# logging -----------------------------------------------------------------
-# We were told to set up logging
-dir.create(here::here("logs"), showWarnings=FALSE)
-sink(NULL) # unset from previous runs
-sink(here::here("logs/04.txt"), split=TRUE)
-
-
 # Paths ---------------------------------------------
 
 # relative to this file
@@ -679,4 +671,3 @@ daily |> write_csv(output_file_path_daily)
 gc()
 
 print('done')
-sink()
