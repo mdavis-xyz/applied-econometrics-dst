@@ -1,27 +1,25 @@
 ################################################################################
-# M1 APPLIED ECONOMETRICS, Spring 2024 
+# M1 APPLIED ECONOMETRICS, Spring 2024
 # Applied Econometrics - Master TSE 1 - 2023/2024
 #
 # "Exploring the Influence of Daylight Saving Time on CO2 Emissions 
-# and Electricity Consumption in Australia's Electricity Grid"
+# and Electricity Consumption in Australia's Electricity Grid"
 #
-# Merging all datasets
+# This script merges all our data sets together:
+# * AEMO data (all AEMO data was joined together in previous scripts)
+# * Population data (for per-capita measures)
+# * Weather (sun, wind, temperature)
+# * DST clock-change transition info
+# It also downsamples to daily data, in addition to half hourly data.
 # 
 # LAST MODIFIED: 29/02/2024 
 # LAST MODIFIED BY: Alexander Köhler
-
+#
 # software version: R version 4.1.1
 # processors: Intel(R) Core(TM) i7-7500U CPU @ 2.7 GHz
 # OS: Windows 10 Pro, 22H2, 19045.4046
 # machine type: Laptop
 ################################################################################
-
-# This file merges all our datasets together
-# AEMO data (all AEMO data was joined together in previous scripts)
-# Population data (for per-capita measures)
-# Weather (sun, wind)
-# and DST transition info
-# It also downsamples to daily data, in addition to half hourly data.
 
 
 # imports -----------------------------------------------------------------
