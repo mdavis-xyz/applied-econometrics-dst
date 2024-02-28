@@ -1,4 +1,4 @@
-# TSE Applied Econometrics Daylight Savings Project
+# TSE Applied Econometrics Daylight Savings Project, Group 8 (Davis, Koehler, Postler, Stegmaier) 
 
 This repo contains Python and R scripts for analysing AEMO data for our TSE M1 applied econometrics project.
 
