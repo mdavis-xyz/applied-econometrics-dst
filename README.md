@@ -12,7 +12,7 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 * To install the R packages you need for this, run
 
 ```
-install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "lmtest", "eventstudyr", "here", "broom", "zoo"))
+install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "here", "zoo", "duckdb"))
 ```
 
 * You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`06-event-study.do`)
