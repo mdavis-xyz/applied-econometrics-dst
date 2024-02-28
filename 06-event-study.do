@@ -1,7 +1,67 @@
+********************************************************************************
+* M1 APPLIED ECONOMETRICS, Spring 2024 *
+* Applied Econometrics - Master TSE 1 - 2023/2024
+* Daylight Savings Paper: Summary statistics, Difference-in-Differences, DDD,
+* Event studies*
+* LAST MODIFIED: 29/02/2024 *
+* LAST MODIFIED BY: Alexander Köhler*
+* software version: Stata 17.0 SE-Standard Edition
+* processors: Intel(R) Core(TM) i7-7500U CPU @ 2.7 GHz
+* OS: Windows 10 Pro, 22H2, 19045.4046
+* machine type: Laptop
+********************************************************************************
+*Required Packages:
 //ssc install estout
 //ssc install eventdd
 //ssc install reghdfe
 //ssc install matsort
+
+/*Structure:
+In the provided Stata code, there are several sections that involve regressions and event studies. Here's an ordered summary of the sections:
+
+1. **Data Import and Transformation:**
+   - Importing and transforming data from the CSV file.
+
+2. **Base DiD Regressions:**
+   - Two sets of DiD regressions for CO2 emissions and electricity consumption.
+   - Base regressions without controls.
+   - DiD regressions with additional controls (weekend_local, public_holiday, temperature, etc.).
+   - Results are stored in `eststo CO2_Base` and `eststo Elec_Base`.
+
+3. **Event Studies:**
+   - Event studies for CO2 emissions and electricity consumption using `eventdd`.
+   - Plots are generated and exported.
+   - Results are stored in `results/EventStudy-Co2.png` and `results/EventStudy-Elec.png`.
+
+4. **DDD Design and Event Study:**
+   - DiD regressions with additional interaction terms for DDD design.
+   - Event studies for CO2 emissions and electricity consumption in DDD design.
+   - Results are stored in `eststo CO2_DDD` and `eststo Elec_DDD`.
+   - Event studies are exported to files.
+
+5. **Event Study by Transition Direction:**
+   - Event studies for CO2 emissions in DDD design, separated by DST start and stop directions.
+   - Results are exported to files.
+
+6. **Additional Robustness Checks:**
+   - Event studies for CO2 emissions and electricity consumption after dropping data related to Tasmania.
+   - Results are exported to files.
+
+7. **Event Study with ln(CO2) for Interpretation:**
+   - Event study for ln(CO2) after dropping data related to Tasmania.
+   - Result is exported to a file.
+
+8. **Tables with lnCO2 and ln Electricity Consumption:**
+   - DiD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
+   - Results are stored in `eststo ln_CO2_DDD` and `eststo ln_Elec_DDD`.
+   - Tables are generated and exported.
+
+9. **DDD without Controls:**
+   - DiD regressions for CO2 emissions and electricity consumption without additional controls.
+   - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
+*/
+
+*******************************************************************************
 
 clear all
 cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
@@ -10,75 +70,87 @@ cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
 *CREATE LOG FILE 
 cap log using "Tables and Graphs from Stata", replace
 
-//Importing Data from csv
+********************* 1. Data Import and Transformation:************************
+*		   - Importing and transforming data from the CSV file.
+   
 import delimited using "data/04-half-hourly.csv"
 
-//Transforming data
+//Transforming data: In the code below we are transforming the following string variables to long types or numerics respectively
+//Date
 gen date_new=date(date_local,"YMD")
 format date_new %td
 drop date_local
 rename date_new date
-
+//DST Date
 gen dst_date_new = date(dst_date, "YMD")
 format dst_date_new %td
 drop dst_date
 rename dst_date_new dst_date
 
-*Convert dst_start, after_transition, dst_now_anywhere, dst_here_anytime, dst_now_here, Weekend
+* dst_now_here, Weekend
+*Converts dst_start
 gen dst_start_temp = 0
 replace dst_start_temp = 1 if dst_start == "TRUE"
 drop dst_start
 rename dst_start_temp dst_start
-
+//after_transition 
 gen after_transition_temp = 0
 replace after_transition_temp = 1 if after_transition == "TRUE"
 drop after_transition
 rename after_transition_temp after_transition
-
+//dst_now_anywhere
 gen dst_now_anywhere_temp = 0
 replace dst_now_anywhere_temp = 1 if dst_now_anywhere == "TRUE"
 drop dst_now_anywhere
 rename dst_now_anywhere_temp dst_now_anywhere
-
+//dst_here_anytime
 gen dst_here_anytime_temp = 0
 replace dst_here_anytime_temp = 1 if dst_here_anytime == "TRUE"
 drop dst_here_anytime
 rename dst_here_anytime_temp dst_here_anytime
-
+//Converts dst_now_here
 gen dst_now_here_temp = 0
 replace dst_now_here_temp = 1 if dst_now_here == "TRUE"
 drop dst_now_here
 rename dst_now_here_temp dst_now_here
-
+//Converts Weekend
 gen Weekend_local_temp = 0
 replace Weekend_local_temp = 1 if weekend_local == "TRUE"
 drop weekend_local
 rename Weekend_local_temp weekend_local
-
+//Converts public holiday
 gen public_holiday_temp = 0
 replace public_holiday_temp = 1 if public_holiday == "TRUE"
 drop public_holiday
 rename public_holiday_temp public_holiday
 
-*dst_direction, start is 1
+//Converts dst_direction, start is 1
 gen dst_direction_temp = 0
 replace dst_direction_temp = 1 if dst_direction == "start"
 drop dst_direction
 rename dst_direction_temp dst_direction
-
+//Encodes region id and dst transition
 encode regionid, gen(regionid1)
 encode dst_transition_id,gen(dst_transition1)
-
+//Change wind from String to Numeric
 gen wind = real(wind_km_per_h)
+//Scale by 1/10000 to increase coefficient size for interpretation
 gen wind_3 = (wind*wind*wind)/10000
-
+//Generate not midday variable for DDD
 gen not_midday = 0
 replace not_midday = 1 if not_midday_control_local == "TRUE"
 
+//Generating Labels
+
+
+
 save "data/12-energy-hourly-changed.dta", replace
 
-///////////////////////// Regressions //////////////////////////////////
-///////////////////doing base DiD regressions //////////////////////////////////
+///////////////////////// Regressions /////////////////////////////////////////
+/*******************2. Base DiD Regressions:*************************************
+- Event studies for CO2 emissions and electricity consumption using `eventdd`.
+- Plots are generated and exported.
+- Results are stored in `results/EventStudy-Co2.png` and `results/EventStudy-Elec.png`.*/
 use "data/12-energy-hourly-changed.dta", clear
 
 //Base 
@@ -99,7 +171,8 @@ eststo Elec_DiD
 
 esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", label se stats(r2 r2_a) replace
 
-/// Event Study plot
+******************************3. Event Studies:*********************************
+
 use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
@@ -110,7 +183,11 @@ graph export "results/EventStudy-Co2.png", replace
 eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Kwh energy p.c.") xtitle("Days until DST transition") title("Event Study - Electricity Consumption"))
 graph export "results/EventStudy-Elec.png", replace
 
-/////////////////////////////DDD Design and Event Study //////////////////////////
+/******************** 4. **DDD Design and Event Study:**************************
+   - DiD regressions with additional interaction terms for DDD design.
+   - Event studies for CO2 emissions and electricity consumption in DDD design.
+   - Results are stored in `eststo CO2_DDD` and `eststo Elec_DDD`.
+   - Event studies are exported to files.*/
 
 use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression - adjusting for midday emissions
@@ -133,7 +210,11 @@ graph export "results/EventStudy-MiddayCo2.png", replace
 eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") xtitle("Days until DST transition") title("Event Study - Energy - Midday Normalised"))
 graph export "results/EventStudy-MiddayElec.png", replace
 
-/////////////////// Doing Event Study by transition direction
+/****************** 5. **Event Study by Transition Direction:*******************
+- Event studies for CO2 emissions in DDD design, separated by DST start and stop directions.
+- Results are exported to files.
+*/
+
 use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
@@ -150,7 +231,11 @@ drop if dst_start !=0 //DST stop so only January to June direction
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
 
-//////// Additional Robustness checks //////////
+
+/****************** 6. **Additional Robustness Checks:**************************
+   - Event studies for CO2 emissions and electricity consumption after dropping data related to Tasmania.
+   - Results are exported to files. */
+   
 // DDD dropping Tasmania
 use "data/12-energy-hourly-changed.dta", clear
 gen timevar = .
@@ -163,12 +248,20 @@ graph export "results/EventStudy-MiddayCo2-Dropping-Tasmania.png", replace
 eventdd energy_wh_per_capita_vs_midday public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") xtitle("Days until DST transition") title("Event Study - Energy - Midday - w/o Tasmania"))
 graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
 
+/******* 7. **Event Study with ln(CO2) for Interpretation:**********************
+- Event study for ln(CO2) after dropping data related to Tasmania.
+- Result is exported to a file.*/
+
 // DDD dropping Tasmania and using ln(co2) for interpretation
 gen ln_co2 = ln(co2_g_per_capita_vs_midday)
 eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("ln(Co2) g per capita") xtitle("Days until DST transition") title("Event Study - lnCO2 - Midday - w/o Tasmania"))
 graph export "results/EventStudy-ln(MiddayCo2)-Dropping-Tasmania.png", replace
 
-//////////////  Tables with lnCO2 and ln electricity consumption ////////////////////////////////
+/********** 8. **Tables with lnCO2 and ln Electricity Consumption:*************
+   - DiD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
+   - Results are stored in `eststo ln_CO2_DDD` and `eststo ln_Elec_DDD`.
+   - Tables are generated and exported. */
+
 use "data/12-energy-hourly-changed.dta", clear
 gen ln_CO2 = ln(co2_kg_per_capita)
 gen ln_Elec = ln(energy_kwh_per_capita)
@@ -181,10 +274,17 @@ eststo ln_Elec_DDD
 
 esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", label se stats(r2 r2_a) replace
 
-//////////////// DDD without controls
+/********************** 9. **DDD without Controls:*****************************
+- DiD regressions for CO2 emissions and electricity consumption without additional controls.
+- Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
+*/
+
 use "data/12-energy-hourly-changed.dta", clear
+//DDD Regression for CO2
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD_base
-
+//DDD Regression for Electricity
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday  [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD_base
+
+// End of file
