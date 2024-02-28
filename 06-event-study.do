@@ -1,6 +1,16 @@
+//ssc install estout
+//ssc install eventdd
+//ssc install reghdfe
+//ssc install matsort
+
 clear all
 cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
 //cd "/home/matthew/applied_repo"
+
+*CREATE LOG FILE 
+cap log using "Tables and Graphs from Stata", replace
+
+//Importing Data from csv
 import delimited using "data/04-half-hourly.csv"
 
 //Transforming data
@@ -60,12 +70,15 @@ encode regionid, gen(regionid1)
 encode dst_transition_id,gen(dst_transition1)
 
 gen wind = real(wind_km_per_h)
-gen wind_3 = wind*wind*wind
+gen wind_3 = (wind*wind*wind)/10000
 
-encode not_midday_control_local, gen(not_midday)
+gen not_midday = 0
+replace not_midday = 1 if not_midday_control_local == "TRUE"
 
 save "data/12-energy-hourly-changed.dta", replace
-//doing base DiD regressions
+
+///////////////////////// Regressions //////////////////////////////////
+///////////////////doing base DiD regressions //////////////////////////////////
 use "data/12-energy-hourly-changed.dta", clear
 
 //Base 
@@ -103,9 +116,6 @@ use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression - adjusting for midday emissions
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
-
-//wrong regression?
-//reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
@@ -156,4 +166,25 @@ graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
 // DDD dropping Tasmania and using ln(co2) for interpretation
 gen ln_co2 = ln(co2_g_per_capita_vs_midday)
 eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure wind_3  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) graph_op(ytitle("ln(Co2) g per capita") xtitle("Days until DST transition") title("Event Study - lnCO2 - Midday - w/o Tasmania"))
+graph export "results/EventStudy-ln(MiddayCo2)-Dropping-Tasmania.png", replace
 
+//////////////  Tables with lnCO2 and ln electricity consumption ////////////////////////////////
+use "data/12-energy-hourly-changed.dta", clear
+gen ln_CO2 = ln(co2_kg_per_capita)
+gen ln_Elec = ln(energy_kwh_per_capita)
+/// DDD regression - adjusting for midday emissions
+reg ln_CO2 c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+eststo ln_CO2_DDD
+
+reg ln_Elec c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+eststo ln_Elec_DDD
+
+esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", label se stats(r2 r2_a) replace
+
+//////////////// DDD without controls
+use "data/12-energy-hourly-changed.dta", clear
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday [aweight = population], vce(cluster regionid1)
+eststo CO2_DDD_base
+
+reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday  [aweight = population], vce(cluster regionid1)
+eststo Elec_DDD_base
