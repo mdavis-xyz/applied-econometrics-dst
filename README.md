@@ -48,7 +48,7 @@ But we also do some regressions to look at just energy itself:
 For our dependent variables, our `x`, we have:
 
 * `regionid` - the geographical state, as per AEMO convention. (AEMO always ends region id with a `1`) This is a string enum/factor. Options are:
-    * `QLD1` - Queensland (our treatment)
+    * `QLD1` - Queensland (our control region)
     * `NSW1` - New South Wales. (This includes the Australian Capital Territory (ACT))
     * `VIC1` - Victoria
     * `SA1` - South Australia
