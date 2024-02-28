@@ -28,7 +28,7 @@
 # This still uses up a lot of memory.
 # It runs on my 16GB laptop. If you have only 8GB, it should still work.
 # So shut down other apps when running this.
-# This takes half an hour to run.
+# This takes an hour to run.
 
 # acronyms:
 # DUID = dispatchable unit ID

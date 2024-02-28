@@ -1,0 +1,143 @@
+
+> # constants ---------------------------------------------------------------
+> 
+> 
+> Sys.setenv(TZ='UTC')
+
+> # directories
+> data_dir <- here::here("data")
+
+> source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
+
+> region_power_dir <-  file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-region-month')
+
+> import_export_path <- file.path(data_dir, '01-F-import-export-local')
+
+> interconnector_power_path <- file.path(data_dir, '01-F-interconnector-power.parquet')
+
+> dest_path <- file.path(data_dir, '01-F-aemo-joined-all.parquet')
+
+> # 5 minute intervals
+> h_per_interval <- 1/12
+
+> # minutes per half hour
+> min_per_hh <- 30
+
+> # hours per day
+> h_per_day <- 24
+
+> # interconnectors (region import/export) ----------------------------------
+> 
+> # logic:
+> # suppose 
+> # - QLD generates 100MW, 20tCO2, consumes 5 .... [TRUNCATED] 
+
+> interconnector <- open_dataset(file.path(source_dir, 'INTERCONNECTOR')) |>
++   arrange(INTERCONNECTORID, desc(SCHEMA_VERSION), desc(TOP_TIMESTAMP),  .... [TRUNCATED] 
+
+> # take the dynamic data about power per interconnector
+> # and join it with the static region from/to each interconnector
+> interconnectors <- left_ .... [TRUNCATED] 
+
+> # Now join generation data and interconnector data
+> # so we can add emissions data to interconnector power flow
+> interconnectors_month <- open_dat .... [TRUNCATED] 
+
+> # now we want to concatenate 3 dataframes:
+> # interconnectors, for the source region (export)
+> # interconnectors, for the destination region (impo .... [TRUNCATED] 
+
+> # import energy
+> import <- interconnectors_month |>
++   rename(
++     REGIONID = REGIONTO,
++   ) |>
++   mutate(DATA_SOURCE='import') |>
++   write_d .... [TRUNCATED] 
+
+> # local generation
+> open_dataset(region_power_dir) |>
++   mutate(
++     DATA_SOURCE = 'local generation'
++   ) |>
++   write_dataset(import_export_p .... [TRUNCATED] 
+
+> # save space
+> rm(interconnectors_month)
+
+> rm(tradinginterconnect)
+
+> df <- open_dataset(import_export_path) |>
++   summarise(
++     CO2_T = sum(CO2_T),
++     ENERGY_MWH = sum(ENERGY_MWH),
++     .by=c(REGIONID, HH_END) .... [TRUNCATED] 
+
+> # add rooftop solar -------------------------------------------------------
+> # note that rooftop solar is half hour, which is what we've got
+> # us .... [TRUNCATED] 
+
+> # plot solar throughout the day
+> rooftop |>
++   mutate(
++     # off by 5 minutes, but close enough for a graph we're gonna eye-ball
++     h = hour( .... [TRUNCATED] 
+
+> # now calculate mathematically
+> # so we can test this with an assertion
+> night_solar_frac <- rooftop |>
++   mutate(
++     during_daylight=if_else( .... [TRUNCATED] 
+
+> stopifnot(night_solar_frac < 0.001)
+
+> # When the timezones are done wrong
+> # subtracting 5 minutes, across a clock-forward transition
+> # results in NA
+> # test this doesn't happen
+> ba .... [TRUNCATED] 
+
+> stopifnot(! any(bad_dts))
+
+> # now add rooftop solar to load
+> df <- df |>
++   left_join(rooftop, by=c("REGIONID", "HH_END")) |>
++   mutate(
++     rooftop_solar_energy_mwh = roo .... [TRUNCATED] 
+
+> # add renewables ----------------------------------------------------------
+> 
+> renewables <- open_dataset(file.path(source_dir, 'DISPATCHREGIONSUM .... [TRUNCATED] 
+
+> df <- df |>
++   mutate(d=date(HH_END - minutes(min_per_hh))) |>
++   left_join(renewables)
+
+> # save --------------------------------------------------------------------
+> 
+> # tidy up capitalisation
+> # the original AEMO files are all upperc .... [TRUNCATED] 
+
+> # make order intuitive
+> df <- df |> arrange(d, regionid)
+
+> df |> write_parquet(dest_path)
+
+> dest_path
+[1] "/home/matthew/applied_repo/data/01-F-aemo-joined-all.parquet"
+
+> # This file merges all our datasets together
+> # AEMO data (all AEMO data was joined together in previous scripts)
+> # Population data (for per-capi .... [TRUNCATED] 
+
+> library(arrow)
+
+> library(zoo)
+
+> library(here)
+
+> # logging -----------------------------------------------------------------
+> # We were told to set up logging
+> dir.create(here::here("logs"), show .... [TRUNCATED] 
+
+> sink(NULL) # unset from previous runs

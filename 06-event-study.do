@@ -1,7 +1,7 @@
 clear all
 cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
 //cd "/home/matthew/applied_repo"
-import delimited using "data/10-half-hourly.csv"
+import delimited using "data/04-half-hourly.csv"
 
 //Transforming data
 gen date_new=date(date_local,"YMD")

@@ -1,3 +1,5 @@
+# Run regressions on the data
+
 library(tidyverse)
 library(arrow)
 library(stargazer)
@@ -27,7 +29,7 @@ Sys.setenv(TZ='UTC') # see README.md
 data_dir <- here::here("data")
 results_dir <- here::here("results")
 
-file_path_parquet <- file.path(data_dir, "10-half-hourly.parquet")
+file_path_parquet <- file.path(data_dir, "04-half-hourly.parquet")
 
 df <- read_parquet(file_path_parquet)
 

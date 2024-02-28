@@ -3,7 +3,7 @@
 # Population data (for per-capita measures)
 # Weather (sun, wind)
 # and DST transition info
-# To run, first change `data_dir`.
+# It also downsamples to daily data, in addition to half hourly data.
 
 
 # imports -----------------------------------------------------------------
@@ -26,8 +26,19 @@ sink(here::here("logs/04.txt"), split=TRUE)
 # although you can specify an absolute path if you wish.
 data_dir <- here::here("data")
 
-temperature_dir <- file.path(data_dir, 'raw/weather')
-sunshine_dir <- file.path(data_dir, 'raw/sunshine')
+# source data
+pub_hol_path_1 <- file.path(data_dir, "raw/holidays/Aus_public_hols_2009-2022-1.csv")
+pub_hol_path_2 <- file.path(data_dir, "raw/holidays/australian-public-holidays-combined-2021-2024.csv")
+dst_transitions_path <- file.path(data_dir, 'snapshot/02-dst-dates.csv')
+population_path <- file.path(data_dir, "raw/population/population-australia-raw.csv")
+temperature_dir <- file.path(data_dir, "raw/weather")
+sunshine_dir <- file.path(data_dir, "raw/sunshine")
+wind_path <- file.path(data_dir, "snapshot/05-wind.csv")
+aemo_pq_path <- file.path(data_dir, "snapshot/01-F-aemo-joined-all.parquet")
+
+output_file_path_hh_csv <- file.path(data_dir, "04-half-hourly.csv")
+output_file_path_hh_pq <- file.path(data_dir, "04-half-hourly.parquet")
+output_file_path_daily <- file.path(data_dir, "04-energy-daily.csv")
 
 # constants ---------------------------------------------------------------
 
@@ -43,13 +54,17 @@ market_tz <- "Australia/Brisbane"
 # (They shift forward/back on the same day by the same amount)
 SA_offset <- minutes(30)
 
+# unit converstion constants
+# We don't want magic numbers later in the code
 # kilograms per tonne
 kg_per_t <- 1000
 # grams per kilogram
 g_per_kg <- 1000
+kg_per_g <- 1/g_per_kg
 
 # kil-mega-giga watt hour conversion ratios
 wh_per_kwh <- 1000
+kwh_per_wh <- 1/wh_per_kwh
 kwh_per_mwh <- 1000
 mwh_per_gwh <- 1000
 gwh_per_twh <- 1000
@@ -93,7 +108,7 @@ end_date <- make_date(2023, 12, 1)
 
 # load energy source data --------------------------------------------------------
 
-energy <- read_parquet(file.path(data_dir, "01-F-aemo-joined-all.parquet"))
+energy <- read_parquet(aemo_pq_path)
 
 # Local time, midday control and other time info --------------------------------------
 
@@ -162,10 +177,10 @@ df <- energy |>
 # we read public holiday data from two files
 # because neither one on it's own covers the full time period we care about
 
-holidays_1 <- read_csv(file.path(data_dir, "raw/holidays/Aus_public_hols_2009-2022-1.csv"), 
+holidays_1 <- read_csv(pub_hol_path_1, 
                        col_select=c("Date", "State"))
 
-holidays_2 <- read_csv(file.path(data_dir, "raw/holidays/australian-public-holidays-combined-2021-2024.csv")) |>
+holidays_2 <- read_csv(pub_hol_path_2) |>
   rename(State=Jurisdiction) |>
   select(Date, State) |>
   mutate(
@@ -194,7 +209,7 @@ df <- holidays |>
 # then we join that to the larger energy dataframe.
 # Note that clock changes happen on the same day in all treatment regions.
 
-dst_transitions <- read_csv(file.path(data_dir, '02-dst-dates.csv'))
+dst_transitions <- read_csv(dst_transitions_path)
 dst_transitions <- dst_transitions |>
   rename(
     dst_date = date,
@@ -275,7 +290,7 @@ df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
 # Add population ----------------------------------------------------------
 
 # Load data
-population_raw <- read_csv(file.path(data_dir, "raw/population/population-australia-raw.csv"))
+population_raw <- read_csv(population_path)
 
 # First data cleaning
 # Doesn't work with |> instead of  %>%
@@ -447,7 +462,7 @@ df <- left_join(df, sunshine, by=c("regionid", "date_local"))
 
 
 # fill in that one gap, linear interpolation
-wind <- read_csv(file.path(data_dir, '05-wind.csv'))
+wind <- read_csv(wind_path)
 
 # we're missing a lot of max wind speed data
 # but only one average wind speed record
@@ -547,10 +562,95 @@ missing <- missing[(missing > 0) & !grepl("rooftop", names(df))]
 stopifnot(length(missing) == 0)
 
 
-# Save output -------------------------------------------------------------
+# Save half hourly output -------------------------------------------------------------
 # CSV for stata
 # parquet for the next R script
 
-write_csv(df, file = file.path(data_dir, "10-half-hourly.csv"))
-write_parquet(df, sink = file.path(data_dir, "10-half-hourly.parquet"))
+write_csv(df, file = output_file_path_hh_csv)
+write_parquet(df, sink = file.path(data_dir, output_file_path_hh_pq))
 
+
+# downsample half hourly to daily -----------------------------------------
+
+
+
+# midday for daily --------------------------------------------------------
+# In our half hourly data, we have a dummy var for if this interval
+# is in our midday control period.
+# Once we aggregate to daily, we lose that.
+# So we'll have a new column which is the CO2 or energy metric itself,
+# i.e. a number not a dummy. We summed for the 2.5h "midday" period
+# scale it so that the values are what emissions/energy would be
+# if the region behaved all day long the way it behaves at midday
+
+# calculate number of half hours per day
+# this is not always 42, because of daylight savings
+hh_per_day_df <- df |> summarise(
+  num_half_hours=n(),
+  day_length_scale_factor=num_half_hours / (2*24),
+  .by=c(regionid, date_local)
+)
+
+# multiply some values by day_length_scale_factor
+# to account for the fact that some days have a bit fewer/more than 48 half hours
+# i.e. it's a normalisation
+daily <- df |> 
+  left_join(hh_per_day_df) |>
+  summarise(
+    # this is the same value every group
+    # but R complains because it doesn't know that
+    day_length_scale_factor = mean(day_length_scale_factor), 
+    
+    co2_kg_per_capita = sum(co2_kg_per_capita) * day_length_scale_factor * kg_per_t,
+    
+    energy_kwh_per_capita = sum(energy_kwh_per_capita) * day_length_scale_factor,
+    energy_kwh_adj_rooftop_solar_per_capita = sum(energy_kwh_adj_rooftop_solar_per_capita) * day_length_scale_factor,
+    
+    energy_kwh_per_capita_vs_midday = sum(energy_wh_per_capita_vs_midday) * day_length_scale_factor * kwh_per_wh,
+    co2_kg_per_capita_vs_midday = sum(co2_g_per_capita_vs_midday) * day_length_scale_factor * kg_per_g,
+    
+    # should be the same values all day
+    energy_kwh_per_capita_midday=mean(energy_kwh_per_capita_midday),
+    co2_kg_per_capita_midday=mean(co2_kg_per_capita_midday),
+    total_renewables_today_twh=mean(total_renewables_today_twh),
+    total_renewables_today_twh_uigf=mean(total_renewables_today_twh_uigf),
+    population=mean(population),
+    temperature=mean(temperature),
+    solar_exposure=mean(solar_exposure),
+    wind_km_per_h=mean(wind_km_per_h),
+    
+    .by = c(
+      # these two are what we're really grouping by
+      date_local,
+      regionid,
+      
+      # we just want to keep all these,
+      # and they happen to be the same for each group
+      # because they're a function of Date and regionid
+      dst_date,
+      dst_direction,
+      dst_start,
+      dst_transition_id,
+      dst_transition_id_and_region,
+      after_transition,
+      dst_now_anywhere,
+      dst_here_anytime,
+      dst_now_here,
+      days_before_transition,
+      days_after_transition,
+      days_into_dst,
+      days_into_dst_outlier,
+      days_into_dst_extreme_outlier,
+      public_holiday,
+      day_of_week_local,
+      weekend_local
+    ) 
+  )  |>
+  rename(
+    date=date_local,
+    day_of_week=day_of_week_local,
+    weekend=weekend_local,
+  )
+daily |> write_csv(output_file_path_daily)
+
+'done'

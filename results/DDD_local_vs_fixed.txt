@@ -6,13 +6,13 @@ Results for CO2 Local vs. Fixed
                                                       CO2 per capita       
                                                     (1)            (2)     
 ---------------------------------------------------------------------------
-Treatment                                        -0.132***      -0.145***  
+Treatment                                        -0.133***      -0.146***  
                                                   (0.001)       (0.0004)   
                                                                            
-Time                                              0.050***      0.021***   
+Time                                              0.052***      0.023***   
                                                   (0.001)       (0.0004)   
                                                                            
-Time*Treatment                                   -0.025***      -0.017***  
+Time*Treatment                                   -0.026***      -0.017***  
                                                   (0.002)        (0.001)   
                                                                            
 not_midday_control_local                          0.027***                 
@@ -21,7 +21,7 @@ not_midday_control_local                          0.027***
 I(dst_here_anytime * not_midday_control_local)   -0.013***                 
                                                   (0.001)                  
                                                                            
-I(dst_now_anywhere * not_midday_control_local)   -0.028***                 
+I(dst_now_anywhere * not_midday_control_local)   -0.030***                 
                                                   (0.001)                  
                                                                            
 I(dst_now_here * not_midday_control_local)        0.009***                 
@@ -36,7 +36,7 @@ midday_control_fixed                                            -0.027***
 I(dst_here_anytime * midday_control_fixed)                      0.013***   
                                                                  (0.001)   
                                                                            
-I(dst_now_anywhere * midday_control_fixed)                      0.028***   
+I(dst_now_anywhere * midday_control_fixed)                      0.030***   
                                                                  (0.001)   
                                                                            
 I(dst_now_here * midday_control_fixed)                          -0.008***  
@@ -45,7 +45,7 @@ I(dst_now_here * midday_control_fixed)                          -0.008***
 weekend_fixed                                                   -0.034***  
                                                                 (0.0003)   
                                                                            
-public_holiday                                   -0.040***      -0.039***  
+public_holiday                                   -0.038***      -0.038***  
                                                   (0.001)        (0.001)   
                                                                            
 temperature                                      -0.011***      -0.011***  
@@ -63,7 +63,7 @@ I(wind_km_per_h3)                                              -0.00001***
 solar_exposure                                   -0.004***      -0.004***  
                                                   (0.0001)      (0.0001)   
                                                                            
-Constant                                          0.711***      0.738***   
+Constant                                          0.713***      0.740***   
                                                   (0.002)        (0.002)   
                                                                            
 ===========================================================================

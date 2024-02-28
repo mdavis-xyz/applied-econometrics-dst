@@ -1,0 +1,584 @@
+
+> # constants and paths -----------------------------------------------------
+> 
+> 
+> 
+> Sys.setenv(TZ='UTC') # see README.md
+
+> # directories
+> data_dir <- here::here("data")
+
+> results_dir <- here::here("results")
+
+> file_path_parquet <- file.path(data_dir, "04-half-hourly.parquet")
+
+> df <- read_parquet(file_path_parquet)
+
+> # Base Regressions for Co2 and Elec and Controls resp.
+> #Base
+> reg_CO2_simple <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_ .... [TRUNCATED] 
+
+> clustered_se <- vcovHC(reg_CO2_simple, cluster = ~regionid)
+
+> DiD_CO2_base = coeftest(reg_CO2_simple, vcov = clustered_se)
+
+> #Controls
+> reg_CO2_controls <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here + weekend_local + public_holiday + tempera .... [TRUNCATED] 
+
+> clustered_se <- vcovHC(reg_CO2_controls, cluster = ~regionid)
+
+> DiD_CO2_controls = coeftest(reg_CO2_controls, vcov = clustered_se)
+
+> #Elec
+> reg_Elec_simple <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here,data = df)
+
+> clustered_se <- vcovHC(reg_Elec_simple, cluster = ~regionid)
+
+> DiD_Elec_base = coeftest(reg_Elec_simple, vcov = clustered_se)
+
+> #Controls
+> reg_Elec_controls <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here + weekend_local + public_holiday + te .... [TRUNCATED] 
+
+> clustered_se <- vcovHC(reg_Elec_controls, cluster = ~regionid)
+
+> DiD_Elec_controls = coeftest(reg_Elec_controls, vcov = clustered_se)
+
+> stargazer(DiD_CO2_base, DiD_Elec_base, DiD_CO2_controls, DiD_Elec_controls, type = "latex", 
++           title = "CO2 and electricity consumption Re ..." ... [TRUNCATED] 
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: mer., févr. 28, 2024 - 20:54:08
+% Requires LaTeX packages: dcolumn rotating 
+\begin{sidewaystable}[!htbp] \centering 
+  \caption{CO2 and electricity consumption Results - DiD w/o controls} 
+  \label{} 
+\small 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{4}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-5} 
+\\[-1.8ex] & \multicolumn{4}{c}{Kg CO2 p.c.} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\ 
+\hline \\[-1.8ex] 
+ Treatment & -0.263^{***} & -0.055^{***} & -0.144^{***} & -0.215^{***} \\ 
+  & (0.0004) & (0.0005) & (0.0004) & (0.0003) \\ 
+  & & & & \\ 
+ Time & 0.024^{***} & 0.032^{***} & 0.026^{***} & 0.031^{***} \\ 
+  & (0.0004) & (0.0004) & (0.0004) & (0.0004) \\ 
+  & & & & \\ 
+ Time*Treatment & -0.028^{***} & -0.105^{***} & -0.018^{***} & -0.024^{***} \\ 
+  & (0.001) & (0.001) & (0.001) & (0.0004) \\ 
+  & & & & \\ 
+ Weekend &  &  & -0.034^{***} & -0.046^{***} \\ 
+  &  &  & (0.0003) & (0.0002) \\ 
+  & & & & \\ 
+ Public holidays &  &  & -0.038^{***} & -0.050^{***} \\ 
+  &  &  & (0.001) & (0.0005) \\ 
+  & & & & \\ 
+ Temperature &  &  & -0.011^{***} & -0.025^{***} \\ 
+  &  &  & (0.0002) & (0.0001) \\ 
+  & & & & \\ 
+ Temperature2 &  &  & 0.0003^{***} & 0.001^{***} \\ 
+  &  &  & (0.00000) & (0.00000) \\ 
+  & & & & \\ 
+ Wind3 &  &  & -0.059^{***} & 0.004^{***} \\ 
+  &  &  & (0.0003) & (0.0002) \\ 
+  & & & & \\ 
+ Solar exposure &  &  & -0.004^{***} & -0.008^{***} \\ 
+  &  &  & (0.0001) & (0.0001) \\ 
+  & & & & \\ 
+ Constant & 0.579^{***} & 0.658^{***} & 0.736^{***} & 1.008^{***} \\ 
+  & (0.0002) & (0.0002) & (0.002) & (0.002) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{sidewaystable} 
+
+> ####### DDD Regression:   #######################
+> DDD_CO2_controls <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
++  .... [TRUNCATED] 
+
+> summary(DDD_CO2_controls)
+
+Call:
+lm(formula = co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + 
+    dst_now_here + not_midday_control_local + I(dst_here_anytime * 
+    not_midday_control_local) + I(dst_now_anywhere * not_midday_control_local) + 
+    I(dst_now_here * not_midday_control_local) + weekend_local + 
+    public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + 
+    solar_exposure, data = df, weights = df$population)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-1047.2  -283.4  -114.9   114.4  1569.5 
+
+Coefficients:
+                                                 Estimate Std. Error  t value Pr(>|t|)
+(Intercept)                                     7.129e-01  2.169e-03  328.688  < 2e-16
+dst_here_anytimeTRUE                           -1.326e-01  1.231e-03 -107.647  < 2e-16
+dst_now_anywhereTRUE                            5.223e-02  1.524e-03   34.269  < 2e-16
+dst_now_hereTRUE                               -2.609e-02  1.727e-03  -15.109  < 2e-16
+not_midday_control_localTRUE                    2.684e-02  1.136e-03   23.620  < 2e-16
+I(dst_here_anytime * not_midday_control_local) -1.307e-02  1.293e-03  -10.105  < 2e-16
+I(dst_now_anywhere * not_midday_control_local) -2.968e-02  1.615e-03  -18.379  < 2e-16
+I(dst_now_here * not_midday_control_local)      9.120e-03  1.838e-03    4.963 6.95e-07
+weekend_localTRUE                              -3.383e-02  2.823e-04 -119.854  < 2e-16
+public_holidayTRUE                             -3.780e-02  7.018e-04  -53.852  < 2e-16
+temperature                                    -1.089e-02  1.506e-04  -72.300  < 2e-16
+I(temperature^2)                                2.718e-04  3.011e-06   90.271  < 2e-16
+I(wind_km_per_h^3/10000)                       -5.937e-02  2.380e-04 -249.465  < 2e-16
+solar_exposure                                 -4.218e-03  8.473e-05  -49.784  < 2e-16
+                                                  
+(Intercept)                                    ***
+dst_here_anytimeTRUE                           ***
+dst_now_anywhereTRUE                           ***
+dst_now_hereTRUE                               ***
+not_midday_control_localTRUE                   ***
+I(dst_here_anytime * not_midday_control_local) ***
+I(dst_now_anywhere * not_midday_control_local) ***
+I(dst_now_here * not_midday_control_local)     ***
+weekend_localTRUE                              ***
+public_holidayTRUE                             ***
+temperature                                    ***
+I(temperature^2)                               ***
+I(wind_km_per_h^3/10000)                       ***
+solar_exposure                                 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 296.3 on 1264058 degrees of freedom
+Multiple R-squared:  0.2139,	Adjusted R-squared:  0.2139 
+F-statistic: 2.646e+04 on 13 and 1264058 DF,  p-value: < 2.2e-16
+
+
+> # Cluster-robust standard errors
+> clustered_se <- vcovHC(DDD_CO2_controls, cluster = ~regionid)
+
+> summary(clustered_se)
+  (Intercept)         dst_here_anytimeTRUE dst_now_anywhereTRUE dst_now_hereTRUE    
+ Min.   :-9.977e-07   Min.   :-1.091e-06   Min.   :-1.374e-06   Min.   :-2.358e-06  
+ 1st Qu.:-5.502e-07   1st Qu.:-4.690e-07   1st Qu.:-4.689e-07   1st Qu.:-4.714e-07  
+ Median :-1.759e-08   Median : 2.142e-09   Median :-1.635e-09   Median :-2.235e-09  
+ Mean   : 2.942e-07   Mean   :-2.588e-08   Mean   :-1.238e-10   Mean   : 1.954e-08  
+ 3rd Qu.: 4.861e-07   3rd Qu.: 4.493e-07   3rd Qu.: 4.462e-07   3rd Qu.: 6.929e-07  
+ Max.   : 5.143e-06   Max.   : 1.112e-06   Max.   : 1.424e-06   Max.   : 2.381e-06  
+ not_midday_control_localTRUE I(dst_here_anytime * not_midday_control_local)
+ Min.   :-6.884e-07           Min.   :-1.181e-06                            
+ 1st Qu.:-4.651e-07           1st Qu.:-4.659e-07                            
+ Median : 1.649e-10           Median :-8.260e-11                            
+ Mean   : 1.996e-10           Mean   : 5.068e-10                            
+ 3rd Qu.: 4.660e-07           3rd Qu.: 4.715e-07                            
+ Max.   : 6.884e-07           Max.   : 1.181e-06                            
+ I(dst_now_anywhere * not_midday_control_local)
+ Min.   :-1.518e-06                            
+ 1st Qu.:-4.660e-07                            
+ Median :-5.400e-12                            
+ Mean   : 1.490e-10                            
+ 3rd Qu.: 4.674e-07                            
+ Max.   : 1.518e-06                            
+ I(dst_now_here * not_midday_control_local) weekend_localTRUE    public_holidayTRUE  
+ Min.   :-2.358e-06                         Min.   :-2.317e-08   Min.   :-1.196e-08  
+ 1st Qu.:-4.636e-07                         1st Qu.:-4.633e-10   1st Qu.:-5.726e-10  
+ Median :-4.370e-11                         Median :-6.781e-11   Median : 5.052e-10  
+ Mean   : 4.566e-09                         Mean   : 4.366e-09   Mean   : 3.724e-08  
+ 3rd Qu.: 5.165e-07                         3rd Qu.: 5.152e-10   3rd Qu.: 3.186e-09  
+ Max.   : 2.616e-06                         Max.   : 7.890e-08   Max.   : 4.545e-07  
+  temperature         I(temperature^2)     I(wind_km_per_h^3/10000)
+ Min.   :-3.471e-07   Min.   :-5.640e-10   Min.   :-2.933e-08      
+ 1st Qu.:-1.504e-09   1st Qu.: 1.866e-12   1st Qu.:-1.842e-09      
+ Median :-2.976e-10   Median : 8.121e-12   Median : 3.390e-11      
+ Mean   :-2.261e-08   Mean   : 4.289e-10   Mean   : 2.564e-09      
+ 3rd Qu.: 3.110e-11   3rd Qu.: 1.935e-11   3rd Qu.: 3.437e-10      
+ Max.   : 2.860e-08   Max.   : 6.658e-09   Max.   : 7.776e-08      
+ solar_exposure      
+ Min.   :-1.201e-08  
+ 1st Qu.:-2.096e-09  
+ Median :-1.260e-10  
+ Mean   :-1.060e-09  
+ 3rd Qu.: 1.198e-11  
+ Max.   : 9.999e-09  
+
+> # Display the coefficients and clustered standard errors
+> DDDCO2_stargazer = coeftest(DDD_CO2_controls, vcov = clustered_se)
+
+> ##### Electricity Consumption regression
+> DDD_Elec_controls <- lm(energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
++      .... [TRUNCATED] 
+
+> summary(DDD_Elec_controls)
+
+Call:
+lm(formula = energy_kwh_per_capita ~ dst_here_anytime + dst_now_anywhere + 
+    dst_now_here + not_midday_control_local + I(dst_here_anytime * 
+    not_midday_control_local) + I(dst_now_anywhere * not_midday_control_local) + 
+    I(dst_now_here * not_midday_control_local) + weekend_local + 
+    public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3/10000) + 
+    solar_exposure, data = df, weights = df$population)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-879.17 -129.71   17.91  205.61 1259.92 
+
+Coefficients:
+                                                 Estimate Std. Error  t value Pr(>|t|)
+(Intercept)                                     9.901e-01  1.840e-03  538.048  < 2e-16
+dst_here_anytimeTRUE                           -2.117e-01  1.045e-03 -202.670  < 2e-16
+dst_now_anywhereTRUE                            6.742e-02  1.293e-03   52.138  < 2e-16
+dst_now_hereTRUE                               -3.411e-02  1.465e-03  -23.280  < 2e-16
+not_midday_control_localTRUE                    2.003e-02  9.642e-04   20.771  < 2e-16
+I(dst_here_anytime * not_midday_control_local) -3.668e-03  1.097e-03   -3.343 0.000828
+I(dst_now_anywhere * not_midday_control_local) -4.109e-02  1.370e-03  -29.991  < 2e-16
+I(dst_now_here * not_midday_control_local)      1.212e-02  1.559e-03    7.772 7.72e-15
+weekend_localTRUE                              -4.616e-02  2.395e-04 -192.735  < 2e-16
+public_holidayTRUE                             -4.981e-02  5.954e-04  -83.648  < 2e-16
+temperature                                    -2.502e-02  1.277e-04 -195.829  < 2e-16
+I(temperature^2)                                5.213e-04  2.555e-06  204.037  < 2e-16
+I(wind_km_per_h^3/10000)                        4.167e-03  2.019e-04   20.637  < 2e-16
+solar_exposure                                 -8.146e-03  7.189e-05 -113.308  < 2e-16
+                                                  
+(Intercept)                                    ***
+dst_here_anytimeTRUE                           ***
+dst_now_anywhereTRUE                           ***
+dst_now_hereTRUE                               ***
+not_midday_control_localTRUE                   ***
+I(dst_here_anytime * not_midday_control_local) ***
+I(dst_now_anywhere * not_midday_control_local) ***
+I(dst_now_here * not_midday_control_local)     ***
+weekend_localTRUE                              ***
+public_holidayTRUE                             ***
+temperature                                    ***
+I(temperature^2)                               ***
+I(wind_km_per_h^3/10000)                       ***
+solar_exposure                                 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 251.4 on 1264058 degrees of freedom
+Multiple R-squared:  0.3793,	Adjusted R-squared:  0.3793 
+F-statistic: 5.942e+04 on 13 and 1264058 DF,  p-value: < 2.2e-16
+
+
+> # Cluster-robust standard errors
+> clustered_se <- vcovHC(DDD_Elec_controls, cluster = ~regionid)
+
+> summary(clustered_se)
+  (Intercept)         dst_here_anytimeTRUE dst_now_anywhereTRUE dst_now_hereTRUE    
+ Min.   :-6.359e-07   Min.   :-6.359e-07   Min.   :-9.606e-07   Min.   :-1.427e-06  
+ 1st Qu.:-3.446e-07   1st Qu.:-2.853e-07   1st Qu.:-2.848e-07   1st Qu.:-2.881e-07  
+ Median :-6.359e-09   Median :-1.229e-10   Median :-1.343e-09   Median :-6.005e-10  
+ Mean   : 2.087e-07   Mean   :-1.776e-08   Mean   :-2.453e-09   Mean   : 1.543e-08  
+ 3rd Qu.: 2.939e-07   3rd Qu.: 2.755e-07   3rd Qu.: 2.739e-07   3rd Qu.: 4.213e-07  
+ Max.   : 3.590e-06   Max.   : 5.939e-07   Max.   : 9.927e-07   Max.   : 1.448e-06  
+ not_midday_control_localTRUE I(dst_here_anytime * not_midday_control_local)
+ Min.   :-4.422e-07           Min.   :-6.563e-07                            
+ 1st Qu.:-2.814e-07           1st Qu.:-2.835e-07                            
+ Median :-1.677e-10           Median :-3.160e-10                            
+ Mean   : 1.685e-10           Mean   : 1.128e-09                            
+ 3rd Qu.: 2.834e-07           3rd Qu.: 2.968e-07                            
+ Max.   : 4.422e-07           Max.   : 6.563e-07                            
+ I(dst_now_anywhere * not_midday_control_local)
+ Min.   :-1.100e-06                            
+ 1st Qu.:-2.836e-07                            
+ Median : 1.600e-10                            
+ Mean   : 1.603e-10                            
+ 3rd Qu.: 2.849e-07                            
+ Max.   : 1.100e-06                            
+ I(dst_now_here * not_midday_control_local) weekend_localTRUE    public_holidayTRUE  
+ Min.   :-1.427e-06                         Min.   :-1.572e-08   Min.   :-7.101e-09  
+ 1st Qu.:-2.893e-07                         1st Qu.:-5.942e-10   1st Qu.:-6.518e-10  
+ Median : 3.312e-10                         Median : 5.275e-11   Median : 3.856e-10  
+ Mean   : 1.876e-09                         Mean   : 2.266e-09   Mean   : 1.971e-08  
+ 3rd Qu.: 3.318e-07                         3rd Qu.: 7.988e-10   3rd Qu.: 1.029e-09  
+ Max.   : 1.633e-06                         Max.   : 4.454e-08   Max.   : 2.450e-07  
+  temperature         I(temperature^2)     I(wind_km_per_h^3/10000)
+ Min.   :-2.535e-07   Min.   :-4.302e-10   Min.   :-6.177e-09      
+ 1st Qu.:-1.034e-09   1st Qu.:-2.558e-12   1st Qu.:-5.076e-10      
+ Median :-3.037e-10   Median : 9.404e-12   Median :-6.523e-11      
+ Mean   :-1.641e-08   Mean   : 3.207e-10   Mean   : 1.142e-09      
+ 3rd Qu.: 1.538e-10   3rd Qu.: 1.859e-11   3rd Qu.: 2.981e-10      
+ Max.   : 2.127e-08   Max.   : 4.992e-09   Max.   : 2.744e-08      
+ solar_exposure      
+ Min.   :-7.363e-09  
+ 1st Qu.:-1.121e-09  
+ Median :-2.130e-10  
+ Mean   :-7.451e-10  
+ 3rd Qu.: 1.550e-11  
+ Max.   : 6.092e-09  
+
+> # Display the coefficients and clustered standard errors
+> DDDElec_stargazer = coeftest(DDD_Elec_controls, vcov = clustered_se)
+
+> #Stargazer output for Latex
+> stargazer(DDDCO2_stargazer, DDDElec_stargazer, type = "latex", title = "Results for CO2 and electricity consumption DD ..." ... [TRUNCATED] 
+
+% Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
+% Date and time: mer., févr. 28, 2024 - 20:54:42
+% Requires LaTeX packages: dcolumn rotating 
+\begin{sidewaystable}[!htbp] \centering 
+  \caption{Results for CO2 and electricity consumption DDD with controls} 
+  \label{} 
+\small 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-3} 
+\\[-1.8ex] & \multicolumn{2}{c}{Kg CO2 p.c.} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+\hline \\[-1.8ex] 
+ Treatment & -0.133^{***} & -0.212^{***} \\ 
+  & (0.001) & (0.001) \\ 
+  & & \\ 
+ Time & 0.052^{***} & 0.067^{***} \\ 
+  & (0.001) & (0.001) \\ 
+  & & \\ 
+ Time*Treatment & -0.026^{***} & -0.034^{***} \\ 
+  & (0.002) & (0.001) \\ 
+  & & \\ 
+ Midday & 0.027^{***} & 0.020^{***} \\ 
+  & (0.001) & (0.001) \\ 
+  & & \\ 
+ Midday*Treatment & -0.013^{***} & -0.004^{***} \\ 
+  & (0.001) & (0.001) \\ 
+  & & \\ 
+ Midday*Time & -0.030^{***} & -0.041^{***} \\ 
+  & (0.001) & (0.001) \\ 
+  & & \\ 
+ Midday*Time*Treatment & 0.009^{***} & 0.012^{***} \\ 
+  & (0.002) & (0.001) \\ 
+  & & \\ 
+ Weekend & -0.034^{***} & -0.046^{***} \\ 
+  & (0.0003) & (0.0002) \\ 
+  & & \\ 
+ Public holidays & -0.038^{***} & -0.050^{***} \\ 
+  & (0.001) & (0.0005) \\ 
+  & & \\ 
+ Temperature & -0.011^{***} & -0.025^{***} \\ 
+  & (0.0002) & (0.0001) \\ 
+  & & \\ 
+ Temperature2 & 0.0003^{***} & 0.001^{***} \\ 
+  & (0.00000) & (0.00000) \\ 
+  & & \\ 
+ Wind3 & -0.059^{***} & 0.004^{***} \\ 
+  & (0.0003) & (0.0002) \\ 
+  & & \\ 
+ Solar exposure & -0.004^{***} & -0.008^{***} \\ 
+  & (0.0001) & (0.0001) \\ 
+  & & \\ 
+ Constant & 0.713^{***} & 0.990^{***} \\ 
+  & (0.002) & (0.002) \\ 
+  & & \\ 
+\hline \\[-1.8ex] 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{sidewaystable} 
+
+> ##### Local vs. Fixed:
+> DDD_CO2_controls_fixed <- lm(co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + dst_now_here
++                       .... [TRUNCATED] 
+
+> summary(DDD_CO2_controls_fixed)
+
+Call:
+lm(formula = co2_kg_per_capita ~ dst_here_anytime + dst_now_anywhere + 
+    dst_now_here + midday_control_fixed + I(dst_here_anytime * 
+    midday_control_fixed) + I(dst_now_anywhere * midday_control_fixed) + 
+    I(dst_now_here * midday_control_fixed) + weekend_fixed + 
+    public_holiday + temperature + I(temperature^2) + I(wind_km_per_h^3) + 
+    solar_exposure, data = df, weights = df$population)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-1047.3  -283.4  -114.9   114.4  1569.3 
+
+Coefficients:
+                                             Estimate Std. Error  t value Pr(>|t|)    
+(Intercept)                                 7.398e-01  1.933e-03  382.770  < 2e-16 ***
+dst_here_anytimeTRUE                       -1.456e-01  5.117e-04 -284.611  < 2e-16 ***
+dst_now_anywhereTRUE                        2.255e-02  6.060e-04   37.214  < 2e-16 ***
+dst_now_hereTRUE                           -1.709e-02  6.705e-04  -25.494  < 2e-16 ***
+midday_control_fixedTRUE                   -2.684e-02  1.136e-03  -23.621  < 2e-16 ***
+I(dst_here_anytime * midday_control_fixed)  1.309e-02  1.293e-03   10.126  < 2e-16 ***
+I(dst_now_anywhere * midday_control_fixed)  2.968e-02  1.615e-03   18.380  < 2e-16 ***
+I(dst_now_here * midday_control_fixed)     -8.191e-03  1.838e-03   -4.458 8.29e-06 ***
+weekend_fixedTRUE                          -3.396e-02  2.822e-04 -120.327  < 2e-16 ***
+public_holidayTRUE                         -3.766e-02  7.018e-04  -53.667  < 2e-16 ***
+temperature                                -1.089e-02  1.506e-04  -72.306  < 2e-16 ***
+I(temperature^2)                            2.718e-04  3.011e-06   90.270  < 2e-16 ***
+I(wind_km_per_h^3)                         -5.936e-06  2.380e-08 -249.451  < 2e-16 ***
+solar_exposure                             -4.216e-03  8.473e-05  -49.754  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 296.3 on 1264058 degrees of freedom
+Multiple R-squared:  0.214,	Adjusted R-squared:  0.214 
+F-statistic: 2.648e+04 on 13 and 1264058 DF,  p-value: < 2.2e-16
+
+
+> # Cluster-robust standard errors
+> clustered_se <- vcovHC(DDD_CO2_controls_fixed, cluster = ~regionid)
+
+> summary(clustered_se)
+  (Intercept)         dst_here_anytimeTRUE dst_now_anywhereTRUE dst_now_hereTRUE    
+ Min.   :-4.364e-07   Min.   :-4.364e-07   Min.   :-1.435e-07   Min.   :-2.579e-07  
+ 1st Qu.:-6.854e-08   1st Qu.:-5.317e-08   1st Qu.:-5.313e-08   1st Qu.:-5.561e-08  
+ Median :-6.079e-09   Median :-6.050e-11   Median :-5.239e-10   Median :-3.697e-10  
+ Mean   : 2.956e-07   Mean   :-2.559e-08   Mean   : 9.159e-10   Mean   : 1.996e-08  
+ 3rd Qu.: 6.424e-08   3rd Qu.: 3.370e-08   3rd Qu.: 3.067e-08   3rd Qu.: 9.042e-08  
+ Max.   : 4.590e-06   Max.   : 1.685e-07   Max.   : 1.929e-07   Max.   : 3.712e-07  
+ midday_control_fixedTRUE I(dst_here_anytime * midday_control_fixed)
+ Min.   :-6.883e-07       Min.   :-1.180e-06                        
+ 1st Qu.:-5.036e-08       1st Qu.:-5.062e-08                        
+ Median :-1.000e-13       Median :-3.300e-12                        
+ Mean   :-1.760e-10       Mean   :-5.027e-10                        
+ 3rd Qu.: 4.976e-08       3rd Qu.: 4.531e-08                        
+ Max.   : 6.883e-07       Max.   : 1.180e-06                        
+ I(dst_now_anywhere * midday_control_fixed) I(dst_now_here * midday_control_fixed)
+ Min.   :-1.518e-06                         Min.   :-1.518e-06                    
+ 1st Qu.:-5.060e-08                         1st Qu.:-5.166e-08                    
+ Median : 8.900e-12                         Median : 6.910e-11                    
+ Mean   :-1.237e-10                         Mean   : 3.839e-08                    
+ 3rd Qu.: 4.923e-08                         3rd Qu.: 9.013e-08                    
+ Max.   : 1.518e-06                         Max.   : 2.609e-06                    
+ weekend_fixedTRUE    public_holidayTRUE    temperature         I(temperature^2)    
+ Min.   :-2.256e-08   Min.   :-1.155e-08   Min.   :-3.470e-07   Min.   :-5.638e-10  
+ 1st Qu.:-5.360e-10   1st Qu.:-1.120e-09   1st Qu.:-1.504e-09   1st Qu.:-6.942e-12  
+ Median :-1.166e-10   Median :-1.724e-10   Median : 2.520e-11   Median :-7.700e-14  
+ Mean   : 4.196e-09   Mean   : 3.709e-08   Mean   :-2.255e-08   Mean   : 4.267e-10  
+ 3rd Qu.: 2.517e-11   3rd Qu.: 3.582e-09   3rd Qu.: 3.290e-10   3rd Qu.: 1.934e-11  
+ Max.   : 7.887e-08   Max.   : 4.545e-07   Max.   : 2.859e-08   Max.   : 6.655e-09  
+ I(wind_km_per_h^3)   solar_exposure      
+ Min.   :-2.903e-12   Min.   :-1.215e-08  
+ 1st Qu.:-1.843e-13   1st Qu.:-1.391e-09  
+ Median :-3.388e-14   Median : 1.991e-11  
+ Mean   :-3.064e-13   Mean   :-8.581e-10  
+ 3rd Qu.: 4.829e-15   3rd Qu.: 2.692e-10  
+ Max.   : 4.500e-13   Max.   : 9.689e-09  
+
+> # Display the coefficients and clustered standard errors
+> DDDCO2_Fixed_stargazer = coeftest(DDD_CO2_controls_fixed, vcov = clustered_se)
+
+> stargazer(DDDCO2_stargazer, DDDCO2_Fixed_stargazer, type = "text", title = "Results for CO2 Local vs. Fixed", align = TRUE,
++           dep.var.labe .... [TRUNCATED] 
+
+Results for CO2 Local vs. Fixed
+===========================================================================
+                                                   Dependent variable:     
+                                               ----------------------------
+                                                      CO2 per capita       
+                                                    (1)            (2)     
+---------------------------------------------------------------------------
+Treatment                                        -0.133***      -0.146***  
+                                                  (0.001)       (0.0004)   
+                                                                           
+Time                                              0.052***      0.023***   
+                                                  (0.001)       (0.0004)   
+                                                                           
+Time*Treatment                                   -0.026***      -0.017***  
+                                                  (0.002)        (0.001)   
+                                                                           
+not_midday_control_local                          0.027***                 
+                                                  (0.001)                  
+                                                                           
+I(dst_here_anytime * not_midday_control_local)   -0.013***                 
+                                                  (0.001)                  
+                                                                           
+I(dst_now_anywhere * not_midday_control_local)   -0.030***                 
+                                                  (0.001)                  
+                                                                           
+I(dst_now_here * not_midday_control_local)        0.009***                 
+                                                  (0.002)                  
+                                                                           
+weekend_local                                    -0.034***                 
+                                                  (0.0003)                 
+                                                                           
+midday_control_fixed                                            -0.027***  
+                                                                 (0.001)   
+                                                                           
+I(dst_here_anytime * midday_control_fixed)                      0.013***   
+                                                                 (0.001)   
+                                                                           
+I(dst_now_anywhere * midday_control_fixed)                      0.030***   
+                                                                 (0.001)   
+                                                                           
+I(dst_now_here * midday_control_fixed)                          -0.008***  
+                                                                 (0.002)   
+                                                                           
+weekend_fixed                                                   -0.034***  
+                                                                (0.0003)   
+                                                                           
+public_holiday                                   -0.038***      -0.038***  
+                                                  (0.001)        (0.001)   
+                                                                           
+temperature                                      -0.011***      -0.011***  
+                                                  (0.0002)      (0.0002)   
+                                                                           
+I(temperature2)                                  0.0003***      0.0003***  
+                                                 (0.00000)      (0.00000)  
+                                                                           
+I(wind_km_per_h3/10000)                          -0.059***                 
+                                                  (0.0003)                 
+                                                                           
+I(wind_km_per_h3)                                              -0.00001*** 
+                                                                (0.00000)  
+                                                                           
+solar_exposure                                   -0.004***      -0.004***  
+                                                  (0.0001)      (0.0001)   
+                                                                           
+Constant                                          0.713***      0.740***   
+                                                  (0.002)        (0.002)   
+                                                                           
+===========================================================================
+===========================================================================
+Note:                                           *p<0.1; **p<0.05; ***p<0.01
+
+> # per-hour event study graph ----------------------------------------------
+> 
+> # we want to do an event study graph
+> # but instead of days_into_d .... [TRUNCATED] 
+
+> ggsave(here("plots/16-DDD-event-study-average.png"), width=9, height=7)
+
+> ddd_es <- df |>
++   mutate(treatment=(regionid == 'QLD1')) |>
++   # aggregate treatment regions together
++   summarise(
++     co2=weighted.mean(co2_ .... [TRUNCATED] 
+
+> typical_midday <- ddd_es |>
++   filter(! not_midday_control_fixed) |>
++   pull(co2) |>
++   mean()
+
+> ddd_es |>
++   mutate(
++     co2 = co2 - typical_midday
++   ) |>
++   
++   ggplot(aes(x=hr_fixed, y=co2)) +
++   geom_line() +
++   labs(
++     title="D ..." ... [TRUNCATED] 
+
+> # What if we do a proper regression, and plot the fixed effect coefficients?
+> 
+> # convert hour of day to categorical/enum/factor
+> # so we can hav .... [TRUNCATED] 
+
+> DDD_CO2_event_study <- lm(co2_kg_per_capita ~ 
++                           dst_here_anytime * hr_local_fact
++                           + dst_now_an .... [TRUNCATED] 
+
+> # Cluster-robust standard errors
+> gc()
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   5202263  277.9    7577799  404.7   7577799  404.7
+Vcells 462800534 3530.9 1014036251 7736.5 850872857 6491.7
+
+> DDD_CO2_event_study_vcov <- vcovHC(DDD_CO2_event_study, cluster = ~regionid)

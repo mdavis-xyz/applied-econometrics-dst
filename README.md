@@ -2,30 +2,74 @@
 
 This repo contains Python and R scripts for analysing AEMO data for our TSE M1 applied econometrics project.
 
-[Trello Board](https://trello.com/b/IOLb1smT/applied-econometrics)
 
 ## Prerequisites
 
-* Python >= 3.10 (It might work as low as 3.6, but I haven't tested)
-* Python `multiprocessing.Pool()` must work. We've found that on some installations it doesn't. If not, that's a problem with your installation, not our code. Check you can run the first code sample [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
+* Python >= 3.10 (It might work as low as 3.6, but I haven't tested) [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
 * Install python dependencies with `pip install -r requirements.txt`
+* We used R version 4.2.2 Patched (2022-11-10 r83330) inside R Studio 2023.06.0 Build 421
+* To install the R packages you need for this, run
+
+```
+install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "lmtest", "eventstudyr", "here", "broom", "zoo"))
+```
+
+* You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`06-event-study.do`)
 
 Note that we keep all the data files in `./data`. The Jupyter and R scripts use relative paths. So you should not have to change any paths in them. For Stata, you will have to change the path up the top of the script.
 
+## What to run
+
+As discussed, our raw dataset is 1.4TB uncompressed. To do the full processing requires at least 16GB of memory, and takes days. However after the first few scripts the dataset is small enough to be a normal, manageable size. 
+The scripts are numbered in the order they should be run. But you probably want to start somewhere in the middle. You have three options. The explanation of what each script does is further below.
+
+### Option 1 - RECOMMENDED - I don't want to touch terabytes of data. I just want to run 3 scripts.
+
+This approach is what our tutor and mentor said they want.
+This will take mintues to run, and will handle hundreds of megabytes.
+This still includes a little bit of merging and data wrangling.
+
+To do this, run scripts `04-merge.R` onwards.
+
+The slow scripts that require lots of time, disk and memory are the 01a-01f ones.
+
+
+### Option 2 - I want to check that all your data wrangling scripts can run, but don't want to take days
+
+You can run a representative 1-month sample of the data.
+
+In `01a-download.ipynb`, read the comment up the top of that, and change the following variables:
+
+* `max_files_per_page` - set to 2
+* `start_urls` - comment out the 4th url, uncomment the 3rd. (Each URL has a comment to explain the difference.)
+* If you know that your laptop can do `multiprocessing.Pool()` in python (some of ours couldn't) then set `use_multiprocessing=True`.
+
+Now run all scripts, in the order of their name. 01a, 01b, 01c etc, 02, 03 etc.
+
+
+### Option 3 - Gimme all the 1.4TB of data! I'm happy to take days to run the full dataset
+
+Run all scripts, in the order of their name. 01a, 01b, 01c etc, 02, 03 etc.
+
+The first one, `01a-download.ipynb` will take a few days to download about 300GB of data. (If you want we can also give you a hard drive to save you this step.)
+
+The next longest one is `01c`, which takes about 16 hours (with multiprocessing).
+
 ## Scripts
 
-First, we download the data with `01-download.ipynb`.
-This is a Python Jupyter notebook. To run it, install Python, then install dependencies with `pip install -r requirements.txt`.
-(If you're not sure how to do this, just run the notebook. The first cell does this for you.)
-Then open the notebook with `jupyter lab` (and then select the file).
+The scripts are named in the order they should be run. As described above, you probably want to start from `04-merge.R`. Each script has comments up top explaining what it does, and any configuration options. Each script saves output into `data/` with subfolder/file names corresponding to the script that generated it.
 
-This playbook downloads the relevant files from AEMO's website (nemweb), and then unzips them,
-maps each row to the respective 'table', and then saves the results as parquet files.
-(More documentation is in Markdown cells inside the notebook.)
-To see the advantages of parquet over csv, read [this](https://r4ds.hadley.nz/arrow#advantages-of-parquet).
-
-Then there's `02-join.R`. This is an R script that takes parquet files from the previous step,
-and joins them together into one dataframe with everything we want.
+* `01a-download.ipynb` - this downloads the AEMO electrical dataset. This includes energy generation per generator per 5 minutes, and CO2 emissions intensity per generator. This is a Python Jupyter notebook. 
+* `01b-download-schema.ipynb` - This downloads metadata about the list of columns and datatypes for each AEMO dataset.
+* `01c-unzip-and-split.ipynb` - AEMO's files are zips of .CSV and zips of zips of .csv. In this script we unzip them (possibly recursively). Additionally, each CSV is actually a concatenation of several CSV files from different datasets, with unrelated columns. We need to un-concatenate (hence the name "split") these. We also need to figure out which dataset they belong to. (AEMO has hundreds of SQL "tables". Figuring out which rows belong to which tables is surprisingly hard.) The details are documented inside the script.
+* `01d-csv-to-parquet.ipynb` - This script takes many little CSV files, and combines them into one parquet file per AEMO "table". Parquet is an alternative format to CSV. The main motivation for using it was as a technical solution to keep things small and fast. (e.g. it allows us to use predicate pushdown in subsequent scripts.) See more info about Parquet advantages [here](https://r4ds.hadley.nz/arrow#advantages-of-parquet).
+* `01e-the-big-squish.R` - At this point we have several parquet files. The largest is a 5GB parquet file. When loaded into memory (e.g. in R) this would take up about 20GB. None of our laptops have that much memory. Yours probably doesn't either. The processing we want to do is to take 5-minute data per generator, multiply it by the constant CO2 emissions factor, sum within each region, aggregate to half hour intervals. Then it's small enough to join with some other data, e.g. to account for inter-region import-export. One challenge is that AEMO's files contain duplicate data. (e.g. they have 5-minute files, and daily summaries of those files, and monthly summaries of those, etc.) Deduplicating data generally requires loading the whole thing in memory. So this is a really hard big data task. What we do is use [Apache Arrow](https://arrow.apache.org/) to lazy-load the parquet files, such that we can use filter and predicate pushdowns into the storage layer, along with physical repartitioning, to end up with something small. I haven't tested it on a laptop with less than 16GB of memory, but I believe it will still work.
+* `01f-aemo-join.R` - this joins all our AEMO datasets. e.g. rooftop solar, total renewables.
+* `02-download-wind.ipynb` - We need wind speed data as a control for wind generation. This script downloads it from https://www.willyweather.com.au/
+* `03-get-DST-transitions.ipynb` - We need to know what days the clocks move. We also want some enriched data about this. e.g. for each calendar day, is the nearest clock change in the future, or past? How many days away? etc. We don't download this data from anywhere. Python itself has a copy inside it, which it uses for timezone conversions of datetimes. We use that instead of downloading, because it's easier and less likely to have mistakes than manually downloading and combining some.
+* `04-merge.R` - We join all our datasets. AEMO electrical data, wind speed, temperature, sunshine, DST transition info. We end up with half hour data, and also downsample to daily data.
+* `05-regressions.R` - This does some of our regressions and graphs
+* `06-event-study.do` - this is a stata file that does more regressions and graphs. Some things are easier in Stata.
 
 ## Acronyms
 
@@ -124,22 +168,19 @@ For the raw AEMO data, the meaning of each column is documented [here](https://n
 
 Some relevant documentation files are in the `documentation` folder. These are files from AEMO.
 Our code doesn't look at these. That's just for humans to look at to understand the dataset.
-
-## Unused
-
-The `unused` folder is an archive of scripts which are no longer in use, or just investigation stuff that we don't want to delete.
+Documentation for AEMO's dataset schema is [here](https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report.htm).
 
 ## Log files
 
-The instructions specified that we must attach log files.
-The `.ipynb` jupyter scripts use a logging function (from `utils.py`) to save to one log file per script in folder `logs/`.
+The formal instructions specified that we must attach log files.
+The `.ipynb` jupyter scripts use a logging function (from `utils.py`) to save to one log file per script in folder `logs/`. They also have the output of the most recent run saved inside them, which you will see when you open them up.
 
 ## Timezone
 
 AEMO data is in 'market time', `Australia/Brisbane`, UTC+10, no DST.
 
 Note that When R reads datetimes from parquet, it can treat some datetimes as local. i.e. Paris, even though Python writes the file as UTC or Brisbane. R studio won't show you that it's done this. You only see this if you extract a single datetime and print it. When viewing the whole dataframe, you'll see UTC.
-But when you subtract 5 minutes from a datetime (to get interval start from interval end), if that datetime happens to be the first 5 minutes after the *French* DST clock-forward transition, R will return NULL. Even though subtracting 5 minutes from a naive or UTC or Australia/Brisbane time is valid.
+But when you subtract 5 minutes from a datetime (to get interval start from interval end), if that datetime happens to be the first 5 minutes after the *French* DST clock-forward transition, R will return NULL. Even though subtracting 5 minutes from a naive or UTC or Australia/Brisbane time is valid. 
 To avoid this, we set the timezone to UTC in the top of some R files.
 
 ```
@@ -148,3 +189,7 @@ Sys.setenv(TZ='UTC')
 (Setting to `Australia/Brisbane` does not work. We end up off by 10 hours.)
 
 There's a unit test in `04-join-aemo.R` to test that whatever we do with time zones is right.
+
+## Code Versioning
+
+The formal instructions say that each file should have a version history commented up the top. We have chosen the more modern and standard approach of using git. Our git repo is publicly readable here: https://github.com/mdavis-xyz/applied-econometrics-dst
