@@ -62,7 +62,8 @@ encode dst_transition_id,gen(dst_transition1)
 gen wind = real(wind_km_per_h)
 gen wind_3 = (wind*wind*wind)/10000
 
-encode not_midday_control_local, gen(not_midday)
+gen not_midday = 0
+replace not_midday = 1 if not_midday_control_local == "TRUE"
 
 save "data/12-energy-hourly-changed.dta", replace
 //doing base DiD regressions
@@ -103,9 +104,6 @@ use "data/12-energy-hourly-changed.dta", clear
 /// DDD regression - adjusting for midday emissions
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD
-
-//wrong regression?
-//reg co2_g_per_capita_vs_midday c.dst_here_anytime##c.dst_now_anywhere weekend_local public_holiday temperature c.temperature#c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
