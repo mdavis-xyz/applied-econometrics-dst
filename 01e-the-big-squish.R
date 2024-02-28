@@ -89,12 +89,6 @@ library(janitor)
 library(here)
 
 
-# logging -----------------------------------------------------------------
-# We were told to set up logging
-dir.create(here::here("logs"), showWarnings=FALSE)
-sink(NULL) # unset from previous runs
-sink(here::here("logs/01e.txt"), split=TRUE)
-
 # constants ---------------------------------------------------------------
 
 Sys.setenv(TZ='UTC')
@@ -255,5 +249,3 @@ for (y in start_year:end_year){
     rm(df)
   }
 }
-
-sink()
