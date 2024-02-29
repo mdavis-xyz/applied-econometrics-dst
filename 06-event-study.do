@@ -68,9 +68,9 @@ Summary of the sections:
 *******************************************************************************
 
 clear all
-cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
+//cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
+cd "/home/matthew/applied_repo"
 set linesize 80
-//cd "/home/matthew/applied_repo"
 
 *CREATE LOG FILE 
 cap log using "Tables and Graphs from Stata", replace
@@ -78,7 +78,7 @@ cap log using "Tables and Graphs from Stata", replace
 ********************* 1. Data Import and Transformation:************************
 *		   - Importing and transforming data from the CSV file.
    
-import delimited using "data/10-half-hourly.csv"
+import delimited using "data/04-half-hourly.csv"
 
 //Transforming data: In the code below we are transforming the following string variables to long types or numerics respectively
 //Date
@@ -137,9 +137,8 @@ rename dst_direction_temp dst_direction
 //Encodes region id and dst transition
 encode regionid, gen(regionid1)
 encode dst_transition_id,gen(dst_transition1)
-//Change wind from String to Numeric
-gen wind = real(wind_km_per_h)
 //Scale by 1/10000 to increase coefficient size for interpretation
+rename wind_km_per_h wind
 gen wind_3 = (wind*wind*wind)/10000
 //Generate not midday variable for DDD
 gen not_midday = 0
@@ -150,9 +149,7 @@ replace not_midday = 1 if not_midday_control_local == "TRUE"
 // Labeling variables
 label variable regionid "Region ID"
 label variable midday_control_fixed "Midday(Noon time) Control (Fixed Time)"
-label variable wind_km_per_h "Wind Speed (km/h)"
 label variable dst_now_anywhere "DST Now in Any Region (Time)"
-label variable sun_hours_per_day "Sun Hours Per Day"
 label variable not_midday_control_local "Not Midday Control (Local Time)"
 label variable co2_kg_per_capita "KG CO2 Emissions per Capita per 30 Minutes"
 label variable dst_here_anytime "DST Region (Treatment)"
@@ -175,7 +172,6 @@ label variable wind "Mean Wind Speed (km/h) per day"
 label variable wind_3 "Daily mean Wind Speed (km/h) Cubed"
 label variable not_midday "Not Midday time period as a 0 or 1"
 label variable rooftop_solar_energy_mwh "Rooftop Solar Energy (MWh) per day"
-label variable tz "Timezone"
 label variable hh_end_fixed "Fixed End Time"
 label variable hh_end_local "Local End Time"
 label variable hh_start_fixed "Fixed Start Time"
