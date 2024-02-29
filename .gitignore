@@ -3,6 +3,9 @@
 # To unignore, just do `git add --force myfile`
 data
 
+# mac junk
+.DS_Store
+
 
 # stata temp files
 *.do.stswp

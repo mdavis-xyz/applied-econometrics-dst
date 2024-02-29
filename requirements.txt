@@ -8,3 +8,4 @@ pyarrow
 tqdm
 polars
 astral
+multiprocess
