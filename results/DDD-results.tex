@@ -3,52 +3,52 @@
 \begin{tabular}{l*{2}{c}}
 \hline\hline
                     &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
-                    &\multicolumn{1}{c}{co2\_kg\_per\_capita}&\multicolumn{1}{c}{energy\_kwh\_per\_capita}\\
+                    &\multicolumn{1}{c}{KG CO2 Emissions per Capita per 30 Minutes}&\multicolumn{1}{c}{kwh Electricity Consumption per Capita per 30 Minutes}\\
 \hline
-dst\_here\_anytime    &      -0.132\sym{*}  &      -0.211\sym{***}\\
-                    &    (0.0296)         &    (0.0210)         \\
+DST Region (Treatment)&      -0.133\sym{*}  &      -0.212\sym{***}\\
+                    &    (0.0298)         &    (0.0211)         \\
 [1em]
-dst\_now\_anywhere    &      0.0495\sym{*}  &      0.0659\sym{*}  \\
-                    &    (0.0172)         &    (0.0175)         \\
+DST Now in Any Region (Time)&      0.0522\sym{*}  &      0.0674\sym{*}  \\
+                    &    (0.0174)         &    (0.0174)         \\
 [1em]
-dst\_here\_anytime $\times$ dst\_now\_anywhere&     -0.0254         &     -0.0340         \\
-                    &    (0.0183)         &    (0.0194)         \\
+DST Region (Treatment) $\times$ DST Now in Any Region (Time)&     -0.0261         &     -0.0341         \\
+                    &    (0.0185)         &    (0.0194)         \\
 [1em]
-not\_midday          &      0.0267\sym{***}&      0.0200\sym{***}\\
-                    &  (5.34e-13)         &  (7.66e-13)         \\
+Not Midday time period as a 0 or 1&      0.0268\sym{***}&      0.0200\sym{***}\\
+                    &  (4.55e-13)         &  (1.31e-13)         \\
 [1em]
-dst\_here\_anytime $\times$ not\_midday&     -0.0129         &    -0.00364         \\
-                    &   (0.00805)         &   (0.00531)         \\
+DST Region (Treatment) $\times$ Not Midday time period as a 0 or 1&     -0.0131         &    -0.00367         \\
+                    &   (0.00807)         &   (0.00533)         \\
 [1em]
-dst\_now\_anywhere $\times$ not\_midday&     -0.0285\sym{***}&     -0.0405\sym{***}\\
-                    &(0.000000795)         &(0.000000838)         \\
+DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&     -0.0297\sym{***}&     -0.0411\sym{***}\\
+                    &  (1.03e-12)         &  (5.43e-13)         \\
 [1em]
-dst\_here\_anytime $\times$ dst\_now\_anywhere $\times$ not\_midday&     0.00874         &      0.0123         \\
-                    &    (0.0122)         &    (0.0104)         \\
+DST Region (Treatment) $\times$ DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&     0.00912         &      0.0121         \\
+                    &    (0.0124)         &    (0.0104)         \\
 [1em]
-weekend\_local       &     -0.0339\sym{***}&     -0.0462\sym{***}\\
-                    &   (0.00133)         &   (0.00180)         \\
+Weekend (Local)     &     -0.0338\sym{***}&     -0.0462\sym{***}\\
+                    &   (0.00132)         &   (0.00181)         \\
 [1em]
-public\_holiday      &     -0.0395\sym{**} &     -0.0504\sym{***}\\
-                    &   (0.00532)         &   (0.00365)         \\
+1 if Public holiday in Region, 0 otherwise&     -0.0378\sym{**} &     -0.0498\sym{***}\\
+                    &   (0.00556)         &   (0.00387)         \\
 [1em]
-temperature         &     -0.0108         &     -0.0249         \\
-                    &    (0.0143)         &    (0.0167)         \\
+Mean Daily Temperature °C in given State&     -0.0109         &     -0.0250         \\
+                    &    (0.0142)         &    (0.0168)         \\
 [1em]
-temperature $\times$ temperature&    0.000269         &    0.000520         \\
-                    &  (0.000237)         &  (0.000286)         \\
+Mean Daily Temperature °C in given State $\times$ Mean Daily Temperature °C in given State&    0.000272         &    0.000521         \\
+                    &  (0.000235)         &  (0.000289)         \\
 [1em]
-solar\_exposure      &    -0.00445         &    -0.00813         \\
-                    &   (0.00627)         &   (0.00595)         \\
+Solar Exposure Coefficient&    -0.00422         &    -0.00815         \\
+                    &   (0.00631)         &   (0.00600)         \\
 [1em]
-wind\_3              &     -0.0590         &     0.00417         \\
-                    &    (0.0248)         &    (0.0117)         \\
+Daily mean Wind Speed (km/h) Cubed&     -0.0594         &     0.00417         \\
+                    &    (0.0249)         &    (0.0119)         \\
 [1em]
-Constant            &       0.711\sym{*}  &       0.987\sym{*}  \\
-                    &     (0.216)         &     (0.264)         \\
+Constant            &       0.713\sym{*}  &       0.990\sym{*}  \\
+                    &     (0.215)         &     (0.265)         \\
 \hline
-r2                  &       0.211         &       0.376         \\
-r2\_a                &       0.211         &       0.376         \\
+r2                  &       0.214         &       0.379         \\
+r2\_a                &       0.214         &       0.379         \\
 \hline\hline
 \multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
 \multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
