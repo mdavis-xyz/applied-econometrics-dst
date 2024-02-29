@@ -2,8 +2,8 @@
 # M1 APPLIED ECONOMETRICS, Spring 2024
 # Applied Econometrics - Master TSE 1 - 2023/2024
 #
-# "Exploring the Influence of Daylight Saving Time on CO2 Emissions 
-# and Electricity Consumption in Australia's Electricity Grid"
+# "Sunlight Synchronization: Exploring the Influence of Daylight Saving Time on 
+# CO2 Emissions and Electricity Consumption in Australia's Electricity Grid" 
 #
 # AEMO data join
 #
