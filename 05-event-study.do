@@ -2,8 +2,8 @@
 * M1 APPLIED ECONOMETRICS, Spring 2024 
 *
 * Applied Econometrics - Master TSE 1 - 2023/2024
-# "Sunlight Synchronization: Exploring the Influence of Daylight Saving Time on 
-# CO2 Emissions and Electricity Consumption in Australia's Electricity Grid" 
+* "Sunlight Synchronization: Exploring the Influence of Daylight Saving Time on 
+* CO2 Emissions and Electricity Consumption in Australia's Electricity Grid" 
 *
 * Summary statistics, Difference-in-Differences, DDD, Event studies
 *
@@ -29,13 +29,15 @@ Summary of the sections:
 2. **Base DiD Regressions:**
    - Two sets of DiD regressions for CO2 emissions and electricity consumption.
    - Base regressions without controls.
-   - DiD regressions with additional controls (weekend_local, public_holiday, temperature, etc.).
+   - DiD regressions with additional controls (weekend_local, public_holiday,
+		temperature, etc.).
    - Results are stored in `eststo CO2_Base` and `eststo Elec_Base`.
 
 3. **Event Studies:**
    - Event studies for CO2 emissions and electricity consumption using `eventdd`.
    - Plots are generated and exported.
-   - Results are stored in `results/EventStudy-Co2.png` and `results/EventStudy-Elec.png`.
+   - Results are stored in `results/EventStudy-Co2.png` and 
+	`results/EventStudy-Elec.png`.
 
 4. **DDD Design and Event Study:**
    - DiD regressions with additional interaction terms for DDD design.
@@ -44,11 +46,13 @@ Summary of the sections:
    - Event studies are exported to files.
 
 5. **Event Study by Transition Direction:**
-   - Event studies for CO2 emissions in DDD design, separated by DST start and stop directions.
+   - Event studies for CO2 emissions in DDD design, separated by DST start 
+	 and stop directions.
    - Results are exported to files.
 
 6. **Additional Robustness Checks:**
-   - Event studies for CO2 emissions and electricity consumption after dropping data related to Tasmania.
+   - Event studies for CO2 emissions and electricity consumption after dropping 
+	 data related to Tasmania.
    - Results are exported to files.
 
 7. **Event Study with ln(CO2) for Interpretation:**
@@ -56,13 +60,17 @@ Summary of the sections:
    - Result is exported to a file.
 
 8. **Tables with lnCO2 and ln Electricity Consumption:**
-   - DiD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
+   - DiD regressions for ln(CO2) and ln(electricity consumption) with 
+	 additional controls.
    - Results are stored in `eststo ln_CO2_DDD` and `eststo ln_Elec_DDD`.
    - Tables are generated and exported.
 
 9. **DDD without Controls:**
-   - DiD regressions for CO2 emissions and electricity consumption without additional controls.
+   - DiD regressions for CO2 emissions and electricity consumption without 
+	 additional controls.
    - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
+   
+10. ** Summary Statistics**
 */
 
 *******************************************************************************
@@ -80,7 +88,8 @@ cap log using "Tables and Graphs from Stata", replace
    
 import delimited using "data/04-half-hourly.csv"
 
-//Transforming data: In the code below we are transforming the following string variables to long types or numerics respectively
+//Transforming data: In the code below we are transforming the following
+//	string variables to long types or numerics respectively
 //Date
 gen date_new=date(date_local,"YMD")
 format date_new %td
@@ -352,4 +361,8 @@ eststo CO2_DDD_base
 reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday  [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD_base
 
+/*********************** 10. Summary Stats **********************************/
+use "data/05-half-hourly.dta", clear
+describe
+summarize
 // End of file
