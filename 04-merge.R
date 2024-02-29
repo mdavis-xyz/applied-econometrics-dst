@@ -28,6 +28,10 @@ library(arrow)
 library(zoo)
 library(here)
 
+# set up logs, as per formal requirements
+dir.create(here("logs"), showWarnings = FALSE)
+sink(here("logs/04.txt"), split = TRUE)
+
 # Paths ---------------------------------------------
 
 # relative to this file
@@ -733,4 +737,70 @@ daily |> write_csv(output_file_path_daily)
 #  This is in case they forget.)
 gc()
 
+
+# graphs ------------------------------------------------------------------
+# we generate one graph that's easier than in stata. The rest is done in stata.
+
+# per-hour event study graph ----------------------------------------------
+
+# we want to do an event study graph
+# but instead of days_into_dst as the horizontal axis,
+# use hour of the day.
+# The hypothesis is that emissions drop/rise in the evening,
+# and rise/drop in the morning. This graph should show such an interday change.
+# The challenge is that event study plots are for DD. We're doing DDD.
+
+ddd_es <- df |>
+  mutate(treatment=(regionid == 'QLD1')) |>
+  # aggregate treatment regions together
+  summarise(
+    co2=weighted.mean(co2_kg_per_capita, population),
+    energy=weighted.mean(energy_wh_per_capita_vs_midday, population),
+    .by=c(treatment, hr_fixed, dst_now_anywhere, not_midday_control_fixed)
+  ) |>
+  # third diff: pre-post
+  pivot_wider(
+    id_cols=c(treatment, hr_fixed,not_midday_control_fixed),
+    values_from=c(co2, energy),
+    names_from=dst_now_anywhere
+  ) |>
+  mutate(
+    co2 = co2_TRUE - co2_FALSE,
+    energy = energy_TRUE - energy_FALSE,
+  ) |>
+  select(treatment, not_midday_control_fixed, hr_fixed, co2, energy) |>
+  # second diff: treatment vs control
+  pivot_wider(
+    id_cols=c(hr_fixed, not_midday_control_fixed),
+    values_from=c(co2, energy),
+    names_from=treatment
+  ) |>
+  mutate(
+    co2 = co2_TRUE - co2_FALSE,
+    energy = energy_TRUE - energy_FALSE,
+  ) |>
+  select(not_midday_control_fixed, hr_fixed, co2, energy)
+
+typical_midday <- ddd_es |>
+  filter(! not_midday_control_fixed) |>
+  pull(co2) |>
+  mean()
+
+ddd_es |>
+  mutate(
+    co2 = co2 - typical_midday
+  ) |>
+  
+  ggplot(aes(x=hr_fixed, y=co2)) +
+  geom_line() +
+  labs(
+    title="DDD Event Study - intraday",
+    subtitle = "Emissions post vs pre, control vs treatment, per hh vs midday",
+    x = "Time of day",
+    y = "gCO2 diff, diff"
+  )
+ggsave(here("plots/16-DDD-event-study-average.png"), width=9, height=7)
+
+
 print('done')
+sink(NULL) # close log file

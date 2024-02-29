@@ -15,7 +15,7 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "here", "zoo", "duckdb"))
 ```
 
-* You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`06-event-study.do`)
+* You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`05-event-study.do`)
 
 Note that we keep all the data files in `./data`. The Jupyter and R scripts use relative paths. So you should not have to change any paths in them. For Stata, you will have to change the path up the top of the script.
 
@@ -75,7 +75,7 @@ The scripts are named in the order they should be run. As described above, you p
 * `03-get-DST-transitions.ipynb` - We need to know what days the clocks move. We also want some enriched data about this. e.g. for each calendar day, is the nearest clock change in the future, or past? How many days away? etc. We don't download this data from anywhere. Python itself has a copy inside it, which it uses for timezone conversions of datetimes. We use that instead of downloading, because it's easier and less likely to have mistakes than manually downloading and combining some.
 * `04-merge.R` - We join all our datasets. AEMO electrical data, wind speed, temperature, sunshine, DST transition info. We end up with half hour data, and also downsample to daily data.
 * `05-regressions.R` - This does some of our regressions and graphs
-* `06-event-study.do` - this is a stata file that does more regressions and graphs. Some things are easier in Stata.
+* `05-event-study.do` - this is a stata file that does more regressions and graphs. Some things are easier in Stata.
 
 ## Acronyms
 
