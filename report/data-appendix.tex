@@ -1,0 +1,37 @@
+\documentclass[a4paper]{article}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+
+%opening
+\title{Sunlight Synchronisation: Exploring the Influence of Daylight Saving Time on CO2 Emissions in Australia's Electricity Grid}
+\author{Davis, Koehler, Postler \& Stegmaier}
+
+\begin{document}
+
+\maketitle
+
+\section*{Data Appendix}
+
+These are the results tables from our stata files.
+Information about the data source is in the README.md file.
+
+\subsection*{2. Base DiD Regressions}
+
+\resizebox{\textwidth}{!}{
+	\input{../results/DiD-results.tex}
+}
+
+
+\subsection*{4. DDD Design and Event Study}
+
+\resizebox{\textwidth}{!}{
+	\input{../results/DDD-results.tex }
+}
+
+\subsection*{8. Tables with ln(CO2) and ln Electricity Consumption}
+
+\resizebox{\textwidth}{!}{
+	\input{../results/ln-DDD-results.tex}
+}
+
+\end{document}
