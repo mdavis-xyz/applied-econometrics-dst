@@ -2,8 +2,9 @@
 # M1 APPLIED ECONOMETRICS, Spring 2024
 # Applied Econometrics - Master TSE 1 - 2023/2024
 #
-# "Exploring the Influence of Daylight Saving Time on CO2 Emissions 
-# and Electricity Consumption in Australia's Electricity Grid"
+# "Sunlight Synchronization: Exploring the Influence of Daylight Saving Time on 
+# CO2 Emissions and Electricity Consumption in Australia's Electricity Grid"
+# 
 #
 # This script merges all our data sets together:
 # * AEMO data (all AEMO data was joined together in previous scripts)
@@ -13,12 +14,12 @@
 # It also downsamples to daily data, in addition to half hourly data.
 # 
 # LAST MODIFIED: 29/02/2024 
-# LAST MODIFIED BY: Alexander Köhler
+# LAST MODIFIED BY: Simon Postler
 #
-# software version: R version 4.1.1
-# processors: Intel(R) Core(TM) i7-7500U CPU @ 2.7 GHz
-# OS: Windows 10 Pro, 22H2, 19045.4046
-# machine type: Laptop
+# software version: R version 4.2.0
+# processors: Apple M1 8-core GPU 
+# OS: macOS Sonoma 14.1
+# machine type: Macbook Pro
 ################################################################################
 
 
