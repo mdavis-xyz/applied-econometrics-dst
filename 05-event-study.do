@@ -246,7 +246,7 @@ weekend_local public_holiday c.temperature##c.temperature solar_exposure ///
 wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DiD
 
-esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex",///
+esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /*****************************3. Event Studies:*********************************
