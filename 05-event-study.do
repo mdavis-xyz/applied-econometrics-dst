@@ -422,6 +422,9 @@ reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday /
  [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD_base
 
+esttab CO2_DDD_base Elec_DDD_base using "results/DDD-base-results.tex", ///
+ label se stats(r2 r2_a) replace
+
 /*********************** 10. Summary Stats **********************************/
 use "data/05-half-hourly.dta", clear
 describe
