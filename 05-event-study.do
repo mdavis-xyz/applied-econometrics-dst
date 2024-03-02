@@ -400,7 +400,7 @@ public_holiday c.temperature##c.temperature solar_exposure wind_3 ///
 [aweight = population], vce(cluster regionid1)
 eststo ln_Elec_DDD
 
-esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex",///
+esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /********************** 9. **DDD without Controls:*****************************
@@ -410,7 +410,7 @@ esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex",///
 
 use "data/05-half-hourly.dta", clear
 //DDD Regression for CO2
-reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday///
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday ///
  [aweight = population], vce(cluster regionid1)
 eststo CO2_DDD_base
 //DDD Regression for Electricity
