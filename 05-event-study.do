@@ -305,6 +305,8 @@ solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  graph_op(ytitle("Co2 g per capita") xtitle("Days until DST transition") ///
  title("Event Study - CO2 - Midday Normalised"))
 graph export "results/EventStudy-MiddayCo2.png", replace
+estat leads
+estat lags
 
 eventdd energy_wh_per_capita_vs_midday public_holiday ///
 c.temperature##c.temperature solar_exposure wind_3 ///
@@ -313,6 +315,8 @@ c.temperature##c.temperature solar_exposure wind_3 ///
  xtitle("Days until DST transition") ///
  title("Event Study - Energy - Midday Normalised"))
 graph export "results/EventStudy-MiddayElec.png", replace
+estat leads
+estat lags
 
 /****************** 5. **Event Study by Transition Direction:*******************
 - Event studies for CO2 emissions in DDD design, separated by DST start and stop directions.

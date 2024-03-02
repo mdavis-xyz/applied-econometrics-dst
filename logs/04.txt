@@ -1,420 +1,19 @@
-
-> # Paths ---------------------------------------------
-> 
-> # relative to this file
-> # although you can specify an absolute path if you wish.
-> data .... [TRUNCATED] 
-
-> # source data
-> pub_hol_path_1 <- file.path(data_dir, "raw/holidays/Aus_public_hols_2009-2022-1.csv")
-
-> pub_hol_path_2 <- file.path(data_dir, "raw/holidays/australian-public-holidays-combined-2021-2024.csv")
-
-> dst_transitions_path <- file.path(data_dir, 'snapshot/02-dst-dates.csv')
-
-> population_path <- file.path(data_dir, "raw/population/population-australia-raw.csv")
-
-> temperature_dir <- file.path(data_dir, "raw/weather")
-
-> sunshine_dir <- file.path(data_dir, "raw/sunshine")
-
-> wind_path <- file.path(data_dir, "snapshot/05-wind.csv")
-
-> aemo_pq_path <- file.path(data_dir, "snapshot/01-F-aemo-joined-all.parquet")
-
-> output_file_path_hh_csv <- file.path(data_dir, "04-half-hourly.csv")
-
-> output_file_path_hh_pq <- file.path(data_dir, "04-half-hourly.parquet")
-
-> output_file_path_daily <- file.path(data_dir, "04-energy-daily.csv")
-
-> # constants ---------------------------------------------------------------
-> 
-> 
-> Sys.setenv(TZ = 'UTC') # see README.md
-
-> # AEMO data is in "Market time"
-> # that's this time zone
-> # (No DST, just UTC+10)
-> market_tz <- "Australia/Brisbane"
-
-> # South Australia is permanently behind VIC, NSW, TAS by this much
-> # (They shift forward/back on the same day by the same amount)
-> SA_offset <- m .... [TRUNCATED] 
-
-> # unit converstion constants
-> # We don't want magic numbers later in the code
-> # kilograms per tonne
-> kg_per_t <- 1000
-
-> # grams per kilogram
-> g_per_kg <- 1000
-
-> kg_per_g <- 1/g_per_kg
-
-> # kil-mega-giga watt hour conversion ratios
-> wh_per_kwh <- 1000
-
-> kwh_per_wh <- 1/wh_per_kwh
-
-> kwh_per_mwh <- 1000
-
-> mwh_per_gwh <- 1000
-
-> gwh_per_twh <- 1000
-
-> mwh_per_twh <- mwh_per_gwh * gwh_per_twh
-
-> # minutes per half hour
-> min_per_hh <- 30
-
-> # minutes per hour
-> min_per_h <- 60
-
-> # Unit conversions:
-> # 1 Joule = 1 watt second
-> # 1 MJ = 10^6 Ws = 10^3 kWs = 10^3 / 60^2 kWh
-> # uppercase M not lowercase, to make it clear this .... [TRUNCATED] 
-
-> # Define the city-region mapping, for weather data to AEMO regions
-> # The first one is for capital cities.
-> # This is for temperature, which drive .... [TRUNCATED] 
-
-> regional_city_region_map <- c(
-+   'cooberpedy' = 'SA1',
-+   'richmond' = 'QLD1',
-+   'dubbo' = 'NSW1',
-+   'bendigo' = 'VIC1',
-+   'hobart' = 'TAS1 .... [TRUNCATED] 
-
-> # we are joining lots of different datasets
-> # with many different start/end dates
-> # the intersection we are aiming for is: (inclusive)
-> start_d .... [TRUNCATED] 
-
-> end_date <- make_date(2023, 12, 1)
-
-> # load energy source data ------------------------------------------------------
-> 
-> energy <- read_parquet(aemo_pq_path)
-
-> # Local time, midday control and other time info -------------------------------
-> 
-> # We want to convert fixed Brisbane UTC+10 time to local time
- .... [TRUNCATED] 
-
-> df <- energy |>
-+   left_join(region_tz, by = c("regionid")) |>
-+   group_by(regionid) |>
-+   mutate(
-+     hh_end_fixed = force_tz(hh_end, tzone =  .... [TRUNCATED] 
-
-> # Public Holidays ---------------------------------------------------------
-> # we read public holiday data from two files
-> # because neither one o .... [TRUNCATED] 
-[1mindexing[0m [34mAus_public_hols_2009-2022-1.csv[0m [========] [32m4.20GB/s[0m, eta: [36m 0s[0m                                                                                                         
-> holidays_2 <- read_csv(pub_hol_path_2) |>
-+   rename(State = Jurisdiction) |>
-+   select(Date, State) |>
-+   mutate(
-+     Date = ymd(Date)
-+   )
-[1mindexing[0m [34maustralian-public-holidays-combined-2021-2024.csv[0m [] [32m8.55GB/s[0m, eta: [36m 0s[0m                                                                                                         
-> holidays <- rbind(holidays_1, holidays_2) |>
-+   mutate(
-+     regionid = paste0(str_to_upper(State), "1"),
-+   ) |>
-+   select(-State) |>
-+   disti .... [TRUNCATED] 
-
-> # Join with main dataframe
-> df <- holidays |>
-+   rename(date_local = Date) |>
-+   mutate(public_holiday = TRUE) |>
-+   right_join(df, by = c("date ..." ... [TRUNCATED] 
-
-> # Join DST data to energy -------------------------------------------------
-> 
-> # dst_transitions has one row per clock change
-> # we want to trans .... [TRUNCATED] 
-[1mindexing[0m [34m02-dst-dates.csv[0m [======================] [32m92.72MB/s[0m, eta: [36m 0s[0m                                                                                                         
-> dst_transitions <- dst_transitions |>
-+   rename(
-+     dst_date = date,
-+     dst_direction = direction) |>
-+   mutate(
-+     dst_direction = facto .... [TRUNCATED] 
-
-> # create a tibble with all dates we care about
-> # (plus extra)
-> # and the info for the nearest DST transition
-> # to make joins later
-> dst_dates_ .... [TRUNCATED] 
-
-> # now join DST info to main dataframe
-> 
-> df <- dst_dates_all |>
-+   rename(date_local = d) |>
-+   right_join(df, by = "date_local") |>
-+   mutate( .... [TRUNCATED] 
-
-> no_dst_info <- df |> filter(is.na(dst_now_here))
-
-> stopifnot((no_dst_info |> nrow()) == 0)
-
-> # In our time period, there's one particular day
-> # that's 94 days into DST, and one that's -94
-> # because the duration of DST (or not) differs sl .... [TRUNCATED] 
-
-> samples_per_days_into_dst <- df |> summarise(n = n(), .by = days_into_dst)
-
-> typical_sample_count <- samples_per_days_into_dst |> 
-+   pull(n) |> 
-+   abs() |> 
-+   median()
-
-> outlier_days <- samples_per_days_into_dst |> 
-+   filter(abs(n) < typical_sample_count) |> 
-+   pull(days_into_dst)
-
-> df$days_into_dst_outlier <- df$days_into_dst %in% outlier_days
-
-> # Add population ----------------------------------------------------------
-> 
-> # Load data
-> population_raw <- read_csv(population_path)
-[1mindexing[0m [34mpopulation-australia-raw.csv[0m [===========] [32m3.56GB/s[0m, eta: [36m 0s[0m                                                                                                         
-> # First data cleaning
-> # Doesn't work with |> instead of  %>%
-> # because of (.)
-> population <- population_raw %>%
-+   select(1, (ncol(.) - 8):nco .... [TRUNCATED] 
-
-> colnames(population) <-
-+   c("Date",
-+     "NSW1",
-+     "VIC1",
-+     "QLD1",
-+     "SA1",
-+     "WA1",
-+     "TAS1",
-+     "NT1",
-+     "ACT1",
-+ .... [TRUNCATED] 
-
-> # Cast to numbers
-> population[2:ncol(population)] <- lapply(population[2:ncol(population)], as.numeric)
-
-> # Include Australian Capital Territory in New South Wales
-> population$NSW1 <- population$NSW1 + population$ACT1
-
-> # drop regions that aren't part of the study
-> population <- population |> select(-c(ACT1, AUS, NT1, WA1))
-
-> # Transform dates to datetime format
-> population <- population |>
-+   mutate(Date = parse_date(Date, "%b-%Y"))|>
-+   filter(between(Date, start_dat .... [TRUNCATED] 
-
-> # Pivot the dataframe to have one column per state
-> population <- population |> 
-+   pivot_longer(cols = -Date, names_to = "regionid", values_to =  .... [TRUNCATED] 
-
-> # now linearly interpolate the 3-month data into daily
-> # Note that since our main electrical dataset ends on 31st December
-> # and this population .... [TRUNCATED] 
-
-> # join to main dataframe
-> df <- population |>
-+   rename(date_local = Date) |>
-+   right_join(df, by = c("regionid", "date_local"))
-
-> # add temperature ---------------------------------------------------------
-> 
-> 
-> # Define the clean and combine function for temperature data
-> c .... [TRUNCATED] 
-
-> # Create Temperature Dataframe 
-> # Loop through each CSV file in the directory 
-> all_temperature <- list()
-
-> temp_files <- list.files(temperature_dir, 
-+                          pattern = "\\.csv$", 
-+                          full.names = TRUE)
-
-> for (file_name in temp_files) {
-+   all_temperature[[length(all_temperature) + 1]] <- clean_and_combine_temp(file_name)
-+   cat(sprintf('Data cleane .... [TRUNCATED] 
-[1mindexing[0m [34mweather_adelaide.csv[0m [==================] [32m89.68GB/s[0m, eta: [36m 0s[0m                                                                                                         Data cleaned and added to list for SA1
-[1mindexing[0m [34mweather_brisbane.csv[0m [==================] [32m22.21GB/s[0m, eta: [36m 0s[0m                                                                                                         Data cleaned and added to list for QLD1
-[1mindexing[0m [34mweather_hobart.csv[0m [===================] [32m181.93GB/s[0m, eta: [36m 0s[0m                                                                                                         Data cleaned and added to list for TAS1
-[1mindexing[0m [34mweather_melbourne.csv[0m [================] [32m114.16GB/s[0m, eta: [36m 0s[0m                                                                                                         Data cleaned and added to list for VIC1
-[1mindexing[0m [34mweather_sydney.csv[0m [===================] [32m120.94GB/s[0m, eta: [36m 0s[0m                                                                                                         Data cleaned and added to list for NSW1
-
-> # check that we have found some data
-> # (i.e. source data not silently missing)
-> stopifnot(length(all_temperature) > 0)
-
-> # Merge all temperature data frames
-> temperature <- bind_rows(all_temperature)
-
-> # Fill in gaps which are larger than one day in a row by interpolating linearly 
-> temperature <- temperature |>
-+   group_by(regionid) |>
-+   mutat .... [TRUNCATED] 
-
-> # join to main dataframe
-> df <- left_join(df, temperature, by = c("regionid", "date_local"))
-
-> # add sunshine ------------------------------------------------------------
-> 
-> # Define the clean and combine function for sunshine data
-> clean_a .... [TRUNCATED] 
-
-> #Create Sunshine Dataframe
-> all_sunshine <- list()
-
-> sunshine_files <- list.files(sunshine_dir, 
-+                              pattern = "\\.csv$", 
-+                              full.names = TRUE)
-
-> for (file_name in sunshine_files) {
-+   all_sunshine[[length(all_sunshine) + 1]] <- clean_and_combine_sunshine(file_name)
-+   cat(sprintf('Data clea .... [TRUNCATED] 
-[1mindexing[0m [34msunshine-bendigo.csv[0m [==================] [32m42.96GB/s[0m, eta: [36m 0s[0m                                                                                                         [1] "Trying to find region for city bendigo , found  VIC1"
+[1mindexing[0m [34mAus_public_hols_2009-2022-1.csv[0m [=================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1mindexing[0m [34maustralian-public-holidays-combined-2021-2024.csv[0m [===============================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1mindexing[0m [34m02-dst-dates.csv[0m [================================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1mindexing[0m [34mpopulation-australia-raw.csv[0m [====================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1mindexing[0m [34mweather_adelaide.csv[0m [============================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           Data cleaned and added to list for SA1
+[1mindexing[0m [34mweather_brisbane.csv[0m [============================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           Data cleaned and added to list for QLD1
+[1mindexing[0m [34mweather_hobart.csv[0m [========================================================================--------------------------------------] [32m?[0m, eta: [36m 0s[0m[1mindexing[0m [34mweather_hobart.csv[0m [=====================================================================================================] [32m193.61MB/s[0m, eta: [36m 0s[0m                                                                                                                                                                                           Data cleaned and added to list for TAS1
+[1mindexing[0m [34mweather_melbourne.csv[0m [===========================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           Data cleaned and added to list for VIC1
+[1mindexing[0m [34mweather_sydney.csv[0m [==============================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           Data cleaned and added to list for NSW1
+[1mindexing[0m [34msunshine-bendigo.csv[0m [============================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1] "Trying to find region for city bendigo , found  VIC1"
 Data cleaned and added to list for VIC1
-[1mindexing[0m [34msunshine-cooberpedy.csv[0m [===============] [32m49.09GB/s[0m, eta: [36m 0s[0m                                                                                                         [1] "Trying to find region for city cooberpedy , found  SA1"
+[1mindexing[0m [34msunshine-cooberpedy.csv[0m [=========================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1] "Trying to find region for city cooberpedy , found  SA1"
 Data cleaned and added to list for SA1
-[1mindexing[0m [34msunshine-dubbo.csv[0m [====================] [32m36.24GB/s[0m, eta: [36m 0s[0m                                                                                                         [1] "Trying to find region for city dubbo , found  NSW1"
+[1mindexing[0m [34msunshine-dubbo.csv[0m [==============================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1] "Trying to find region for city dubbo , found  NSW1"
 Data cleaned and added to list for NSW1
-[1mindexing[0m [34msunshine-hobart.csv[0m [===================] [32m21.51GB/s[0m, eta: [36m 0s[0m                                                                                                         [1] "Trying to find region for city hobart , found  TAS1"
+[1mindexing[0m [34msunshine-hobart.csv[0m [=============================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1] "Trying to find region for city hobart , found  TAS1"
 Data cleaned and added to list for TAS1
-[1mindexing[0m [34msunshine-richmond.csv[0m [=================] [32m39.52GB/s[0m, eta: [36m 0s[0m                                                                                                         [1] "Trying to find region for city richmond , found  QLD1"
+[1mindexing[0m [34msunshine-richmond.csv[0m [===========================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1] "Trying to find region for city richmond , found  QLD1"
 Data cleaned and added to list for QLD1
-
-> # check that we have found some data
-> # (i.e. source data not silently missing)
-> stopifnot(length(all_sunshine) > 0)
-
-> # Merge all sunshine data frames
-> sunshine <- bind_rows(all_sunshine)
-
-> # Fill in gaps which are larger than one day in a row by interpolating linearly 
-> sunshine <- sunshine |>
-+   group_by(regionid) |>
-+   mutate(sola .... [TRUNCATED] 
-
-> # join to main dataframe
-> df <- left_join(df, sunshine, by = c("regionid", "date_local"))
-
-> # Wind data ---------------------------------------------------------------
-> 
-> 
-> # fill in that one gap, linear interpolation
-> wind <- read_csv( .... [TRUNCATED] 
-[1mindexing[0m [34m05-wind.csv[0m [===========================] [32m69.91GB/s[0m, eta: [36m 0s[0m                                                                                                         
-> # we're missing a lot of max wind speed data
-> # but only one average wind speed record
-> stopifnot(sum(is.na(wind$avg_wind_speed_km_per_h)) <= 1)
-
-> wind <- wind |>
-+   group_by(regionid) |>
-+   arrange(date) |>
-+   mutate(avg_wind_speed_km_per_h = zoo::na.approx(avg_wind_speed_km_per_h, 
-+       .... [TRUNCATED] 
-
-> # Fill in gaps which are larger than one day in a row by interpolating linearly 
-> wind <- wind |>
-+   group_by(regionid) |>
-+   complete(date_local .... [TRUNCATED] 
-
-> # add to main dataframe
-> df <- df |>
-+   left_join(wind, by = c("date_local", "regionid"))
-
-> # Per capita calculations -------------------------------------------------
-> 
-> # do division to get per-capita 
-> # also normalise values by chang .... [TRUNCATED] 
-
-> # add midday float --------------------------------------------------------
-> # we already have a dummy column for if this half our is a midday cont .... [TRUNCATED] 
-
-> df <- df |>
-+   left_join(midday_emissions, by = c("regionid", "date_local")) |>
-+   mutate(
-+     energy_wh_per_capita_vs_midday = (energy_kwh_per_ .... [TRUNCATED] 
-
-> # tidy up -----------------------------------------------------------------
-> 
-> 
-> # our weather data, AEMO data etc
-> # has slightly different end .... [TRUNCATED] 
-
-> # missing data final check ------------------------------------------------
-> 
-> # check data has no unexpected holes
-> # we know rooftop solar data .... [TRUNCATED] 
-
-> missing <- missing[(missing > 0) & !grepl("rooftop", names(df))]
-
-> stopifnot(length(missing) == 0)
-
-> # Save half hourly output ------------------------------------------------------
-> # CSV for stata
-> # parquet for the next R script
-> 
-> write_csv( .... [TRUNCATED] 
-[1mwrote[0m [32m5.61MB[0m in [36m 0s[0m, [32m560.14GB/s[0m[1mwrote[0m [32m186.54MB[0m in [36m 0s[0m, [32m920.95MB/s[0m[1mwrote[0m [32m192.28MB[0m in [36m 0s[0m, [32m912.21MB/s[0m[1mwrote[0m [32m197.97MB[0m in [36m 0s[0m, [32m918.66MB/s[0m[1mwrote[0m [32m203.66MB[0m in [36m 0s[0m, [32m903.12MB/s[0m[1mwrote[0m [32m209.29MB[0m in [36m 0s[0m, [32m910.52MB/s[0m[1mwrote[0m [32m214.93MB[0m in [36m 0s[0m, [32m891.32MB/s[0m[1mwrote[0m [32m220.64MB[0m in [36m 0s[0m, [32m899.27MB/s[0m[1mwrote[0m [32m226.25MB[0m in [36m 0s[0m, [32m883.79MB/s[0m[1mwrote[0m [32m231.88MB[0m in [36m 0s[0m, [32m890.57MB/s[0m[1mwrote[0m [32m237.54MB[0m in [36m 0s[0m, [32m875.87MB/s[0m[1mwrote[0m [32m243.25MB[0m in [36m 0s[0m, [32m881.03MB/s[0m[1mwrote[0m [32m248.88MB[0m in [36m 0s[0m, [32m870.53MB/s[0m[1mwrote[0m [32m254.52MB[0m in [36m 0s[0m, [32m876.23MB/s[0m[1mwrote[0m [32m260.22MB[0m in [36m 0s[0m, [32m865.24MB/s[0m[1mwrote[0m [32m265.94MB[0m in [36m 0s[0m, [32m871.92MB/s[0m[1mwrote[0m [32m271.66MB[0m in [36m 0s[0m, [32m862.74MB/s[0m[1mwrote[0m [32m277.32MB[0m in [36m 0s[0m, [32m868.14MB/s[0m[1mwrote[0m [32m283.22MB[0m in [36m 0s[0m, [32m856.15MB/s[0m[1mwrote[0m [32m289.18MB[0m in [36m 0s[0m, [32m861.28MB/s[0m[1mwrote[0m [32m295.11MB[0m in [36m 0s[0m, [32m855.79MB/s[0m[1mwrote[0m [32m301.13MB[0m in [36m 0s[0m, [32m859.25MB/s[0m[1mwrote[0m [32m307.14MB[0m in [36m 0s[0m, [32m850.81MB/s[0m[1mwrote[0m [32m313.17MB[0m in [36m 0s[0m, [32m852.01MB/s[0m[1mwrote[0m [32m319.12MB[0m in [36m 0s[0m, [32m850.77MB/s[0m[1mwrote[0m [32m325.11MB[0m in [36m 0s[0m, [32m853.82MB/s[0m[1mwrote[0m [32m331.09MB[0m in [36m 0s[0m, [32m842.95MB/s[0m[1mwrote[0m [32m337.15MB[0m in [36m 0s[0m, [32m848.44MB/s[0m[1mwrote[0m [32m343.23MB[0m in [36m 0s[0m, [32m841.45MB/s[0m[1mwrote[0m [32m349.24MB[0m in [36m 0s[0m, [32m843.19MB/s[0m[1mwrote[0m [32m355.20MB[0m in [36m 0s[0m, [32m834.93MB/s[0m[1mwrote[0m [32m361.15MB[0m in [36m 0s[0m, [32m837.16MB/s[0m[1mwrote[0m [32m367.16MB[0m in [36m 0s[0m, [32m836.27MB/s[0m[1mwrote[0m [32m373.19MB[0m in [36m 0s[0m, [32m834.51MB/s[0m[1mwrote[0m [32m379.24MB[0m in [36m 0s[0m, [32m830.50MB/s[0m[1mwrote[0m [32m385.28MB[0m in [36m 0s[0m, [32m827.60MB/s[0m[1mwrote[0m [32m391.31MB[0m in [36m 0s[0m, [32m829.54MB/s[0m[1mwrote[0m [32m397.34MB[0m in [36m 1s[0m, [32m680.22MB/s[0m[1mwrote[0m [32m403.38MB[0m in [36m 1s[0m, [32m680.47MB/s[0m[1mwrote[0m [32m409.40MB[0m in [36m 1s[0m, [32m685.76MB/s[0m[1mwrote[0m [32m415.43MB[0m in [36m 1s[0m, [32m659.74MB/s[0m[1mwrote[0m [32m421.44MB[0m in [36m 1s[0m, [32m663.23MB/s[0m[1mwrote[0m [32m427.42MB[0m in [36m 1s[0m, [32m624.19MB/s[0m[1mwrote[0m [32m433.38MB[0m in [36m 1s[0m, [32m614.71MB/s[0m[1mwrote[0m [32m439.46MB[0m in [36m 1s[0m, [32m608.49MB/s[0m[1mwrote[0m [32m445.55MB[0m in [36m 1s[0m, [32m610.86MB/s[0m[1mwrote[0m [32m451.60MB[0m in [36m 1s[0m, [32m608.89MB/s[0m[1mwrote[0m [32m457.63MB[0m in [36m 1s[0m, [32m612.84MB/s[0m[1mwrote[0m [32m463.69MB[0m in [36m 1s[0m, [32m614.87MB/s[0m[1mwrote[0m [32m469.66MB[0m in [36m 1s[0m, [32m612.19MB/s[0m[1mwrote[0m [32m475.61MB[0m in [36m 1s[0m, [32m614.88MB/s[0m[1mwrote[0m [32m481.57MB[0m in [36m 1s[0m, [32m616.59MB/s[0m[1mwrote[0m [32m487.61MB[0m in [36m 1s[0m, [32m619.00MB/s[0m[1mwrote[0m [32m493.74MB[0m in [36m 1s[0m, [32m618.39MB/s[0m[1mwrote[0m [32m499.84MB[0m in [36m 1s[0m, [32m619.26MB/s[0m[1mwrote[0m [32m505.95MB[0m in [36m 1s[0m, [32m621.79MB/s[0m[1mwrote[0m [32m511.98MB[0m in [36m 1s[0m, [32m622.16MB/s[0m[1mwrote[0m [32m517.97MB[0m in [36m 1s[0m, [32m624.91MB/s[0m[1mwrote[0m [32m523.95MB[0m in [36m 1s[0m, [32m624.60MB/s[0m[1mwrote[0m [32m529.88MB[0m in [36m 1s[0m, [32m624.80MB/s[0m[1mwrote[0m [32m535.86MB[0m in [36m 1s[0m, [32m626.98MB/s[0m[1mwrote[0m [32m541.90MB[0m in [36m 1s[0m, [32m627.26MB/s[0m[1mwrote[0m [32m547.85MB[0m in [36m 1s[0m, [32m627.81MB/s[0m[1mwrote[0m [32m553.78MB[0m in [36m 1s[0m, [32m630.88MB/s[0m[1mwrote[0m [32m559.73MB[0m in [36m 1s[0m, [32m629.23MB/s[0m[1mwrote[0m [32m565.64MB[0m in [36m 1s[0m, [32m631.89MB/s[0m[1mwrote[0m [32m571.59MB[0m in [36m 1s[0m, [32m630.92MB/s[0m[1mwrote[0m [32m577.60MB[0m in [36m 1s[0m, [32m632.08MB/s[0m[1mwrote[0m [32m583.59MB[0m in [36m 1s[0m, [32m635.56MB/s[0m                                                                    [1mwrote[0m [32m1.00TB[0m in [36m 1s[0m, [32m1.09TB/s[0m                                                                    
-> write_parquet(df, sink = output_file_path_hh_pq)
-
-> # downsample half hourly to daily -----------------------------------------
-> 
-> 
-> 
-> # midday for daily ------------------------------------------ .... [TRUNCATED] 
-
-> # multiply some values by day_length_scale_factor
-> # to account for the fact that some days have a bit fewer/more than 48 half hours
-> # i.e. it's  .... [TRUNCATED] 
-
-> daily |> write_csv(output_file_path_daily)
-[1mwrote[0m [32m80.22kB[0m in [36m 0s[0m, [32m8.01GB/s[0m[1mwrote[0m [32m1.00TB[0m in [36m 0s[0m, [32m45.52TB/s[0m                                                                    
-> # this script uses a lot of memory
-> # free up some with aggressive garbage collection
-> # to leave room for the next script.
-> # (It's better if th .... [TRUNCATED] 
-           used  (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells  1982285 105.9    5907880  315.6  11615057  620.4
-Vcells 62755724 478.8  188679120 1439.6 188676506 1439.5
-
-> # graphs ------------------------------------------------------------------
-> # we generate one graph that's easier than in stata. The rest is done  .... [TRUNCATED] 
-
-> typical_midday <- ddd_es |>
-+   filter(! not_midday_control_fixed) |>
-+   pull(co2) |>
-+   mean()
-
-> ddd_es |>
-+   mutate(
-+     co2 = co2 - typical_midday
-+   ) |>
-+   
-+   ggplot(aes(x=hr_fixed, y=co2)) +
-+   geom_line() +
-+   labs(
-+     title="D ..." ... [TRUNCATED] 
-
-> ggsave(here("plots/16-DDD-event-study-average.png"), width=9, height=7)
-
-> # Plot of daily emissions profile per day
-> for (r in unique(df$regionid)){
-+   for (time_col in c("hr_local", "hr_fixed")){
-+     for (y in c("co2_ ..." ... [TRUNCATED] 
-
-> print('done')
+[1mindexing[0m [34m05-wind.csv[0m [=====================================================================================================================] [32m?[0m, eta: [36m 0s[0m                                                                                                                                                                                           [1mwrote[0m [32m5.61MB[0m in [36m 0s[0m, [32m?[0m[1mwrote[0m [32m67.15MB[0m in [36m 0s[0m, [32m318.19MB/s[0m[1mwrote[0m [32m72.76MB[0m in [36m 0s[0m, [32m302.84MB/s[0m[1mwrote[0m [32m78.42MB[0m in [36m 0s[0m, [32m295.70MB/s[0m[1mwrote[0m [32m84.11MB[0m in [36m 0s[0m, [32m294.99MB/s[0m[1mwrote[0m [32m89.81MB[0m in [36m 0s[0m, [32m291.51MB/s[0m[1mwrote[0m [32m95.50MB[0m in [36m 0s[0m, [32m286.79MB/s[0m[1mwrote[0m [32m101.18MB[0m in [36m 0s[0m, [32m285.06MB/s[0m[1mwrote[0m [32m106.86MB[0m in [36m 0s[0m, [32m285.04MB/s[0m[1mwrote[0m [32m112.50MB[0m in [36m 0s[0m, [32m273.20MB/s[0m[1mwrote[0m [32m118.20MB[0m in [36m 0s[0m, [32m271.26MB/s[0m[1mwrote[0m [32m123.94MB[0m in [36m 0s[0m, [32m270.21MB/s[0m[1mwrote[0m [32m129.65MB[0m in [36m 0s[0m, [32m268.10MB/s[0m[1mwrote[0m [32m135.35MB[0m in [36m 1s[0m, [32m265.64MB/s[0m[1mwrote[0m [32m141.03MB[0m in [36m 1s[0m, [32m265.86MB/s[0m[1mwrote[0m [32m146.72MB[0m in [36m 1s[0m, [32m264.64MB/s[0m[1mwrote[0m [32m152.43MB[0m in [36m 1s[0m, [32m261.31MB/s[0m[1mwrote[0m [32m158.18MB[0m in [36m 1s[0m, [32m257.51MB/s[0m[1mwrote[0m [32m163.83MB[0m in [36m 1s[0m, [32m256.70MB/s[0m[1mwrote[0m [32m169.44MB[0m in [36m 1s[0m, [32m255.52MB/s[0m[1mwrote[0m [32m175.08MB[0m in [36m 1s[0m, [32m254.46MB/s[0m[1mwrote[0m [32m180.81MB[0m in [36m 1s[0m, [32m239.65MB/s[0m[1mwrote[0m [32m186.54MB[0m in [36m 1s[0m, [32m238.72MB/s[0m[1mwrote[0m [32m192.28MB[0m in [36m 1s[0m, [32m239.25MB/s[0m[1mwrote[0m [32m197.97MB[0m in [36m 1s[0m, [32m239.65MB/s[0m[1mwrote[0m [32m203.66MB[0m in [36m 1s[0m, [32m241.01MB/s[0m[1mwrote[0m [32m209.29MB[0m in [36m 1s[0m, [32m246.31MB/s[0m[1mwrote[0m [32m214.93MB[0m in [36m 1s[0m, [32m243.29MB/s[0m[1mwrote[0m [32m220.64MB[0m in [36m 1s[0m, [32m245.18MB/s[0m[1mwrote[0m [32m226.25MB[0m in [36m 1s[0m, [32m247.12MB/s[0m[1mwrote[0m [32m231.88MB[0m in [36m 1s[0m, [32m249.02MB/s[0m[1mwrote[0m [32m237.54MB[0m in [36m 1s[0m, [32m250.89MB/s[0m[1mwrote[0m [32m243.25MB[0m in [36m 1s[0m, [32m252.75MB/s[0m[1mwrote[0m [32m248.88MB[0m in [36m 1s[0m, [32m254.48MB/s[0m[1mwrote[0m [32m254.52MB[0m in [36m 1s[0m, [32m252.18MB/s[0m[1mwrote[0m [32m260.22MB[0m in [36m 1s[0m, [32m253.91MB/s[0m[1mwrote[0m [32m265.94MB[0m in [36m 1s[0m, [32m255.59MB/s[0m[1mwrote[0m [32m271.66MB[0m in [36m 1s[0m, [32m261.09MB/s[0m[1mwrote[0m [32m277.32MB[0m in [36m 1s[0m, [32m258.75MB/s[0m[1mwrote[0m [32m283.22MB[0m in [36m 1s[0m, [32m260.47MB/s[0m[1mwrote[0m [32m289.18MB[0m in [36m 1s[0m, [32m258.52MB/s[0m[1mwrote[0m [32m295.11MB[0m in [36m 1s[0m, [32m260.19MB/s[0m[1mwrote[0m [32m301.13MB[0m in [36m 1s[0m, [32m261.89MB/s[0m[1mwrote[0m [32m307.14MB[0m in [36m 1s[0m, [32m263.53MB/s[0m[1mwrote[0m [32m313.17MB[0m in [36m 1s[0m, [32m265.15MB/s[0m[1mwrote[0m [32m319.12MB[0m in [36m 1s[0m, [32m263.23MB/s[0m[1mwrote[0m [32m325.11MB[0m in [36m 1s[0m, [32m264.76MB/s[0m[1mwrote[0m [32m331.09MB[0m in [36m 1s[0m, [32m266.24MB/s[0m[1mwrote[0m [32m337.15MB[0m in [36m 1s[0m, [32m267.75MB/s[0m[1mwrote[0m [32m343.23MB[0m in [36m 1s[0m, [32m265.98MB/s[0m[1mwrote[0m [32m349.24MB[0m in [36m 1s[0m, [32m267.40MB/s[0m[1mwrote[0m [32m355.20MB[0m in [36m 1s[0m, [32m268.00MB/s[0m[1mwrote[0m [32m361.15MB[0m in [36m 1s[0m, [32m269.32MB/s[0m[1mwrote[0m [32m367.16MB[0m in [36m 1s[0m, [32m270.65MB/s[0m[1mwrote[0m [32m373.19MB[0m in [36m 1s[0m, [32m271.97MB/s[0m[1mwrote[0m [32m379.24MB[0m in [36m 1s[0m, [32m270.22MB/s[0m[1mwrote[0m [32m385.28MB[0m in [36m 1s[0m, [32m271.50MB/s[0m[1mwrote[0m [32m391.31MB[0m in [36m 1s[0m, [32m272.75MB/s[0m[1mwrote[0m [32m397.34MB[0m in [36m 1s[0m, [32m273.97MB/s[0m[1mwrote[0m [32m403.38MB[0m in [36m 1s[0m, [32m272.34MB/s[0m[1mwrote[0m [32m409.40MB[0m in [36m 2s[0m, [32m272.59MB/s[0m[1mwrote[0m [32m415.43MB[0m in [36m 2s[0m, [32m273.76MB/s[0m[1mwrote[0m [32m421.44MB[0m in [36m 2s[0m, [32m274.89MB/s[0m[1mwrote[0m [32m427.42MB[0m in [36m 2s[0m, [32m275.98MB/s[0m[1mwrote[0m [32m433.38MB[0m in [36m 2s[0m, [32m277.03MB/s[0m[1mwrote[0m [32m439.46MB[0m in [36m 2s[0m, [32m275.42MB/s[0m[1mwrote[0m [32m445.55MB[0m in [36m 2s[0m, [32m276.53MB/s[0m[1mwrote[0m [32m451.60MB[0m in [36m 2s[0m, [32m277.59MB/s[0m[1mwrote[0m [32m457.63MB[0m in [36m 2s[0m, [32m278.62MB/s[0m[1mwrote[0m [32m463.69MB[0m in [36m 2s[0m, [32m279.66MB/s[0m[1mwrote[0m [32m469.66MB[0m in [36m 2s[0m, [32m280.61MB/s[0m[1mwrote[0m [32m475.61MB[0m in [36m 2s[0m, [32m278.96MB/s[0m[1mwrote[0m [32m481.57MB[0m in [36m 2s[0m, [32m279.89MB/s[0m[1mwrote[0m [32m487.61MB[0m in [36m 2s[0m, [32m280.85MB/s[0m[1mwrote[0m [32m493.74MB[0m in [36m 2s[0m, [32m279.35MB/s[0m[1mwrote[0m [32m499.84MB[0m in [36m 2s[0m, [32m280.33MB/s[0m[1mwrote[0m [32m505.95MB[0m in [36m 2s[0m, [32m278.87MB/s[0m[1mwrote[0m [32m511.98MB[0m in [36m 2s[0m, [32m281.13MB/s[0m[1mwrote[0m [32m517.97MB[0m in [36m 2s[0m, [32m279.62MB/s[0m[1mwrote[0m [32m523.95MB[0m in [36m 2s[0m, [32m279.62MB/s[0m[1mwrote[0m [32m529.88MB[0m in [36m 2s[0m, [32m279.96MB/s[0m[1mwrote[0m [32m535.86MB[0m in [36m 2s[0m, [32m281.56MB/s[0m[1mwrote[0m [32m541.90MB[0m in [36m 2s[0m, [32m282.41MB/s[0m[1mwrote[0m [32m547.85MB[0m in [36m 2s[0m, [32m283.21MB/s[0m[1mwrote[0m [32m553.78MB[0m in [36m 2s[0m, [32m281.73MB/s[0m[1mwrote[0m [32m559.73MB[0m in [36m 2s[0m, [32m282.51MB/s[0m[1mwrote[0m [32m565.64MB[0m in [36m 2s[0m, [32m283.26MB/s[0m[1mwrote[0m [32m571.59MB[0m in [36m 2s[0m, [32m284.02MB/s[0m[1mwrote[0m [32m577.60MB[0m in [36m 2s[0m, [32m284.79MB/s[0m[1mwrote[0m [32m583.59MB[0m in [36m 2s[0m, [32m285.54MB/s[0m                                                                                                                                                      [1mwrote[0m [32m2.15GB[0m in [36m 2s[0m, [32m2.15GB/s[0m                                                                                                                                                      [1mwrote[0m [32m81.49kB[0m in [36m 0s[0m, [32m?[0m[1mwrote[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                                                 used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells  1550460  82.9    4487856  239.7   5609820  299.6
+Vcells 62474157 476.7  200669270 1531.0 166651755 1271.5
 [1] "done"
-
-> sink(NULL) # close log file
