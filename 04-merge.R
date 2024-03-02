@@ -158,9 +158,11 @@ df <- energy |>
     
     
     midday_control_local = (hour(hh_start_local) >= 12) &
-      (hour(hh_end_local) < 15),
+      (hour(hh_end_local) < 15) &
+      (hour(hh_start_local) <= hour(hh_end_local)), # exclude 23:30-00:00
     midday_control_fixed = (hour(hh_start_fixed) >= 12) &
-      (hour(hh_end_fixed) < 15),
+      (hour(hh_end_fixed) < 15) &
+      (hour(hh_start_fixed) <= hour(hh_end_fixed)), # exclude 23:30-00:00
     
     # True if it is NOT midday
     # For our DDD this is the way we normally want to think about this.
@@ -801,7 +803,6 @@ ddd_es |>
     y = "gCO2 diff, diff"
   )
 ggsave(here("plots/16-DDD-event-study-average.png"), width=9, height=7)
-
 
 print('done')
 sink(NULL) # close log file
