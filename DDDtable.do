@@ -92,3 +92,25 @@ reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere weekend_local publi
 
 // TREATMENT - CONTROL of midday
 // -.0175978 - -.0186343 = 0.0089392
+
+///////////////// Test Eventdd /////////////////////////
+webuse set www.damianclarke.net/stata/
+webuse bacon_example.dta, clear
+
+gen timeToTreat=year-_nfd
+
+sort stfips year 
+list stfips year _nfd timeToTreat in 1/10, noobs sepby(stfips) abbreviate(11)
+
+
+eventdd asmrs pcinc asmrh cases i.year i.stfips, timevar(timeToTreat) ///
+method( ,cluster(stfips)) graph_op(ytitle("Suicidesper1mWomen") ///
+xlabel(-20(5)25))
+
+eventdd asmrs pcinc asmrh cases, timevar(timeToTreat) ///
+method(hdfe ,absorb(i.year i.stfips) cluster(stfips)) graph_op(ytitle("Suicides per 1m Women") ///
+xlabel(-20(5)25))
+
+estat leads
+// low p-value implies H_0 of leads being 0 does not hold
+estat lags
