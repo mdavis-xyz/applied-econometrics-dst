@@ -214,6 +214,9 @@ label variable dst_transition_id_and_region "DST Transition ID and Region"
 label variable energy_wh_per_capita_vs_midday "Electricity Consumption (Wh) per Capita compared to the Midday period"
 label variable days_into_dst "Number of Days into the DST transition"
 
+// save some space
+compress
+
 save "data/05-half-hourly.dta", replace
 
 ///////////////////////// Regressions /////////////////////////////////////////
