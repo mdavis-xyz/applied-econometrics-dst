@@ -81,7 +81,7 @@ cd "/home/matthew/applied_repo"
 set linesize 80
 
 *CREATE LOG FILE 
-cap log using "Tables and Graphs from Stata", replace
+cap log using "logs/05-Tables-and-Graphs-from-Stata", replace
 
 ********************* 1. Data Import and Transformation:************************
 *		   - Importing and transforming data from the CSV file.
