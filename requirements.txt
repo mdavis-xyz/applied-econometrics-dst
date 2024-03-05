@@ -9,3 +9,6 @@ tqdm
 polars
 astral
 multiprocess
+matplotlib
+geopandas
+
