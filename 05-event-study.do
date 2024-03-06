@@ -36,7 +36,7 @@ Summary of the sections:
 3. **Event Studies:**
    - Event studies for CO2 emissions and electricity consumption using `eventdd`.
    - Plots are generated and exported.
-   - Results are stored in `results/EventStudy-Co2.png` and 
+   - Results are stored in `results/EventStudy-CO2.png` and 
 	`results/EventStudy-Elec.png`.
 
 4. **DDD Design and Event Study:**
@@ -223,7 +223,7 @@ save "data/05-half-hourly.dta", replace
 /*******************2. Base DiD Regressions:*************************************
 - Event studies for CO2 emissions and electricity consumption using `eventdd`.
 - Plots are generated and exported.
-- Results are stored in `results/EventStudy-Co2.png` and
+- Results are stored in `results/EventStudy-CO2.png` and
   `results/EventStudy-Elec.png`.*/
 use "data/05-half-hourly.dta", clear
 
@@ -255,7 +255,7 @@ esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", ///
 /*****************************3. Event Studies:*********************************
 - Event studies for CO2 emissions and electricity consumption using `eventdd`.
 - Plots are generated and exported.
-- Results are stored in `results/EventStudy-Co2.png` and `results/EventStudy-Elec.png`.
+- Results are stored in `results/EventStudy-CO2.png` and `results/EventStudy-Elec.png`.
 */
 
 use "data/05-half-hourly.dta", clear
@@ -265,14 +265,14 @@ replace timevar = days_into_dst if dst_here_anytime == 1
 eventdd co2_kg_per_capita public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3  [aweight = population], timevar(timevar) ///
 method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
-graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") ///
+graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 Emissions"))
-graph export "results/EventStudy-Co2.png", replace
+graph export "results/EventStudy-CO2.png", replace
 
 eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
- graph_op(ytitle("Kwh energy p.c.") xtitle("Days until DST transition") ///
+ graph_op(ytitle("Kwh energy p.c.") xtitle("Days into DST (summer)") ///
  title("Event Study - Electricity Consumption"))
 graph export "results/EventStudy-Elec.png", replace
 
@@ -305,9 +305,9 @@ replace timevar = days_into_dst if dst_here_anytime == 1
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
- graph_op(ytitle("Co2 g per capita") xtitle("Days until DST transition") ///
+ graph_op(ytitle("CO2 g per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 - Midday Normalised"))
-graph export "results/EventStudy-MiddayCo2.png", replace
+graph export "results/EventStudy-MiddayCO2.png", replace
 estat leads
 estat lags
 
@@ -315,7 +315,7 @@ eventdd energy_wh_per_capita_vs_midday public_holiday ///
 c.temperature##c.temperature solar_exposure wind_3 ///
  [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) ///
  cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") ///
- xtitle("Days until DST transition") ///
+ xtitle("Days into DST (summer)") ///
  title("Event Study - Energy - Midday Normalised"))
 graph export "results/EventStudy-MiddayElec.png", replace
 estat leads
@@ -334,7 +334,7 @@ drop if dst_start !=1 //DST start so only July to December direction
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3 [aweight = population], timevar(timevar) ///
 method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
-graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") ///
+graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
 title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
 
@@ -346,7 +346,7 @@ drop if dst_start !=0 //DST stop so only January to June direction
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature ///
  solar_exposure wind_3 [aweight = population], timevar(timevar) /// 
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) /// 
- graph_op(ytitle("Co2 kg per capita") xtitle("Days until DST transition") ///
+ graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
 
@@ -364,14 +364,14 @@ drop if regionid == "TAS1"
 eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature /// 
 solar_exposure wind_3  [aweight = population], timevar(timevar) /// 
 method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
- graph_op(ytitle("Co2 g per capita") xtitle("Days until DST transition") /// 
+ graph_op(ytitle("CO2 g per capita") xtitle("Days into DST (summer)") /// 
  title("Event Study - CO2 - Midday - w/o Tasmania"))
-graph export "results/EventStudy-MiddayCo2-Dropping-Tasmania.png", replace
+graph export "results/EventStudy-MiddayCO2-Dropping-Tasmania.png", replace
 
 eventdd energy_wh_per_capita_vs_midday public_holiday /// 
 c.temperature##c.temperature solar_exposure wind_3  [aweight = population], ///
  timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
- graph_op(ytitle("Wh energy p.c.") xtitle("Days until DST transition") /// 
+ graph_op(ytitle("Wh energy p.c.") xtitle("Days into DST (summer)") /// 
  title("Event Study - Energy - Midday - w/o Tasmania"))
 graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
 
@@ -384,9 +384,9 @@ gen ln_co2 = ln(co2_g_per_capita_vs_midday)
 eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure ///
  wind_3  [aweight = population], timevar(timevar) /// 
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
- graph_op(ytitle("ln(Co2) g per capita") xtitle("Days until DST transition") ///
+ graph_op(ytitle("ln(CO2) g per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - lnCO2 - Midday - w/o Tasmania"))
-graph export "results/EventStudy-ln(MiddayCo2)-Dropping-Tasmania.png", replace
+graph export "results/EventStudy-ln(MiddayCO2)-Dropping-Tasmania.png", replace
 
 /********** 8. **Tables with lnCO2 and ln Electricity Consumption:*************
    - DiD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
