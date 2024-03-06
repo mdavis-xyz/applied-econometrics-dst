@@ -70,7 +70,12 @@ Summary of the sections:
 	 additional controls.
    - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
    
-10. ** Summary Statistics**
+10. **Summary Statistics**
+
+11. **DDD + Event Study with only the past 5 years:**
+	- DDD regressions for Electricity and CO2 using only the past 5 years
+		with all controls
+	- Event Study Graphs
 */
 
 *******************************************************************************
@@ -432,4 +437,53 @@ esttab CO2_DDD_base Elec_DDD_base using "results/DDD-base-results.tex", ///
 use "data/05-half-hourly.dta", clear
 describe
 summarize
+
+/*********************** 11. DDD + Event Study for the last 5 years ***********/
+use "data/05-half-hourly.dta", clear
+drop if year(date) < 2019
+//to correct for the sudden cutoff, we drop the 2018- start so 
+// we drop the whole period from end of 2018 - January 2019 (halfway)
+// to the next dst transition
+drop if dst_transition1 == 19
+
+/// DDD regression - adjusting for midday emissions
+reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday ///
+ weekend_local public_holiday temperature c.temperature#c.temperature ///
+ solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+eststo CO2_DDD_5year
+
+reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday ///
+weekend_local public_holiday c.temperature##c.temperature ///
+solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
+eststo Elec_DDD_5year
+
+esttab CO2_DDD_5year Elec_DDD_5year using "results/DDD-5year-results.tex", ///
+ label se stats(r2 r2_a) replace
+
+//DDD Event study
+use "data/05-half-hourly.dta", clear
+drop if year(date) < 2019
+drop if dst_transition1 == 19
+gen timevar = .
+replace timevar = days_into_dst if dst_here_anytime == 1
+
+eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature ///
+solar_exposure wind_3  [aweight = population], timevar(timevar) ///
+ method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
+ graph_op(ytitle("CO2 g per capita") xtitle("Days into DST (summer)") ///
+ title("Event Study - CO2 - Midday Normalised - Last 5 Years"))
+graph export "results/EventStudy-MiddayCO2-5year.png", replace
+estat leads
+estat lags
+// Repeated for Electricity
+eventdd energy_wh_per_capita_vs_midday public_holiday ///
+c.temperature##c.temperature solar_exposure wind_3 ///
+ [aweight = population], timevar(timevar) method(hdfe, absorb(regionid1 date) ///
+ cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") ///
+ xtitle("Days into DST (summer)") ///
+ title("Event Study - Energy - Midday Normalised - Last 5 Years"))
+graph export "results/EventStudy-MiddayElec-5year.png", replace
+estat leads
+estat lags
+
 // End of file
