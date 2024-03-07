@@ -7,7 +7,7 @@
 *
 * Summary statistics, Difference-in-Differences, DDD, Event studies
 *
-* LAST MODIFIED: 29/02/2024 *
+* LAST MODIFIED: 03/03/2024 *
 * LAST MODIFIED BY: Alexander Köhler*
 * software version: Stata 17.0 SE-Standard Edition
 * processors: Intel(R) Core(TM) i7-7500U CPU @ 2.7 GHz
