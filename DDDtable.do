@@ -4,7 +4,9 @@
 
 ///// DDD Table
 clear
-use "/Users/simonpostler/Desktop/applied-econometrics-dst-master/data/05-half-hourly.dta", clear
+// cd "/Users/simonpostler/Desktop/applied-econometrics-dst-master/"
+cd "/home/matthew/applied_repo/"
+use "data/05-half-hourly.dta", clear
 
 // not_midday TRUE = 2, "FALSE"
 gen midday_treatment  = ""
@@ -20,21 +22,21 @@ replace midday_treatment = "mid_post" if not_midday == 1 & after_transition == 1
 //Without controls
 bysort midday_treatment: reg co2_kg_per_capita dst_now_here [aweight = population], vce(cluster regionid1)
 eststo CO2_niceDDD_simple
-esttab CO2_niceDDD_simple using "simple_nice_DDD-results.tex", label se stats(r2 r2_a) replace
+esttab CO2_niceDDD_simple using "results/simple_nice_DDD-results.tex", label se stats(r2 r2_a) replace
 
- //(-.0748616 - -.0174641) - (-.0847293 - -.0464328 )
- //-0.019101
+//(-.0748616 - -.0174641) - (-.0847293 - -.0464328 )
+//-0.019101
 
 // First regression
 bysort midday_treatment: reg co2_kg_per_capita dst_now_here weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo CO2_niceDDD
 
-(-.0976186 -  -.0574957) - ( -.1090231 -  -.0832942)
--0.014394
+// (-.0976186 -  -.0574957) - ( -.1090231 -  -.0832942)
+// -0.014394
 
-esttab CO2_niceDDD  using "nice_DDD-results.tex", label se stats(r2 r2_a) replace
+esttab CO2_niceDDD  using "results/nice_DDD-results.tex", label se stats(r2 r2_a) replace
 
-dorp if midday
+drop if midday
 reg co2_kg_per_capita c.dst_now_anywhere##c.dst_now_anytime  weekend_local public_holiday c.temperature##c.temperature solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 
 
