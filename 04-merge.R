@@ -28,6 +28,7 @@ library(tidyverse)
 library(arrow)
 library(zoo)
 library(here)
+library(knitr) # for table to tex
 
 # set up logs, as per formal requirements
 dir.create(here("logs"), showWarnings = FALSE)
@@ -47,7 +48,8 @@ population_path <- file.path(data_dir, "raw/population/population-australia-raw.
 temperature_dir <- file.path(data_dir, "raw/weather")
 sunshine_dir <- file.path(data_dir, "raw/sunshine")
 wind_path <- file.path(data_dir, "snapshot/05-wind.csv")
-aemo_pq_path <- file.path(data_dir, "snapshot/01-F-aemo-joined-all.parquet")
+aemo_pq_path <- file.path(data_dir, "snapshot/01-G-aemo-joined-all.parquet")
+sunrise_file_path <- file.path(data_dir, "snapshot/01f-sunrise.csv")
 
 output_file_path_hh_csv <- file.path(data_dir, "04-half-hourly.csv")
 output_file_path_hh_pq <- file.path(data_dir, "04-half-hourly.parquet")
@@ -735,10 +737,128 @@ daily |> write_csv(output_file_path_daily)
 gc()
 
 
-# graphs ------------------------------------------------------------------
+
+# summary stats -----------------------------------------------------------
+
+
+# now generate stats like
+# x% of all emissions/volume are within 1h of sunrise/sunset
+# To do that, we need to take intraday emissions from before
+# and join it with sunrise/sunset data
+sunrise <- read_csv(sunrise_file_path) |>
+  select(region, d, sunrise_fixed, sunset_fixed) |>
+  rename(
+    regionid=region,
+    date_fixed=d
+  )
+
+sun_delta <- hours(1)
+sunrise_stats <- df |> 
+  # filter for DST period approximately
+  # (we haven't added it exactly yet)
+  #filter(dst_now_anywhere) |> 
+  select(date_fixed, regionid, hh_end_fixed, co2_kg_per_capita, energy_kwh_per_capita, population) |>
+  arrange(regionid, hh_end_fixed) |>
+  left_join(sunrise, by=c('regionid', 'date_fixed')) |>
+  # time calculations
+  # how close are we to sunrise/sunset
+  mutate(
+    sunrise_fixed = with_tz(sunrise_fixed,  'Australia/Brisbane'),
+    sunset_fixed = with_tz(sunset_fixed,  'Australia/Brisbane'),
+    hh_end = force_tz(hh_end_fixed,  'Australia/Brisbane'),
+    hh_mid = hh_end - minutes(30/2),
+    time_from_sunrise = abs(hh_mid - sunrise_fixed),
+    time_from_sunset = abs(hh_mid - sunset_fixed),
+    sun_up = between(hh_mid, sunrise_fixed, sunset_fixed),
+    before_sunrise = between(hh_mid, sunrise_fixed - sun_delta, sunrise_fixed),
+    after_sunset = between(hh_mid, sunset_fixed, sunset_fixed + sun_delta),
+    close_to_sunrise = time_from_sunrise <= sun_delta,
+    close_to_sunset = time_from_sunset <= sun_delta,
+    close_to_sunchange = close_to_sunrise | close_to_sunset,
+    
+    # text label for table
+    label = case_when(
+      before_sunrise ~ "the hour before sunrise",
+      close_to_sunrise ~ "the hour after sunrise",
+      after_sunset ~ "the hour after sunset",
+      close_to_sunset ~ "the hour before sunset",
+      TRUE ~ "remainder of day" # Default case, like 'else' in Python
+    ),
+    
+    # convert values to percentages
+    # to make it easy to summarise
+    num_rows = n(),
+    energy_frac = energy_kwh_per_capita / sum(energy_kwh_per_capita),
+    co2_frac = co2_kg_per_capita / sum(co2_kg_per_capita)
+    
+  ) |>
+  arrange(
+    desc(close_to_sunrise),
+    desc(close_to_sunset)
+  ) |>
+  summarise(
+    energy = wh_per_kwh * weighted.mean(energy_kwh_per_capita, population),
+    co2 = g_per_kg * weighted.mean(co2_kg_per_capita, population),
+    co2_intensity = g_per_kg * weighted.mean(co2_kg_per_capita / energy_kwh_per_capita, population),
+    #time_frac = n() / median(num_rows),
+    .by=label
+  ) 
+
+# from the `co2_intensity` column
+# we see that emissions shortly after sunset are different
+# to those shortly before sunrise
+
+# save to a file
+knitr::kable(
+  sunrise_stats,
+  format = "latex",
+  caption = paste("Energy and emissions near sunrise and sunset.",
+                  "Emissions intensity is lower when the sun is up,",
+                  "but the difference is not the same between sun rising and sun setting."), 
+  label = "sunrise emissions stats",
+  col.names = c(
+    "period of day",
+    "power (W per capita)",
+    "CO2 (g/h per capita)",
+    "CO2 Intensity (g CO2 / kWh)"
+  )
+) |>
+writeLines(con = here("results", "04-sunrise-sunset-emissions.tex"))
+
+
+# graphs------------------------------------------------------------------
 # we generate one graph that's easier than in stata. The rest is done in stata.
 
-# per-hour event study graph ----------------------------------------------
+# calculate weighted sample standard deviation
+# https://www.itl.nist.gov/div898/software/dataplot/refman2/ch2/weightsd.pdf
+weighted.se <- function(x, w){
+  numerator <- sum(w * (x - weighted.mean(x, w))^2)
+  bottom_sum <- sum(w)
+  num_nonzero_weights <- sum(w != 0)
+  denominator <- (num_nonzero_weights-1)/num_nonzero_weights * bottom_sum
+  return(sqrt(numerator / denominator))
+}
+
+df |>
+  mutate(
+    treated=(regionid == 'QLD1')
+  ) |>
+  summarise(
+    co2=weighted.mean(co2_kg_per_capita, population),
+    
+    # calculate weighted sample standard deviation
+    # https://www.itl.nist.gov/div898/software/dataplot/refman2/ch2/weightsd.pdf
+    co2_se=weighted.se(co2_kg_per_capita, population),
+      
+    .by=c(treated, dst_now_anywhere, not_midday_control_local)
+  ) |>
+  arrange(not_midday_control_local, desc(treated), desc(dst_now_anywhere)) |>
+  relocate(not_midday_control_local, treated, dst_now_anywhere, co2, co2_se) |>
+  pivot_longer(c(co2, co2_se)) |>
+  write_csv(here("results/ddd-means.csv"))
+
+
+## per-hour event study graph ----------------------------------------------
 
 # we want to do an event study graph
 # but instead of days_into_dst as the horizontal axis,

@@ -37,7 +37,7 @@ This still includes a little bit of merging and data wrangling.
 
 To do this, run scripts `04-merge.R` onwards.
 
-The slow scripts that require lots of time, disk and memory are the 01a-01f ones.
+The slow scripts that require lots of time, disk and memory are the 01a-01g ones.
 
 
 ### Option 2 - I want to check that all your data wrangling scripts can run, but don't want to take days
@@ -70,7 +70,8 @@ The scripts are named in the order they should be run. As described above, you p
 * `01c-unzip-and-split.ipynb` - AEMO's files are zips of .CSV and zips of zips of .csv. In this script we unzip them (possibly recursively). Additionally, each CSV is actually a concatenation of several CSV files from different datasets, with unrelated columns. We need to un-concatenate (hence the name "split") these. We also need to figure out which dataset they belong to. (AEMO has hundreds of SQL "tables". Figuring out which rows belong to which tables is surprisingly hard.) The details are documented inside the script.
 * `01d-csv-to-parquet.ipynb` - This script takes many little CSV files, and combines them into one parquet file per AEMO "table". Parquet is an alternative format to CSV. The main motivation for using it was as a technical solution to keep things small and fast. (e.g. it allows us to use predicate pushdown in subsequent scripts.) See more info about Parquet advantages [here](https://r4ds.hadley.nz/arrow#advantages-of-parquet).
 * `01e-the-big-squish.R` - At this point we have several parquet files. The largest is a 5GB parquet file. When loaded into memory (e.g. in R) this would take up about 20GB. None of our laptops have that much memory. Yours probably doesn't either. The processing we want to do is to take 5-minute data per generator, multiply it by the constant CO2 emissions factor, sum within each region, aggregate to half hour intervals. Then it's small enough to join with some other data, e.g. to account for inter-region import-export. One challenge is that AEMO's files contain duplicate data. (e.g. they have 5-minute files, and daily summaries of those files, and monthly summaries of those, etc.) Deduplicating data generally requires loading the whole thing in memory. So this is a really hard big data task. What we do is use [Apache Arrow](https://arrow.apache.org/) to lazy-load the parquet files, such that we can use filter and predicate pushdowns into the storage layer, along with physical repartitioning, to end up with something small. I haven't tested it on a laptop with less than 16GB of memory, but I believe it will still work.
-* `01f-aemo-join.R` - this joins all our AEMO datasets. e.g. rooftop solar, total renewables.
+* `01f-sunrise-sunset-times.ipynb` generates data about the time the sun sets and rises
+* `01g-aemo-join.R` - this joins all our AEMO datasets. e.g. rooftop solar, total renewables.
 * `02-download-wind.ipynb` - We need wind speed data as a control for wind generation. This script downloads it from https://www.willyweather.com.au/
 * `03-get-DST-transitions.ipynb` - We need to know what days the clocks move. We also want some enriched data about this. e.g. for each calendar day, is the nearest clock change in the future, or past? How many days away? etc. We don't download this data from anywhere. Python itself has a copy inside it, which it uses for timezone conversions of datetimes. We use that instead of downloading, because it's easier and less likely to have mistakes than manually downloading and combining some.
 * `04-merge.R` - We join all our datasets. AEMO electrical data, wind speed, temperature, sunshine, DST transition info. We end up with half hour data, and also downsample to daily data.
