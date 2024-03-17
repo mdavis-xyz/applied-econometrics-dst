@@ -94,7 +94,7 @@ For our independent variable, our `y`, we have:
 But we also do some regressions to look at just energy itself:
 
 * `energy_kwh_per_capita` - kilowatt hours of energy consumer, per capita in this region (accounting for population growth over time). Note that rooftop solar is counted as negative load by AEMO. So 10kWh of load plus 3kWh of solar appears here is 7kWh.
-* `energy_kwh_adj_rooftop_solar_per_capita`: `energy_kwh_per_capita`, adjusted to account for rooftop solar generation, by adding `rooftop_solar_energy_mwh` (per capita)
+* `energy_kwh_adj_rooftop_solar_per_capita`: `energy_kwh_per_capita`, adjusted to account for rooftop solar generation, by adding `rooftop_solar_energy_mwh` (per capita). This is empty prior to 2016, because AEMO does not provide rooftop solar data that old.
 
 For our dependent variables, our `x`, we have:
 
@@ -131,8 +131,8 @@ Comes from `02-astral-sun-hours.ipynb`.
 * `dst_date` - The date of the nearest daylight saving transition (which may be in the future or the past). Note that all treatment regions move their clocks on the same day. So the value is the same for all regions on a given day. Even for the control region (Queensland) this value is populated.
 * `dst_direction` - A string factor/enum about the direction of the clock change at `dst_date`. Either `start` (move clocks forward, in October, spring) or `stop` (move clocks back, in Autumn).
 * `dst_transition_id` - A unique string to represent each clock transition. e.g. `2009-start`, `2009-stop`. This is a string identifier for `dst_date`.
-* `days_before_transition` - The number of days before the nearest clockchange. If the nearest clock change is in the past, this is a negative number.
-* `days_after_transition` - The number of days since the nearest clockchange. If the nearest clock change is in the future, this is a negative number.
+* `days_before_transition` - The number of days before the nearest clock change. If the nearest clock change is in the past, this is a negative number.
+* `days_after_transition` - The number of days since the nearest clock change. If the nearest clock change is in the future, this is a negative number.
 * `dst_start` - a dummy variable, for if `dst_direction` == `start`
 * `after_transition` - a dummy variable. True if the most recent clock change is closer to the current date than the upcoming clock change
 * `days_into_dst_extreme_outlier` - dummy variable - clock changes always happen on a Sunday morning. It's not on the same calendar day each year. Thus there are slight variations in the number of days between clock changes. There is one year which has one more day between the clock changes than other years. For that day only, this column is true. This is just to reflect the fact that for this value of `days_into_dst`, we only have one day of observations. We use this column to exclude this outlier from some graphs. But we do not exclude it from the actual regressions.
@@ -149,7 +149,7 @@ Our controls are:
 
 * `rooftop_solar_energy_mwh` - AEMO tends to report rooftop solar generation as negative load, mixed in with actual load. (Because they can't actually measure it.) For some years we are able to separately obtain it from AEMO's estimates.  But this is only from 2016 onwards, so we don't generally use this. Units are megawatt hours (over the day, or half hour, depending on the file.  Whatever the row duration is.)
 * `population` - number of people in this region. This varies over time. The data source uses 3 month data, which we linearly interpolate. These might be a fraction of a person just due to the arithmatic of interpolation. Whilst population growth tends to be exponential, over a 3 month period linear is a sufficient approximation. See `08-population-data-cleaner.ipynb` and `09-population-weather-merger.ipynb`. (https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2023/310104.xlsx) 
-* `temperature` - maximum temperature each day, in each region, in degrees C. (We use maximum not average, because that tends to be a more representative driver of air conditioner load in summer.) For each region, we choose a weather station approximately in the biggest metropolitain area of the region, as this is the point where the largest demand for heating/air conditioning exists. See `07-weather-data-cleaner.ipynb`. All Data from [The Bureau of Meteorology](https://reg.bom.gov.au/climate/data/).  In Detail:
+* `temperature` - maximum temperature each day, in each region, in degrees C. (We use maximum not average, because that tends to be a more representative driver of air conditioner load in summer.) For each region, we choose a weather station approximately in the biggest metropolitan area of the region, as this is the point where the largest demand for heating/air conditioning exists. See `07-weather-data-cleaner.ipynb`. All Data from [The Bureau of Meteorology](https://reg.bom.gov.au/climate/data/).  In Detail:
     * Adelaide: https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=23034
     * Brisbane: https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=40913
     * Hobart: https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=94029
@@ -161,7 +161,7 @@ Our controls are:
     * Dubbo: https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=65070
     * Hobart: https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=94193
     * Richmond:https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=30045
-* `wind_km_per_h` - average wind speed, measured in km/h. For each region, we choose a weather station approximately in the middle of the regionas, as (wind energy) production is likely to be in less densely inhabited palces.. See `05-download-wind.ipynb`. Relevant for estimating potential wind turbine power generation. (The theory says that wind farm output is proportional to wind speed cubed.)
+* `wind_km_per_h` - average wind speed, measured in km/h. For each region, we choose a weather station approximately in the middle of the regions, as (wind energy) production is likely to be in less densely inhabited places. See `05-download-wind.ipynb`. Relevant for estimating potential wind turbine power generation. (The theory says that wind farm output is proportional to wind speed cubed.)
 * `total_renewables_today_mwh` - Megawatt hours - "non-scheduled generation" (i.e. wind and solar) forecast ([TOTALINTERMITTENTGENERATION](https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_131_2.htm)).
 * `total_renewables_today_mwh_uigf` - Megawatt hours - another forecast of "non-scheduled generation" (i.e. wind and solar) ([UIGF](https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_131_2.htm))
 
@@ -197,7 +197,7 @@ There's a unit test in `04-join-aemo.R` to test that whatever we do with time zo
 
 The dataset we download is 300GB compressed CSV, totalling 1.4TB when uncompressed. Handling datasets larger than the size of your hard drive, with individual files larger than memory, is quite a technical challenge.
 
-The dataset comes from AEMO. Their target audience are electricity industry participants, who generally want to know everything. So the data is somewhat mixed together. e.g. individual files telling you total energy (MWh) for a region also tell you the total price, and the marginal cost of electrical transmission constraints, and FCAS ancilliary service charges and so on. We were able to identify about 1/3 of files as being definitely not needed (e.g. ones about gas) prior to downloading them. Of the remainder we need to download them, unzip them, "split" them (described above), and only then can we figure out which of the final 300 tables they belong to. At that point we can discard most data.
+The dataset comes from AEMO. Their target audience are electricity industry participants, who generally want to know everything. So the data is somewhat mixed together. e.g. individual files telling you total energy (MWh) for a region also tell you the total price, and the marginal cost of electrical transmission constraints, and FCAS ancillary service charges and so on. We were able to identify about 1/3 of files as being definitely not needed (e.g. ones about gas) prior to downloading them. Of the remainder we need to download them, unzip them, "split" them (described above), and only then can we figure out which of the final 300 tables they belong to. At that point we can discard most data.
 
 Once we get to the raw data for only the handful of AEMO tables we need (about 10GB when compressed) then we can aggregate down from 5-minutes per generator, to 30-minutes per region. (Done in `01e-the-big-squish.R`.) After that point things become manageable. e.g. we can just load the whole thing into a dataframe in R.
 
