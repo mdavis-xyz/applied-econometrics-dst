@@ -84,7 +84,7 @@ clear all
 // point this path to the overall repository/zip
 // i.e. to the parent of the folder which contains this script.
 //cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
-cd "/home/matthew/applied_repo"
+cd "/home/matthew/applied_repo_fresh"
 set linesize 80
 
 *CREATE LOG FILE 
