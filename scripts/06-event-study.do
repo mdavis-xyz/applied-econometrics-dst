@@ -209,8 +209,8 @@ label variable days_into_dst_outlier "Days into DST for Outliers"
 label variable population "Population in given State and Time period"
 label variable temperature "Mean Daily Temperature °C in given State"
 label variable solar_exposure "Solar Exposure Coefficient"
-label variable co2_kg_per_capita "KG CO2 Emissions per Capita per 30 Minutes"
-label variable energy_kwh_per_capita "kwh Electricity Consumption per Capita per 30 Minutes"
+label variable co2_kg_per_capita "kg CO2 Emissions per Capita per 30 Minutes"
+label variable energy_kwh_per_capita "kWh Electricity Consumption per Capita per 30 Minutes"
 label variable energy_kwh_per_capita_midday "Mean Electricity Consumption (kWh) per Capita during the Midday period"
 label variable co2_g_per_capita_vs_midday "CO2 Emissions (g) per Capita compared to the Midday period"
 label variable date "Date"
@@ -279,7 +279,7 @@ graph export "results/plots/EventStudy-CO2.png", replace
 eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
- graph_op(ytitle("Kwh energy p.c.") xtitle("Days into DST (summer)") ///
+ graph_op(ytitle("kWh energy p.c.") xtitle("Days into DST (summer)") ///
  title("Event Study - Electricity Consumption"))
 graph export "results/plots/EventStudy-Elec.png", replace
 
