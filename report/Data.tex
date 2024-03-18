@@ -6,5 +6,5 @@ Energy and carbon data was obtained from \ac{AEMO}\nocite{nemweb, nemweb_mmsdm} 
 The dataset does not include Western Australia nor the Northern Territory due to the structure of the \ac{NEM}.
 To calculate the emissions per region over time, we take static emissions intensity (tCO2e/MWh) per generator, and join them with energy output (MW) per generator per 5 minutes. We sum to a region level, downsample to half-hourly data, and adjust for inter-region energy flows\footnote{available only with 30-minute granularity. The calculations are explained in detail in Appendix \ref{sec:interconnector calc}.}.
 To obtain per capita values, 
-quarterly population data per region was downloaded \parencite{abs_population} and linearly interpolated to a daily level.
-Weather data was obtained from the Bureau of Meteorology\nocite{weather_data} and Willy Weather\nocite{willy_weather}. Table \ref{tab:summary stats} presents summary statistics for each of these variables. 
+quarterly population data per region was downloaded from \citeauthor{abs_population} and linearly interpolated to a daily level.
+Weather data was obtained from the Bureau of Meteorology\nocite{weather_data} and Willy Weather\nocite{willy_weather}. Table \ref{tab:summary stats} presents summary statistics for all variables of interest, showing that Queensland and treated regions are relatively similar.  
