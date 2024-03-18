@@ -47,7 +47,7 @@ dst_transitions_path <- file.path(data_dir, 'snapshot/02-dst-dates.csv')
 population_path <- file.path(data_dir, "raw/population/population-australia-raw.csv")
 temperature_dir <- file.path(data_dir, "raw/weather")
 sunshine_dir <- file.path(data_dir, "raw/sunshine")
-wind_path <- file.path(data_dir, "snapshot/05-wind.csv")
+wind_path <- file.path(data_dir, "snapshot/02-wind.csv")
 aemo_pq_path <- file.path(data_dir, "snapshot/01-G-aemo-joined-all.parquet")
 sunrise_file_path <- file.path(data_dir, "snapshot/01f-sunrise.csv")
 

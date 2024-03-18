@@ -86,7 +86,7 @@ cd "/home/matthew/applied_repo"
 set linesize 80
 
 *CREATE LOG FILE 
-cap log using "logs/05-Tables-and-Graphs-from-Stata", replace
+cap log using "logs/06-Tables-and-Graphs-from-Stata", replace
 
 ********************* 1. Data Import and Transformation:************************
 *		   - Importing and transforming data from the CSV file.
@@ -222,7 +222,7 @@ label variable days_into_dst "Number of Days into the DST transition"
 // save some space
 compress
 
-save "data/05-half-hourly.dta", replace
+save "data/06-half-hourly.dta", replace
 
 ///////////////////////// Regressions /////////////////////////////////////////
 /*******************2. Base DiD Regressions:*************************************
@@ -230,7 +230,7 @@ save "data/05-half-hourly.dta", replace
 - Plots are generated and exported.
 - Results are stored in `results/EventStudy-CO2.png` and
   `results/EventStudy-Elec.png`.*/
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 
 //Base 
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere ///
@@ -263,7 +263,7 @@ esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", ///
 - Results are stored in `results/EventStudy-CO2.png` and `results/EventStudy-Elec.png`.
 */
 
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
@@ -287,7 +287,7 @@ graph export "results/EventStudy-Elec.png", replace
    - Results are stored in `eststo CO2_DDD` and `eststo Elec_DDD`.
    - Event studies are exported to files.*/
 
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 /// DDD regression - adjusting for midday emissions
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday ///
  weekend_local public_holiday temperature c.temperature#c.temperature ///
@@ -303,7 +303,7 @@ esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 //DDD Event study
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 
@@ -331,7 +331,7 @@ estat lags
 - Results are exported to files.
 */
 
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=1 //DST start so only July to December direction
@@ -343,7 +343,7 @@ graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
 title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
 graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
 
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if dst_start !=0 //DST stop so only January to June direction
@@ -361,7 +361,7 @@ graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
    - Results are exported to files. */
    
 // DDD dropping Tasmania
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 gen timevar = .
 replace timevar = days_into_dst if dst_here_anytime == 1
 drop if regionid == "TAS1"
@@ -398,7 +398,7 @@ graph export "results/EventStudy-ln(MiddayCO2)-Dropping-Tasmania.png", replace
    - Results are stored in `eststo ln_CO2_DDD` and `eststo ln_Elec_DDD`.
    - Tables are generated and exported. */
 
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 gen ln_CO2 = ln(co2_kg_per_capita)
 gen ln_Elec = ln(energy_kwh_per_capita)
 /// DDD regression - adjusting for midday emissions
@@ -420,7 +420,7 @@ esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", ///
 - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
 */
 
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 //DDD Regression for CO2
 reg co2_kg_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday ///
  [aweight = population], vce(cluster regionid1)
@@ -434,12 +434,12 @@ esttab CO2_DDD_base Elec_DDD_base using "results/DDD-base-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /*********************** 10. Summary Stats **********************************/
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 describe
 summarize
 
 /*********************** 11. DDD + Event Study for the last 5 years ***********/
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 drop if year(date) < 2019
 //to correct for the sudden cutoff, we drop the 2018- start so 
 // we drop the whole period from end of 2018 - January 2019 (halfway)
@@ -461,7 +461,7 @@ esttab CO2_DDD_5year Elec_DDD_5year using "results/DDD-5year-results.tex", ///
  label se stats(r2 r2_a) replace
 
 //DDD Event study
-use "data/05-half-hourly.dta", clear
+use "data/06-half-hourly.dta", clear
 drop if year(date) < 2019
 drop if dst_transition1 == 19
 gen timevar = .
