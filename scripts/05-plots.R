@@ -190,7 +190,7 @@ for (time_col in c("hr_local", "hr_fixed")) {
             )
           )
         
-        plot_dir <- here("..", "plots", "intraday", y, paste0("by-", agg_col), agg_group)
+        plot_dir <- here("..", "results", "plots", "intraday", y, paste0("by-", agg_col), agg_group)
         if (!dir.exists(plot_dir)) {
           dir.create(plot_dir, recursive = TRUE)
         }

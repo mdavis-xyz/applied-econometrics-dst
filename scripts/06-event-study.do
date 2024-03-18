@@ -36,8 +36,8 @@ Summary of the sections:
 3. **Event Studies:**
    - Event studies for CO2 emissions and electricity consumption using `eventdd`.
    - Plots are generated and exported.
-   - Results are stored in `results/EventStudy-CO2.png` and 
-	`results/EventStudy-Elec.png`.
+   - Results are stored in `results/plots/EventStudy-CO2.png` and 
+	`results/plots/EventStudy-Elec.png`.
 
 4. **DDD Design and Event Study:**
    - DiD regressions with additional interaction terms for DDD design.
@@ -230,8 +230,8 @@ save "data/06-half-hourly.dta", replace
 /*******************2. Base DiD Regressions:*************************************
 - Event studies for CO2 emissions and electricity consumption using `eventdd`.
 - Plots are generated and exported.
-- Results are stored in `results/EventStudy-CO2.png` and
-  `results/EventStudy-Elec.png`.*/
+- Results are stored in `results/plots/EventStudy-CO2.png` and
+  `results/plots/EventStudy-Elec.png`.*/
 use "data/06-half-hourly.dta", clear
 
 //Base 
@@ -256,13 +256,13 @@ weekend_local public_holiday c.temperature##c.temperature solar_exposure ///
 wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DiD
 
-esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/DiD-results.tex", ///
+esttab CO2_Base Elec_Base CO2_DiD Elec_DiD using "results/tables/DiD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /*****************************3. Event Studies:*********************************
 - Event studies for CO2 emissions and electricity consumption using `eventdd`.
 - Plots are generated and exported.
-- Results are stored in `results/EventStudy-CO2.png` and `results/EventStudy-Elec.png`.
+- Results are stored in `results/plots/EventStudy-CO2.png` and `results/plots/EventStudy-Elec.png`.
 */
 
 use "data/06-half-hourly.dta", clear
@@ -274,14 +274,14 @@ solar_exposure wind_3  [aweight = population], timevar(timevar) ///
 method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
 graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 Emissions"))
-graph export "results/EventStudy-CO2.png", replace
+graph export "results/plots/EventStudy-CO2.png", replace
 
 eventdd energy_kwh_per_capita public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
  graph_op(ytitle("Kwh energy p.c.") xtitle("Days into DST (summer)") ///
  title("Event Study - Electricity Consumption"))
-graph export "results/EventStudy-Elec.png", replace
+graph export "results/plots/EventStudy-Elec.png", replace
 
 /******************** 4. **DDD Design and Event Study:**************************
    - DiD regressions with additional interaction terms for DDD design.
@@ -301,7 +301,7 @@ weekend_local public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD
 
-esttab CO2_DDD Elec_DDD using "results/DDD-results.tex", ///
+esttab CO2_DDD Elec_DDD using "results/tables/DDD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 //DDD Event study
@@ -314,7 +314,7 @@ solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
  graph_op(ytitle("CO2 g per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 - Midday Normalised"))
-graph export "results/EventStudy-MiddayCO2.png", replace
+graph export "results/plots/EventStudy-MiddayCO2.png", replace
 estat leads
 estat lags
 
@@ -324,7 +324,7 @@ c.temperature##c.temperature solar_exposure wind_3 ///
  cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") ///
  xtitle("Days into DST (summer)") ///
  title("Event Study - Energy - Midday Normalised"))
-graph export "results/EventStudy-MiddayElec.png", replace
+graph export "results/plots/EventStudy-MiddayElec.png", replace
 estat leads
 estat lags
 
@@ -343,7 +343,7 @@ solar_exposure wind_3 [aweight = population], timevar(timevar) ///
 method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
 graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
 title("Event Study - CO2 - Midday Normalised - DST Start Direction"))
-graph export "results/EventStudy-MiddayCO2-DST-Start.png", replace
+graph export "results/plots/EventStudy-MiddayCO2-DST-Start.png", replace
 
 use "data/06-half-hourly.dta", clear
 gen timevar = .
@@ -355,7 +355,7 @@ eventdd co2_g_per_capita_vs_midday public_holiday c.temperature##c.temperature /
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) /// 
  graph_op(ytitle("CO2 kg per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 - Midday Normalised - DST Stop Direction"))
-graph export "results/EventStudy-MiddayCO2-DST-Stop.png", replace
+graph export "results/plots/EventStudy-MiddayCO2-DST-Stop.png", replace
 
 
 /****************** 6. **Additional Robustness Checks:**************************
@@ -373,14 +373,14 @@ solar_exposure wind_3  [aweight = population], timevar(timevar) ///
 method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
  graph_op(ytitle("CO2 g per capita") xtitle("Days into DST (summer)") /// 
  title("Event Study - CO2 - Midday - w/o Tasmania"))
-graph export "results/EventStudy-MiddayCO2-Dropping-Tasmania.png", replace
+graph export "results/plots/EventStudy-MiddayCO2-Dropping-Tasmania.png", replace
 
 eventdd energy_wh_per_capita_vs_midday public_holiday /// 
 c.temperature##c.temperature solar_exposure wind_3  [aweight = population], ///
  timevar(timevar) method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
  graph_op(ytitle("Wh energy p.c.") xtitle("Days into DST (summer)") /// 
  title("Event Study - Energy - Midday - w/o Tasmania"))
-graph export "results/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
+graph export "results/plots/EventStudy-MiddayElec-Dropping-Tasmania.png", replace
 
 /******* 7. **Event Study with ln(CO2) for Interpretation:**********************
 - Event study for ln(CO2) after dropping data related to Tasmania.
@@ -393,7 +393,7 @@ eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
  graph_op(ytitle("ln(CO2) g per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - lnCO2 - Midday - w/o Tasmania"))
-graph export "results/EventStudy-ln(MiddayCO2)-Dropping-Tasmania.png", replace
+graph export "results/plots/EventStudy-ln(MiddayCO2)-Dropping-Tasmania.png", replace
 
 /********** 8. **Tables with lnCO2 and ln Electricity Consumption:*************
    - DiD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
@@ -414,7 +414,7 @@ public_holiday c.temperature##c.temperature solar_exposure wind_3 ///
 [aweight = population], vce(cluster regionid1)
 eststo ln_Elec_DDD
 
-esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", ///
+esttab ln_CO2_DDD ln_Elec_DDD using "results/tables/ln-DDD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /********************** 9. **DDD without Controls:*****************************
@@ -432,7 +432,7 @@ reg energy_kwh_per_capita c.dst_here_anytime##c.dst_now_anywhere##c.not_midday /
  [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD_base
 
-esttab CO2_DDD_base Elec_DDD_base using "results/DDD-base-results.tex", ///
+esttab CO2_DDD_base Elec_DDD_base using "results/tables/DDD-base-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /*********************** 10. Summary Stats **********************************/
@@ -459,7 +459,7 @@ weekend_local public_holiday c.temperature##c.temperature ///
 solar_exposure wind_3 [aweight = population], vce(cluster regionid1)
 eststo Elec_DDD_5year
 
-esttab CO2_DDD_5year Elec_DDD_5year using "results/DDD-5year-results.tex", ///
+esttab CO2_DDD_5year Elec_DDD_5year using "results/tables/DDD-5year-results.tex", ///
  label se stats(r2 r2_a) replace
 
 //DDD Event study
@@ -474,7 +474,7 @@ solar_exposure wind_3  [aweight = population], timevar(timevar) ///
  method(hdfe, absorb(regionid1 date) cluster(regionid1)) ///
  graph_op(ytitle("CO2 g per capita") xtitle("Days into DST (summer)") ///
  title("Event Study - CO2 - Midday Normalised - Last 5 Years"))
-graph export "results/EventStudy-MiddayCO2-5year.png", replace
+graph export "results/plots/EventStudy-MiddayCO2-5year.png", replace
 estat leads
 estat lags
 // Repeated for Electricity
@@ -484,7 +484,7 @@ c.temperature##c.temperature solar_exposure wind_3 ///
  cluster(regionid1)) graph_op(ytitle("Wh energy p.c.") ///
  xtitle("Days into DST (summer)") ///
  title("Event Study - Energy - Midday Normalised - Last 5 Years"))
-graph export "results/EventStudy-MiddayElec-5year.png", replace
+graph export "results/plots/EventStudy-MiddayElec-5year.png", replace
 estat leads
 estat lags
 
