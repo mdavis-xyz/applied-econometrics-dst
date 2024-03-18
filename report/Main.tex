@@ -1,0 +1,81 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{csquotes} % for bibliography
+\usepackage[english]{babel}
+\usepackage{xcolor}
+\usepackage{dcolumn}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{multirow} %for nicer tables
+\usepackage{subcaption} % subfigures
+\usepackage{lscape} %to fit the tables on the page
+\graphicspath{{Images/}}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\setlength\parindent{0pt}
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue, % for \href in data appendicies
+    citecolor=black,
+}
+\usepackage[
+    backend=biber, 
+    citestyle=authoryear-comp, 
+    bibstyle=authoryear, 
+    url=false, 
+    sorting=nyt, % order of bibliography sorted by name, year title
+    hyperref=true, 
+    maxcitenames=2, % use et al if more than 2
+    isbn=false, 
+    doi=false,  % suppress from bibliorgraphy
+    giveninits=true, % initials for first names
+    uniquename=false, 
+    date=year % no month in bibliography
+]{biblatex}
+\addbibresource{references-manual.bib}
+\addbibresource{zotero.bib}
+\usepackage{booktabs}
+\renewbibmacro{in:}{} % don't have "In: " before journal name
+\renewcommand*{\nameyeardelim}{\addcomma\space}
+\DeclareFieldFormat{pages}{#1}
+\DeclareNameAlias{default}{family-given}
+\DeclareNameAlias{sortname}{family-given}
+\renewcommand{\labelnamepunct}{\addcomma\addspace} % comma separators in bibliography
+\renewcommand{\newunitpunct}{\addcomma\addspace} % comma separators in bibliography
+\DeclareFieldFormat[article]{number}{\addspace\mkbibparens{#1}} % wrap issue number in braces
+\usepackage[printonlyused]{acronym}
+
+% make references appear in table of contents
+\usepackage[nottoc]{tocbibind}
+\usepackage{placeins} % \FloatBarrier
+
+\begin{document}
+    \input{Frontbackmatter/Titlepage}
+    \thispagestyle{empty}
+    \tableofcontents
+    \clearpage
+    \pagenumbering{Roman}
+    \thispagestyle{empty}
+    \markboth{List of Abbreviations}{List of Abbreviations}
+    \addcontentsline{toc}{section}{Acronyms}
+    \input{Frontbackmatter/Acronyms}  
+    \listoffigures
+    \listoftables
+    \newpage
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+    \input{Introduction}
+    \input{Literature}
+    \input{InstitutionalContext}
+    \input{Methodology}
+    \input{Results}
+    \input{Conclusion}
+    \newpage
+    \addcontentsline{toc}{section}{References}
+    \printbibliography
+    \input{Frontbackmatter/Appendix}
+\end{document}

@@ -1,0 +1,101 @@
+\addcontentsline{toc}{subsection}{Appendix B: Data column explanation}
+\subsection*{Appendix B: Data column explanation}
+
+This section describes the dataset used, after all the joins, transformations and enrichment are performed.
+
+For the independent variable, ($y$), there is:
+
+\begin{description}
+    \item[\texttt{co2\_kg\_per\_capita}] kilograms of $CO_2$ emitted, per capita in this region (accounting for population growth over time), within this time interval. (e.g. within half hour for the half-hour file, or within the day for the daily file.)
+    \item[\texttt{energy\_kwh\_per\_capita}] kilowatt hours of energy consumer, per capita in this region (accounting for population growth over time). Note that rooftop solar is counted as negative load by AEMO. So 10kWh of load plus 3kWh of solar appears here is 7kWh.
+\end{description}
+
+For the dependent variables ($x$) there is:
+
+\begin{description}
+    \item[\texttt{regionid}] the geographical state, as per AEMO convention. (AEMO always ends region id with a \texttt{1}) This is a string enum/factor. Options are:
+    \begin{description}
+        \item[\texttt{QLD1}] Queensland (our control region)
+        \item[\texttt{NSW1}] New South Wales. (This includes the Australian Capital Territory (ACT))
+        \item[\texttt{VIC1}] Victoria
+        \item[\texttt{SA1}] South Australia
+        \item[\texttt{TAS1}] Tasmania
+    \end{description}
+    \item[\texttt{dst\_now\_anywhere}] ``post" - dummy variable - is there daylight saving in this time interval. Even in the control region this is true.
+    \item[\texttt{dst\_here\_anytime}] ``treatment" - dummy variable -  is this a region which has daylight saving. True even if there is not daylight saving in this time interval. Note that this value changes at midnight, even though in theory \ac{DST} transitions happen at 2am or 3am. In practice everyone changes their clocks before going to bed, so we don't expect these 5 hours per year to introduce much error. It simplifies the code and graphs to think of the 'post' as applying to a whole date.
+    \item[\texttt{dst\_now\_here}] treatment x post - dummy variable. True if there is daylight saving in this region, on this day
+    \item[\texttt{midday\_control}] a dummy - true if this half hour falls within 12:00-14:30. This is used for the third difference in our \ac{DDD}. 12:00-14:30 was chosen to match \cite{kellogg_daylight_2008}. 12:00-14:30 is Queensland time (no \ac{DST}) not local time.
+    \item[\texttt{midday\_control\_local}] Same as \texttt{midday\_control}, but calculated based on local time in this region
+    
+    \item[\texttt{days\_into\_dst}] How far are we into the daylight saving period?
+    \begin{itemize}
+       \item  On the day when the clocks are moved forward, this is 0. 
+       \item  The day after the clocks moved forward, it is 1.
+       \item  In the middle of summer it is around 90.
+       \item  The day before clocks move back (the last day with daylight saving) this is 0
+       \item  the day the clocks move back, this is -1
+       \item  the day after the clocks move back, this is -2
+       \item  in the middle of winter, this approximately -90
+       \item  the day before the clocks move forward in spring, this is -1
+    \end{itemize}
+\end{description}
+
+Our other time variables are:
+
+\begin{description}
+    \item[\texttt{Date}] the date of the observation. (First letter capitalised to avoid a namespace clash with R's \texttt{date} function)
+    \item[\texttt{public\_holiday}] dummy variable for if this date is a public holiday in this region. 
+    \item[\texttt{hh\_end}] The datetime of the end of this half hour (when we have one row per half hour). The timezone is Queensland time (UTC+10, Australia/Brisbane, no daylight saving) even if this row is for a different region.
+    \item[\texttt{hh\_start}] the start of this half hour period
+    \item[\texttt{dst\_date}] The date of the nearest daylight saving transition (which may be in the future or the past). Note that all treatment regions move their clocks on the same day. So the value is the same for all regions on a given day. Even for the control region (Queensland) this value is populated.
+    \item[\texttt{dst\_direction}] A string factor/enum about the direction of the clock change at \texttt{dst\_date}. Either \texttt{start} (move clocks forward, in October, spring) or \texttt{stop} (move clocks back, in Autumn).
+    \item[\texttt{dst\_transition\_id}] A unique string to represent each clock transition. e.g. \texttt{2009-start}, \texttt{2009-stop}. This is a string identifier for \texttt{dst\_date}.
+    \item[\texttt{days\_before\_transition}] The number of days before the nearest clock change. If the nearest clock change is in the past, this is a negative number.
+    \item[\texttt{days\_after\_transition}] The number of days since the nearest clock change. If the nearest clock change is in the future, this is a negative number.
+    \item[\texttt{dst\_start}] a dummy variable, for if \texttt{dst\_direction} == \texttt{start}
+    \item[\texttt{after\_transition}] a dummy variable. True if the most recent clock change is closer to the current date than the upcoming clock change
+    \item[\texttt{days\_into\_dst\_extreme\_outlier}] dummy variable - clock changes always happen on a Sunday morning. It's not on the same calendar day each year. Thus there are slight variations in the number of days between clock changes. There is one year which has one more day between the clock changes than other years. For that day only, this column is true. This is just to reflect the fact that for this value of \texttt{days\_into\_dst}, we only have one day of observations. We use this column to exclude this outlier from some graphs. But we do not exclude it from the actual regressions.
+    \item[\texttt{days\_into\_dst\_outlier}] Similar to the previous variable, except this one is true for a few days across the time period. True if this value of \texttt{days\_into\_dst} is so large that it does not occur in some years. Once again, we may use this to exclude outliers from graphs, but not for the regression itself.
+    \item[\texttt{day\_of\_week}] integer - 1=Sunday, 0=Monday, ... 7=Saturday (Because that's what \texttt{lubridate::wday} does)
+    \item[\texttt{weekend}] dummy variable
+    \item[\texttt{dst\_transition\_id\_and\_region}] a concatenation of \texttt{dst\_transition\_id} and \texttt{regionid}. e.g. \texttt{2009-start-NSW1}. Useful when playing around with error clustering, fixed effects etc.
+    \item[\texttt{hr}] a float/decimal number representing the hour. e.g. 1:30pm-2pm is \texttt{13.5}
+    \item[\texttt{hh\_end\_local}] a datetime for the end of this half hour, in the local timezone of each region.
+    \item[\texttt{hh\_start\_local}] a datetime for the start of this half hour, in the local timezone of each region.
+    \item[\texttt{date\_local}] same as \texttt{Date}, but calculated based on the local time in this region. (i.e. date changes one hour sooner in treatment regions during daylight saving)
+\end{description}
+
+Our controls are:
+
+\begin{description}
+    \item[\texttt{rooftop\_solar\_energy\_mwh}] AEMO tends to report rooftop solar generation as negative load, mixed in with actual load. (Because they can't actually measure it.) For some years we are able to separately obtain it from \ac{AEMO}'s estimates.  However this is only from 2016 onwards, so this column was not used for the main analysis. Units are megawatt hours.
+    \item[\texttt{population}] number of people in this region. This varies over time. The data source uses 3 month data, which we linearly interpolate. These might be a fraction of a person just due to the arithmetic of interpolation. Whilst population growth tends to be exponential, over a 3 month period linear is a sufficient approximation.  This comes from \href{https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2023/310104.xlsx}{the public website of the Australian Bureau of Statistics}.
+    \item[\texttt{temperature}] maximum temperature each day, in each region, in degrees C. (We use maximum not average, because that tends to be a more representative driver of air conditioner load in summer.) For each region, we choose a weather station approximately in the biggest metropolitan area of the region, as this is the point where the largest demand for heating/air conditioning exists. All Data from \href{https://reg.bom.gov.au/climate/data/}{the public website of the Bureau of Meteorology}.  In Detail:
+    \begin{description}
+        \item[SA1]: \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=23034}{weather station 23034, Adelaide}
+        \item[QLD1]: \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=40913}{weather station 40913, Brisbane}
+        \item[TAS1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=94029}{weather station 94029, Hobart}
+        \item[VIC1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=86038}{weather station 86038, Melbourne}
+        \item[NSW1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=122&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=66037}{weather station 66037, Sydney}
+    \end{description}
+    \item[\texttt{solar\_exposure}] Amount of sun irradiance, measured in $kWh/m^2$, in this region for this day. (Not for this particular half hour.) For each region, we choose a weather station approximately in the middle of the region, as (solar energy) production is likely to be in less densely inhabited places. This data is from from \href{https://reg.bom.gov.au/climate/data/}{The Bureau of Meteorology}:
+    \begin{description}
+        \item[VIC1]: \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=81123}{weather station 81123, Bendigo}
+        \item[SA1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=16007}{weather station 16007, Cooberpedy}
+        \item[NSW1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=65070}{weather station 65070, Dubbo}
+        \item[TAS1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=94193}{weather station 94193, Hobart}
+        \item[QLD1] \href{https://reg.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_nccObsCode=193&p_display_type=dailyDataFile&p_startYear=&p_c=&p_stn_num=30045}{weather station 30045, Richmond}
+    \end{description}
+    \item[\texttt{wind\_km\_per\_h}] average wind speed, measured in km/h. For each region, we choose a weather station approximately in the middle of the regions, as (wind energy) production is likely to be in less densely inhabited places. Relevant for estimating potential wind turbine power generation. Standard physics theory (and personal experience) tells us that wind farm output is proportional to wind speed cubed. This data was obtained from \cite{willy_weather}. Some specific weather stations differ to those used for solar. This is because of differences in historical measurement availability.
+    \begin{description}
+        \item[VIC1]: \href{https://www.willyweather.com.au/climate/weather-stations/vic/loddon/bendigo-airport.html?superGraph=plots:wind-speed,grain:monthly,graphRange:1year&climateRecords=period:all-time&longTermGraph=plots:temperature,period:all-time,month:all&windRose=period:1-year,month:all-months}{weather station 411, Bendigo}
+        \item[SA1] \href{https://www.willyweather.com.au/climate/weather-stations/sa/flinders-ranges-and-outback/coober-pedy.html?superGraph=grain:daily,graphRange:5days&climateRecords=period:all-time&longTermGraph=plots:temperature,period:all-time,month:all&windRose=period:1-year,month:all-months}{weather station 133, Cooberpedy}
+        \item[NSW1] \href{https://www.willyweather.com.au/climate/weather-stations/nsw/central-west/dubbo-airport.html?superGraph=plots:wind-speed,wind-gust,grain:daily,graphRange:5days&climateRecords=period:all-time&longTermGraph=plots:temperature,period:all-time,month:all&windRose=period:1-year,month:all-months}{weather station 340, Dubbo}
+        \item[TAS1] \href{https://www.willyweather.com.au/climate/weather-stations/vic/loddon/bendigo-airport.html?superGraph=plots:wind-speed,grain:monthly,graphRange:1year&climateRecords=period:all-time&longTermGraph=plots:temperature,period:all-time,month:all&windRose=period:1-year,month:all-months}{weather station 501, Hobart}
+        \item[QLD1] \href{https://www.willyweather.com.au/climate/weather-stations/qld/central-west/longreach-airport.html?superGraph=plots:wind-speed,grain:monthly,graphRange:5days&climateRecords=period:all-time&longTermGraph=plots:temperature,period:all-time,month:all&windRose=period:1-year,month:all-months}{weather station 236, Longreach}
+    \end{description}
+    \item[\texttt{total\_renewables\_today\_mwh}] Megawatt hours - ``non-scheduled generation" (i.e. wind and solar) forecast, from AEMO, table \href{https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_131_2.htm}{\texttt{DISPATCHREGIONSUM}} column \texttt{TOTALINTERMITTENTGENERATION}.
+    \item[\texttt{total\_renewables\_today\_mwh\_uigf}] Megawatt hours - another forecast of ``non-scheduled generation" (i.e. wind and solar) from AEMO, table \href{https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_files/MMS_131_2.htm}{\texttt{DISPATCHREGIONSUM}} column \texttt{UIGF}.
+\end{description}
+
+For the raw AEMO data, the meaning of each column is documented in the \href{https://nemweb.com.au/Reports/Current/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report.htm}{the MMS Data Model Report}.

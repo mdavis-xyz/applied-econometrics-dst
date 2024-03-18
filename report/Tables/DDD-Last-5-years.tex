@@ -1,0 +1,64 @@
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+
+\begin{table}[!htbp] \centering 
+  \caption{Results For CO2 and Electricity Consumption DDD With Controls - Last 5 Years} 
+  \label{DDD-Last-5-Results} 
+\small 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-3} 
+\\[-1.8ex] & \multicolumn{1}{c}{Kg CO2 p.c.} & \multicolumn{1}{c}{Kwh energy consumption p.c.} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+\hline \\[-1.8ex]
+Treatment&      -0.137\sym{*}  &      -0.209\sym{***}\\
+                    &    (0.0324)         &    (0.0237)         \\
+[1em]
+Post &      0.0614\sym{*}  &      0.0747\sym{*}  \\
+                    &    (0.0170)         &    (0.0176)         \\
+[1em]
+Treatment $\times$ Post &     -0.0609\sym{**} &     -0.0680\sym{*}  \\
+                    &    (0.0128)         &    (0.0175)         \\
+[1em]
+Not Midday&      0.0792\sym{***}&      0.0472\sym{***}\\
+                    &  (3.65e-13)         &  (5.65e-13)         \\
+[1em]
+Treatment $\times$ Not Midday &     -0.0311         &     0.00107         \\
+                    &    (0.0168)         &   (0.00890)         \\
+[1em]
+Post $\times$ Not Midday&     -0.0355\sym{***}&     -0.0496\sym{***}\\
+                    &  (5.61e-13)         &  (8.43e-13)         \\
+[1em]
+Treatment $\times$ Post $\times$ Not Midday &      0.0230         &      0.0322\sym{*}  \\
+                    &    (0.0127)         &    (0.0115)         \\
+[1em]
+Weekend    &     -0.0263\sym{***}&     -0.0368\sym{***}\\
+                    &   (0.00125)         &   (0.00167)         \\
+[1em]
+Public holiday &     -0.0288\sym{*}  &     -0.0407\sym{**} \\
+                    &   (0.00777)         &   (0.00594)         \\
+[1em]
+Temperature&    -0.00144         &     -0.0216         \\
+                    &    (0.0111)         &    (0.0168)         \\
+[1em]
+Temperature2 &    0.000112         &    0.000471         \\
+                    &  (0.000184)         &  (0.000293)         \\
+[1em]
+Solar Exposure &    -0.00724         &    -0.00978         \\
+                    &   (0.00641)         &   (0.00595)         \\
+[1em]
+Wind3 &     -0.0471         &      0.0152         \\
+                    &    (0.0243)         &    (0.0128)         \\
+[1em]
+Constant            &       0.477\sym{*}  &       0.869\sym{*}  \\
+                    &     (0.167)         &     (0.264)         \\
+\hline
+r2                  &       0.424         &       0.445         \\
+r2\_a                &       0.424         &       0.445         \\
+\hline \\[-1.8ex] 
+\hline 
+\hline \\[-1.8ex] 
+\multicolumn{2}{l}{Note: Errors clustered by region, weighted by population} \\ \multicolumn{2}{l}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 

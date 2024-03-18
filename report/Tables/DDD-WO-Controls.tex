@@ -1,0 +1,46 @@
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+
+\begin{table}[!htbp] \centering 
+  \caption{Results For CO2 and Electricity Consumption Base DDD Without Controls} 
+  \label{DDD-WO-Controls-Results} 
+\small 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-3} 
+\\[-1.8ex] & \multicolumn{1}{c}{Kg CO2 p.c.} & \multicolumn{1}{c}{Kwh energy consumption p.c.} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\ 
+\hline \\[-1.8ex]
+\hline
+Treatment &      -0.123\sym{*}  &      -0.180\sym{**} \\
+                    &    (0.0435)         &    (0.0256)         \\
+[1em]
+Post &      0.0585\sym{***}&      0.0790\sym{***}\\
+                    &  (1.26e-13)         &  (2.01e-13)         \\
+[1em]
+Treatment $\times$ Post &     -0.0451\sym{***}&     -0.0734\sym{**} \\
+                    &   (0.00506)         &    (0.0142)         \\
+[1em]
+Not Midday &      0.0272\sym{***}&      0.0143\sym{***}\\
+                    &  (1.28e-13)         &  (1.27e-13)         \\
+[1em]
+Treatment $\times$ Not Midday &     -0.0115         &    0.000858         \\
+                    &   (0.00875)         &   (0.00608)         \\
+[1em]
+Post $\times$ Not Midday &     -0.0382\sym{***}&     -0.0529\sym{***}\\
+                    &  (1.67e-13)         &  (2.29e-13)         \\
+[1em]
+Treatment $\times$ Post $\times$ Not Midday &      0.0136         &      0.0185         \\
+                    &    (0.0129)         &    (0.0110)         \\
+[1em]
+Constant            &       0.552\sym{***}&       0.643\sym{***}\\
+                    &  (1.28e-13)         &  (1.34e-13)         \\
+\hline
+r2                  &       0.153         &       0.328         \\
+r2\_a                &       0.153         &       0.328         \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+\end{table}

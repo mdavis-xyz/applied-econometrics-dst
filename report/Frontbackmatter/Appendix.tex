@@ -1,0 +1,178 @@
+\addcontentsline{toc}{section}{Appendix}
+\section*{Appendix}
+
+
+
+\FloatBarrier
+\addcontentsline{toc}{subsection}{Appendix A: Figures and Tables}
+\subsection*{Appendix A: Figures and Tables}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.4\textwidth]{map.png}
+    \caption{Map of Australia showing treatment and control regions}
+    \label{fig:map}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{sunrise.png}
+    \caption[Effect of \acs{DST} on apparent sunrise and sunset times in Sydney]{Effect of \acs{DST} on apparent sunrise and sunset times in Sydney. Note that since Australia is in the southern hemisphere, summer and \acs{DST} occur at the start and end of the calendar year.}
+    \label{fig:sunrise plot}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-CO2.png}
+        % Subcaption for the first image
+        \caption{\acs{DiD} Event study plot for CO2 Emissions}
+        \label{fig:dd event study co2}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-Elec.png} 
+        \caption{\acs{DiD} Event study plot for CO2 Emissions} % Subcaption for the second image
+        \label{fig:dd event study elec}
+    \end{subfigure}
+    % Shared caption for both subfigures
+   \caption[Event study plots for \acs{DiD}]{Event study plots for \acs{DiD}. Both forward and backward clock changes are represented on the same plot, with the latter flipped accordingly. Summer is on the right of each plot, winter on the left. A common prior trend does not exist, because the points on the left half of each plot are jointly significant. The right half of each plot is close to zero, suggesting some sort of common post trend. However this is the treatment period, so such a result cannot be used to justify a \ac{DiD} to the control region.}
+    \label{fig:dd event study}
+\end{figure}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayCO2.png}
+        % Subcaption for the first image
+        \caption{\acs{DDD} Event study plot for CO2 Emissions}
+        \label{fig:ddd event study co2}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayElec.png} 
+        \caption{\acs{DDD} Event study plot for CO2 Emissions} % Subcaption for the second image
+        \label{fig:ddd event study elec}
+    \end{subfigure}
+    % Shared caption for both subfigures
+    \caption[Event study plots for \acs{DiD}]{Event study plots for \acs{DiD}. For each day, for each region, the average value of emission or energy during 12:00-14:30 was calculated, and subtracted from the value for all intervals. Then the same procedure was applied as for Figure \ref{fig:dd event study}. The left half of each plot is approximately zero, so there is a common prior trend. The right half is approximately zero, so there is a null result.} 
+    \label{fig:ddd event study}
+\end{figure}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayCO2-5year.png}
+        % Subcaption for the first image
+        \caption{\acs{DDD} Event study plot for CO2 Emissions - Last 5 years}
+        \label{fig:ddd event study co2 - Last 5}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayElec-5year.png} 
+        \caption{\acs{DDD} Event study plot for Electricity consumption - Last 5 years} % Subcaption for the second image
+        \label{fig:ddd event study elec - Last 5}
+    \end{subfigure}
+    % Shared caption for both subfigures
+    \caption[Event study plots for \acs{DDD} using last 5 years]{Event study plots for \acs{DDD}. Using only the last 5 years of our data we see the size of our coefficients increase relative to the errors. However, our DDD regression results still remain insignificant at the 5\% level. \ref{DDD-Last-5-Results}} 
+    \label{fig:ddd event study - Last 5}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayCO2-DST-Start.png}
+        % Subcaption for the first image
+        \caption{\acs{DDD} Event study plot for CO2 Emissions only for the DST start (clock forward)}
+        \label{fig:ddd event study co2 start}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayCO2-DST-Stop.png}
+        \caption{\acs{DDD} Event study plot for CO2 Emissions only for the DST stop (clock backward). The plot chronologically reversed. The data starts in the middle of summer, during \acs{DST} on the right of the plot, and time progresses forwards towards the left. The clocks are moved back on the morning of day -1. Then once the treatment is unapplied, the "Days into \acs{DST}" continues to become more negative, with mid-winter on the far left.} % Subcaption for the second image
+        \label{fig:ddd event study co2 stop}
+    \end{subfigure}
+    % Shared caption for both subfigures
+    \caption[Event study plots for \acs{DiD} split by clock change direction]{Event study plots for \acs{DiD}, split by clock direction. This is the same as Figure \ref{fig:ddd event study co2}, but split into clock forward and clock back transitions, as a robustness check. The common prior trend and null result still hold.} 
+    \label{fig:ddd event study co2 start stop}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayCO2-Dropping-Tasmania.png}
+        % Subcaption for the first image
+        \caption{\acs{DDD} Event study plot for CO2 Emissions when normalising for midday values and dropping Tasmania}
+        \label{fig:ddd event study co2 w/o Tas}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{EventStudy-MiddayElec-Dropping-Tasmania.png}
+        \caption{\acs{DDD} Event study plot for Electricity consumption when normalising for midday values and dropping Tasmania} % Subcaption for the second image
+        \label{fig:ddd event study Elec w/o Tas}
+    \end{subfigure}
+    % Shared caption for both subfigures
+    \caption[Event study plots for \acs{DDD} without Tasmania]{Event study plots for \acs{DDD}, dropping Tasmania as a robustness check. The common prior trend and null result still hold.} 
+    \label{fig:ddd event study w/o Tas}
+\end{figure}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{Images/intraday/co2_kg_per_capita/by-treated/control/hr_local-filled.png}
+        % Subcaption for the first image
+        \caption{Average intraday emissions in the control region}
+        \label{fig:intraday co2 control}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{Images/intraday/co2_kg_per_capita/by-treated/treatment/hr_local-filled.png}
+        \caption{Average intraday emissions in the treated regions} % Subcaption for the second image
+        \label{fig:intraday co2 treated}
+    \end{subfigure}
+    % Shared caption for both subfigures
+    \caption[Average intraday emissions, with and without \acs{DST}, for treated and control]{Average intraday emissions, with and without \acs{DST}, for treated and control. The fact that there is more of the red (decrease) area and less of the green (increase) for the treated region than the control suggests that \acs{DST} does reduce emissions. However this effect disappears once accounting for controls.} 
+    \label{fig:intraday co2}
+\end{figure}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{Images/intraday/co2_g_per_capita_vs_midday/by-treated/control/hr_local-filled.png}
+        % Subcaption for the first image
+        \caption{Average intraday emissions in the control region}
+        \label{fig:intraday co2 control midday}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.45\textwidth} 
+        \includegraphics[width=\textwidth]{Images/intraday/co2_g_per_capita_vs_midday/by-treated/treatment/hr_local-filled.png}
+        \caption{Average intraday emissions in the treated regions} % Subcaption for the second image
+        \label{fig:intraday co2 treated midday}
+    \end{subfigure}
+    % Shared caption for both subfigures
+    \caption[Average intraday emissions, normalising for midday]{Average intraday emissions, normalising for midday. This is the same as Figure \ref{fig:intraday co2}, except the average of the emissions for that day for that region was calculated for 12:00-14:30, and that was subtracted from all intervals for that day. This graphically represents the third differencing step. The fact that the red area (decrease) is larger for the control group suggests that \acs{DST} increases emissions. However once controls are accounted for in the regression, this difference changes sign and becomes statistically insignificant.} 
+    \label{fig:intraday co2 midday}
+\end{figure}
+
+
+
+\input{Tables/summary-stas}
+\input{Tables/Main-DiD-Results}
+\input{Tables/Main-DDD-Results}
+\input{Tables/DDD-WO-Controls}
+\input{Tables/DDD-ln-Results}
+\input{Tables/DDD-Last-5-years}
+\input{Tables/04-sunrise-sunset-emissions}
+
+\FloatBarrier
+\input{Frontbackmatter/DataColumns}
+
+\input{Frontbackmatter/DataWranglingExplanation}
+
+
+
+
