@@ -7,7 +7,7 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 
 * 8GB RAM/memory. 16GB recommended. If you only have 8GB, you may need to quit all other apps to free up memory.
 * Python >= 3.10 (It might work as low as 3.6, but we haven't tested) [here](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing)
-* Install python dependencies with `pip install -r requirements.txt`
+* Install python dependencies with `pip install -r scripts/requirements.txt`
 * We used R version 4.2.2 Patched (2022-11-10 r83330) inside R Studio 2023.06.0 Build 421
 * To install the R packages you need for this, run
 
@@ -15,7 +15,7 @@ This repo contains Python and R scripts for analysing AEMO data for our TSE M1 a
 install.packages(c("tidyverse", "arrow", "stargazer", "sandwich", "here", "zoo", "duckdb"))
 ```
 
-* You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`06-event-study.do`)
+* You need to install some Stata libraries. They are documented in comments up the top of the only stata file (`scripts/06-event-study.do`)
 
 Note that we keep all the data files in `./data`. The Jupyter and R scripts use relative paths. So you should not have to change any paths in them. For Stata, you will have to change the path up the top of the script.
 
@@ -35,7 +35,7 @@ This approach is what our tutor and mentor said they want.
 This will take minutes to run, and will handle hundreds of megabytes.
 This still includes a little bit of merging and data wrangling.
 
-To do this, run scripts `04-merge.R` onwards.
+To do this, run scripts `scripts/04-merge.R` onwards.
 
 The slow scripts that require lots of time, disk and memory are the 01a-01g ones.
 
@@ -44,7 +44,7 @@ The slow scripts that require lots of time, disk and memory are the 01a-01g ones
 
 You can run a representative 1-month sample of the data.
 
-In `01a-download.ipynb`, read the comment up the top of that, and change the following variables:
+In `scripts/01a-download.ipynb`, read the comment up the top of that, and change the following variables:
 
 * `max_files_per_page` - set to 2
 * `start_urls` - comment out the 4th url, uncomment the 3rd. (Each URL has a comment to explain the difference.)
@@ -57,13 +57,13 @@ Now run all scripts, in the order of their name. 01a, 01b, 01c etc, 02, 03 etc.
 
 Run all scripts, in the order of their name. 01a, 01b, 01c etc, 02, 03 etc.
 
-The first one, `01a-download.ipynb` will take a few days to download about 300GB of data. (If you want we can also give you a hard drive to save you this step.)
+The first one, `scripts/01a-download.ipynb` will take a few days to download about 300GB of data. (If you want we can also give you a hard drive to save you this step.)
 
 The next longest one is `01c`, which takes about 16 hours (with multiprocessing).
 
 ## Scripts
 
-The scripts are named in the order they should be run. As described above, you probably want to start from `04-merge.R`. Each script has comments up top explaining what it does, and any configuration options. Each script saves output into `data/` with subfolder/file names corresponding to the script that generated it.
+The scripts are inside the `scripts` folder, named in the order they should be run. As described above, you probably want to start from `04-merge.R`. Each script has comments up top explaining what it does, and any configuration options. Each script saves output into `data/` with subfolder/file names corresponding to the script that generated it.
 
 * `01a-download.ipynb` - this downloads the AEMO electrical dataset. This includes energy generation per generator per 5 minutes, and CO2 emissions intensity per generator. This is a Python Jupyter notebook. 
 * `01b-download-schema.ipynb` - This downloads metadata about the list of columns and datatypes for each AEMO dataset.

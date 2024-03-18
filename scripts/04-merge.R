@@ -31,14 +31,14 @@ library(here)
 library(knitr) # for table to tex
 
 # set up logs, as per formal requirements
-dir.create(here("logs"), showWarnings = FALSE)
-sink(here("logs/04.txt"), split = TRUE)
+dir.create(here("..", "logs"), showWarnings = FALSE)
+sink(here("..", "logs", "04.txt"), split = TRUE)
 
 # Paths ---------------------------------------------
 
 # relative to this file
 # although you can specify an absolute path if you wish.
-data_dir <- here::here("data")
+data_dir <- here::here("..", "data")
 
 # source data
 pub_hol_path_1 <- file.path(data_dir, "raw/holidays/Aus_public_hols_2009-2022-1.csv")
@@ -823,7 +823,7 @@ knitr::kable(
     "CO2 Intensity (g CO2 / kWh)"
   )
 ) |>
-writeLines(con = here("results", "04-sunrise-sunset-emissions.tex"))
+writeLines(con = here("..", "results", "04-sunrise-sunset-emissions.tex"))
 
 
 # graphs------------------------------------------------------------------
@@ -855,7 +855,7 @@ df |>
   arrange(not_midday_control_local, desc(treated), desc(dst_now_anywhere)) |>
   relocate(not_midday_control_local, treated, dst_now_anywhere, co2, co2_se) |>
   pivot_longer(c(co2, co2_se)) |>
-  write_csv(here("results/ddd-means.csv"))
+  write_csv(here("..", "results", "ddd-means.csv"))
 
 
 ## per-hour event study graph ----------------------------------------------
@@ -916,7 +916,7 @@ ddd_es |>
     x = "Time of day",
     y = "gCO2 diff, diff"
   )
-ggsave(here("plots/16-DDD-event-study-average.png"), width=9, height=7)
+ggsave(here("..", "plots", "16-DDD-event-study-average.png"), width=9, height=7)
 
 
 print('done')

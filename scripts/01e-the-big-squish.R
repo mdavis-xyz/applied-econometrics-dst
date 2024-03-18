@@ -112,7 +112,7 @@ library(here)
 Sys.setenv(TZ='UTC')
 
 # directories
-data_dir <- here::here("data")
+data_dir <- here::here("..", "data")
 source_dir <-  file.path(data_dir, '01-D-parquet-pyarrow-dataset')
 source_dispatchload_dir <-  file.path(source_dir, 'DISPATCHLOAD')
 dispatchload_partitioned_dir <- file.path(data_dir, '01-E-DISPATCHLOAD-partitioned-by-month-raw')

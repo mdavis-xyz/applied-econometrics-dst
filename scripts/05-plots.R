@@ -11,6 +11,8 @@
 # using only weighted means, no variances or regressions.
 # The tricky part is colouring in the gaps between curves,
 # to highlight an increase/decrease.
+# This script generates a lot of graphs, using
+# a lot of nested for loops.
 #
 # LAST MODIFIED: 4/03/2024 
 # LAST MODIFIED BY: Matthew Davis
@@ -26,7 +28,11 @@ library(tidyverse)
 library(here)
 library(arrow)
 
-df <- read_parquet(here("data/04-half-hourly.parquet"))
+# set up logs, as per formal requirements
+dir.create(here("..", "logs"), showWarnings = FALSE)
+sink(here("..", "logs", "05.txt"), split = TRUE)
+
+df <- read_parquet(here("..", "data", "04-half-hourly.parquet"))
 
 aggregation_level <- list(
   c(
@@ -38,9 +44,16 @@ aggregation_level <- list(
     title_suffix = "region"
   )
 )
+# for local time vs fixed/standard non-DST time
 for (time_col in c("hr_local", "hr_fixed")) {
+  # are we going have one plot per region,
+  # or one per control/treatment group
   for (agg in aggregation_level){
       agg_col <- unname(agg["col"])
+      
+    # data aggregation from years of data
+    # to daily profiles, grouped by region/treatment level
+    # need to also fiddle with data masking
     intraday <- df |>
       rename(hr = {{ time_col }}) |>
       mutate(treated = if_else(dst_here_anytime, "treatment", "control")) |>
@@ -54,6 +67,8 @@ for (time_col in c("hr_local", "hr_fixed")) {
       ) |>
       mutate(dst_now_anywhere = if_else(dst_now_anywhere, "post", "pre"))
     
+    # calculations of the difference between pre/post
+    # so we can separately colour in the area between the curves
     intraday <- intraday |>
       pivot_wider(
         id_cols = c(hr, {{ agg_col }}),
@@ -117,8 +132,11 @@ for (time_col in c("hr_local", "hr_fixed")) {
       ) |>
       right_join(intraday, by = c("hr", agg_col))
     
+    # now do a for loop per region, or control/treatment
+    # to generate some plots for each
     unique_values <- unique(intraday[[agg_col]])
     for (agg_group in unique_values) {
+      # we want plots for many different dependent variables
       cols <- list(
         c(
           y = "co2_kg_per_capita",
@@ -141,6 +159,7 @@ for (time_col in c("hr_local", "hr_fixed")) {
           title = "Energy"
         )
       )
+      # for each dependent variable, do some plots
       for (col in cols) {
         y <- unname(col["y"])
         print(paste("time_col", 
@@ -153,6 +172,7 @@ for (time_col in c("hr_local", "hr_fixed")) {
         y_pre_name <- paste0(y, "_pre")
         y_post_name <- paste0(y, "_post")
         y_increased_name <- paste0(y, "_increased")
+        # first plot: no colour between the lines
         df_plot <- intraday |>
           filter(.data[[agg_col]] == agg_group) |>
           rename(
@@ -170,7 +190,7 @@ for (time_col in c("hr_local", "hr_fixed")) {
             )
           )
         
-        plot_dir <- here("plots", "intraday", y, paste0("by-", agg_col), agg_group)
+        plot_dir <- here("..", "plots", "intraday", y, paste0("by-", agg_col), agg_group)
         if (!dir.exists(plot_dir)) {
           dir.create(plot_dir, recursive = TRUE)
         }
@@ -199,6 +219,10 @@ for (time_col in c("hr_local", "hr_fixed")) {
           height = 7,
           width = 9
         )
+        
+        # second plot: start with the variable containing the first
+        # plot, and add more elements, to explicitly colour in
+        # the gaps between the lines.
         plot <- plot +
           geom_ribbon(
             data = df_plot,
@@ -231,3 +255,4 @@ for (time_col in c("hr_local", "hr_fixed")) {
   }
 }
 
+sink(NULL) # close log file

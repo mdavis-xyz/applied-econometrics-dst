@@ -81,6 +81,8 @@ Summary of the sections:
 *******************************************************************************
 
 clear all
+// point this path to the overall repository/zip
+// i.e. to the parent of the folder which contains this script.
 //cd "C:\Users\Alex\Documents\GitHub\applied-econometrics-dst"
 cd "/home/matthew/applied_repo"
 set linesize 80
