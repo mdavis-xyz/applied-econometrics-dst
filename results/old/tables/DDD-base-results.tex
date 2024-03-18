@@ -1,0 +1,38 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                    &\multicolumn{1}{c}{KG CO2 Emissions per Capita per 30 Minutes}&\multicolumn{1}{c}{kwh Electricity Consumption per Capita per 30 Minutes}\\
+\hline
+DST Region (Treatment)&      -0.123\sym{*}  &      -0.180\sym{**} \\
+                    &    (0.0435)         &    (0.0256)         \\
+[1em]
+DST Now in Any Region (Time)&      0.0585\sym{***}&      0.0790\sym{***}\\
+                    &  (1.26e-13)         &  (2.01e-13)         \\
+[1em]
+c.dst\_here\_anytime#c.dst\_now\_anywhere&     -0.0451\sym{***}&     -0.0734\sym{**} \\
+                    &   (0.00506)         &    (0.0142)         \\
+[1em]
+Not Midday time period as a 0 or 1&      0.0272\sym{***}&      0.0143\sym{***}\\
+                    &  (1.28e-13)         &  (1.27e-13)         \\
+[1em]
+c.dst\_here\_anytime#c.not\_midday&     -0.0115         &    0.000858         \\
+                    &   (0.00875)         &   (0.00608)         \\
+[1em]
+c.dst\_now\_anywhere#c.not\_midday&     -0.0382\sym{***}&     -0.0529\sym{***}\\
+                    &  (1.67e-13)         &  (2.29e-13)         \\
+[1em]
+c.dst\_here\_anytime#c.dst\_now\_anywhere#c.not\_midday&      0.0136         &      0.0185         \\
+                    &    (0.0129)         &    (0.0110)         \\
+[1em]
+Constant            &       0.552\sym{***}&       0.643\sym{***}\\
+                    &  (1.28e-13)         &  (1.34e-13)         \\
+\hline
+r2                  &       0.153         &       0.328         \\
+r2\_a                &       0.153         &       0.328         \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+}

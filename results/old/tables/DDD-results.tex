@@ -1,0 +1,56 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                    &\multicolumn{1}{c}{KG CO2 Emissions per Capita per 30 Minutes}&\multicolumn{1}{c}{kwh Electricity Consumption per Capita per 30 Minutes}\\
+\hline
+DST Region (Treatment)&      -0.134\sym{*}  &      -0.216\sym{***}\\
+                    &    (0.0306)         &    (0.0216)         \\
+[1em]
+DST Now in Any Region (Time)&      0.0605\sym{*}  &      0.0788\sym{*}  \\
+                    &    (0.0174)         &    (0.0174)         \\
+[1em]
+DST Region (Treatment) $\times$ DST Now in Any Region (Time)&     -0.0303         &     -0.0401         \\
+                    &    (0.0186)         &    (0.0196)         \\
+[1em]
+Not Midday time period as a 0 or 1&      0.0272\sym{***}&      0.0143\sym{***}\\
+                    &  (8.78e-13)         &  (1.00e-12)         \\
+[1em]
+DST Region (Treatment) $\times$ Not Midday time period as a 0 or 1&     -0.0115         &    0.000875         \\
+                    &   (0.00874)         &   (0.00608)         \\
+[1em]
+DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&     -0.0382\sym{***}&     -0.0529\sym{***}\\
+                    &  (2.00e-12)         &  (2.33e-12)         \\
+[1em]
+DST Region (Treatment) $\times$ DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&      0.0136         &      0.0185         \\
+                    &    (0.0129)         &    (0.0110)         \\
+[1em]
+Weekend (Local)     &     -0.0338\sym{***}&     -0.0462\sym{***}\\
+                    &   (0.00132)         &   (0.00181)         \\
+[1em]
+1 if Public holiday in Region, 0 otherwise&     -0.0378\sym{**} &     -0.0498\sym{***}\\
+                    &   (0.00556)         &   (0.00387)         \\
+[1em]
+Mean Daily Temperature °C in given State&     -0.0109         &     -0.0250         \\
+                    &    (0.0142)         &    (0.0168)         \\
+[1em]
+Mean Daily Temperature °C in given State $\times$ Mean Daily Temperature °C in given State&    0.000272         &    0.000521         \\
+                    &  (0.000235)         &  (0.000289)         \\
+[1em]
+Solar Exposure Coefficient&    -0.00422         &    -0.00815         \\
+                    &   (0.00631)         &   (0.00600)         \\
+[1em]
+Daily mean Wind Speed (km/h) Cubed&     -0.0594         &     0.00417         \\
+                    &    (0.0249)         &    (0.0119)         \\
+[1em]
+Constant            &       0.712\sym{*}  &       0.995\sym{*}  \\
+                    &     (0.215)         &     (0.265)         \\
+\hline
+r2                  &       0.214         &       0.380         \\
+r2\_a                &       0.214         &       0.380         \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+}

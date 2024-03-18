@@ -11,19 +11,19 @@ DST Region (Treatment)&      -0.134\sym{*}  &      -0.216\sym{***}\\
 DST Now in Any Region (Time)&      0.0605\sym{*}  &      0.0788\sym{*}  \\
                     &    (0.0174)         &    (0.0174)         \\
 [1em]
-DST Region (Treatment) $\times$ DST Now in Any Region (Time)&     -0.0303         &     -0.0401         \\
+c.dst\_here\_anytime#c.dst\_now\_anywhere&     -0.0303         &     -0.0401         \\
                     &    (0.0186)         &    (0.0196)         \\
 [1em]
 Not Midday time period as a 0 or 1&      0.0272\sym{***}&      0.0143\sym{***}\\
                     &  (8.78e-13)         &  (1.00e-12)         \\
 [1em]
-DST Region (Treatment) $\times$ Not Midday time period as a 0 or 1&     -0.0115         &    0.000875         \\
+c.dst\_here\_anytime#c.not\_midday&     -0.0115         &    0.000875         \\
                     &   (0.00874)         &   (0.00608)         \\
 [1em]
-DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&     -0.0382\sym{***}&     -0.0529\sym{***}\\
+c.dst\_now\_anywhere#c.not\_midday&     -0.0382\sym{***}&     -0.0529\sym{***}\\
                     &  (2.00e-12)         &  (2.33e-12)         \\
 [1em]
-DST Region (Treatment) $\times$ DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&      0.0136         &      0.0185         \\
+c.dst\_here\_anytime#c.dst\_now\_anywhere#c.not\_midday&      0.0136         &      0.0185         \\
                     &    (0.0129)         &    (0.0110)         \\
 [1em]
 Weekend (Local)     &     -0.0338\sym{***}&     -0.0462\sym{***}\\
@@ -35,7 +35,7 @@ Weekend (Local)     &     -0.0338\sym{***}&     -0.0462\sym{***}\\
 Mean Daily Temperature °C in given State&     -0.0109         &     -0.0250         \\
                     &    (0.0142)         &    (0.0168)         \\
 [1em]
-Mean Daily Temperature °C in given State $\times$ Mean Daily Temperature °C in given State&    0.000272         &    0.000521         \\
+c.temperature#c.temperature&    0.000272         &    0.000521         \\
                     &  (0.000235)         &  (0.000289)         \\
 [1em]
 Solar Exposure Coefficient&    -0.00422         &    -0.00815         \\

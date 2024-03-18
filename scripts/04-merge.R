@@ -916,7 +916,7 @@ ddd_es |>
     x = "Time of day",
     y = "gCO2 diff, diff"
   )
-ggsave(here("..", "results", "plots", "16-DDD-event-study-average.png"), width=9, height=7)
+ggsave(here("..", "results", "plots", "04-DDD-event-study-average.png"), width=9, height=7)
 
 
 print('done')

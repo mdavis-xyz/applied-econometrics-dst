@@ -35,7 +35,7 @@ This approach is what our tutor and mentor said they want.
 This will take minutes to run, and will handle hundreds of megabytes.
 This still includes a little bit of merging and data wrangling.
 
-To do this, run scripts `scripts/04-merge.R` onwards.
+To do this, run scripts `scripts/04-merge.R` and `scripts/06-event-study.do`.
 
 The slow scripts that require lots of time, disk and memory are the 01a-01g ones.
 

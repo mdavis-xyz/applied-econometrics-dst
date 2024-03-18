@@ -11,19 +11,19 @@ DST Region (Treatment)&      -0.351\sym{*}  &      -0.409\sym{***}\\
 DST Now in Any Region (Time)&       0.130         &       0.108\sym{*}  \\
                     &    (0.0509)         &    (0.0280)         \\
 [1em]
-DST Region (Treatment) $\times$ DST Now in Any Region (Time)&     -0.0490         &     -0.0566         \\
+c.dst\_here\_anytime#c.dst\_now\_anywhere&     -0.0490         &     -0.0566         \\
                     &    (0.0524)         &    (0.0337)         \\
 [1em]
 Not Midday time period as a 0 or 1&      0.0569\sym{***}&      0.0224\sym{***}\\
-                    &  (3.57e-12)         &  (1.43e-12)         \\
+                    &  (3.57e-12)         &  (1.46e-12)         \\
 [1em]
-DST Region (Treatment) $\times$ Not Midday time period as a 0 or 1&     0.00157         &      0.0116         \\
+c.dst\_here\_anytime#c.not\_midday&     0.00157         &      0.0116         \\
                     &    (0.0291)         &    (0.0131)         \\
 [1em]
-DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&     -0.0671\sym{***}&     -0.0764\sym{***}\\
-                    &  (6.78e-12)         &  (3.25e-12)         \\
+c.dst\_now\_anywhere#c.not\_midday&     -0.0671\sym{***}&     -0.0764\sym{***}\\
+                    &  (6.81e-12)         &  (3.29e-12)         \\
 [1em]
-DST Region (Treatment) $\times$ DST Now in Any Region (Time) $\times$ Not Midday time period as a 0 or 1&      0.0186         &      0.0153         \\
+c.dst\_here\_anytime#c.dst\_now\_anywhere#c.not\_midday&      0.0186         &      0.0153         \\
                     &    (0.0311)         &    (0.0242)         \\
 [1em]
 Weekend (Local)     &     -0.0774\sym{**} &     -0.0947\sym{***}\\
@@ -35,7 +35,7 @@ Weekend (Local)     &     -0.0774\sym{**} &     -0.0947\sym{***}\\
 Mean Daily Temperature °C in given State&     -0.0178         &     -0.0402         \\
                     &    (0.0352)         &    (0.0225)         \\
 [1em]
-Mean Daily Temperature °C in given State $\times$ Mean Daily Temperature °C in given State&    0.000501         &    0.000872         \\
+c.temperature#c.temperature&    0.000501         &    0.000872         \\
                     &  (0.000578)         &  (0.000380)         \\
 [1em]
 Solar Exposure Coefficient&     -0.0171         &     -0.0148         \\
