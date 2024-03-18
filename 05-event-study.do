@@ -66,7 +66,7 @@ Summary of the sections:
    - Tables are generated and exported.
 
 9. **DDD without Controls:**
-   - DiD regressions for CO2 emissions and electricity consumption without 
+   - DDD regressions for CO2 emissions and electricity consumption without 
 	 additional controls.
    - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
    
@@ -394,7 +394,7 @@ eventdd ln_co2 public_holiday c.temperature##c.temperature solar_exposure ///
 graph export "results/EventStudy-ln(MiddayCO2)-Dropping-Tasmania.png", replace
 
 /********** 8. **Tables with lnCO2 and ln Electricity Consumption:*************
-   - DiD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
+   - DDD regressions for ln(CO2) and ln(electricity consumption) with additional controls.
    - Results are stored in `eststo ln_CO2_DDD` and `eststo ln_Elec_DDD`.
    - Tables are generated and exported. */
 
@@ -416,7 +416,7 @@ esttab ln_CO2_DDD ln_Elec_DDD using "results/ln-DDD-results.tex", ///
  label se stats(r2 r2_a) replace
 
 /********************** 9. **DDD without Controls:*****************************
-- DiD regressions for CO2 emissions and electricity consumption without additional controls.
+- DDD regressions for CO2 emissions and electricity consumption without additional controls.
 - Results are stored in `eststo CO2_DDD_base` and `eststo Elec_DDD_base`.
 */
 
