@@ -2,9 +2,9 @@
 \label{sec:data}
 
 %\ac{AEMO} publish data for the \ac{NEM} publicly on their website (NEMWeb\nocite{nemweb, nemweb_mmsdm}). I(Alex) rewrote this, see below
-Energy and carbon data was obtained from \ac{AEMO}\nocite{nemweb, nemweb_mmsdm} for 2009 to 2023. 
+Energy and carbon data from 2009 to 2023 was obtained from \ac{AEMO}\nocite{nemweb, nemweb_mmsdm}. 
 The dataset does not include Western Australia nor the Northern Territory due to the structure of the \ac{NEM}.
-To calculate the emissions per region over time, we take static emissions intensity (tCO2e/MWh) per generator, and join them with energy output (MW) per generator per 5 minutes. We sum to a region level, downsample to half-hourly data, and adjust for inter-region energy flows\footnote{available only with 30-minute granularity. The calculations are explained in detail in Appendix \ref{sec:interconnector calc}.}.
+To calculate the emissions per region over time, we take static emissions intensity (tCO2e/MWh) per generator, and join them with energy output (MW) per generator per 5 minutes. We sum to a region level, downsample to half-hourly data, and adjust for inter-region energy flows.\footnote{available only with 30-minute granularity. The calculations are explained in detail in Appendix \ref{sec:interconnector calc}.}
 To obtain per capita values, 
 quarterly population data per region was downloaded from \citeauthor{abs_population} and linearly interpolated to a daily level.
-Weather data was obtained from the Bureau of Meteorology\nocite{weather_data} and Willy Weather\nocite{willy_weather}. Table \ref{tab:summary stats} presents summary statistics for all variables of interest, showing that Queensland and treated regions are relatively similar.  
+Weather data was obtained from the Bureau of Meteorology\nocite{weather_data} and Willy Weather\nocite{willy_weather}. Temperature data was taken from capital cities, since most thermal load (building heating and cooling) occurs in capital cities. Wind and sunlight data was taken from region midpoints, as representative values for generation which is typically dispersed across the region. Our final dataset includes information on $CO_2$, $kWh$, temperature, solar exposure, wind, and population, as well as holiday and weekend dates. Table \ref{tab:summary stats} presents summary statistics for all variables, showing that Queensland and the treated regions are relatively similar.  
