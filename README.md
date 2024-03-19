@@ -2,7 +2,8 @@
 
 This repo contains Python and R scripts for analysing AEMO data for our TSE M1 applied econometrics project.
 
-
+The report PDF is in this folder. The source code (`.tex` files) as requested by the formal requirements, are in the `report`  folder.
+ 
 ## Prerequisites
 
 * 8GB RAM/memory. 16GB recommended. If you only have 8GB, you may need to quit all other apps to free up memory.
